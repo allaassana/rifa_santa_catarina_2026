@@ -9,7 +9,6 @@
 
 <body data-page="admin">
 
-<!-- 🔐 Proteção simples -->
 <script>
   const ADMIN_PASSWORD = "admin2025";
   if (!sessionStorage.getItem("admin_access")) {
@@ -24,7 +23,6 @@
 </script>
 
 <header class="site-header">
-  <img src="assets/logo.png" class="logo">
   <h1>PARÓQUIA SANTA CATARINA — Painel do Proprietário</h1>
   <p class="subtitle">Gestão da Rifa — 120 bilhetes</p>
 </header>
@@ -50,34 +48,17 @@
   </aside>
 </main>
 
-<!-- Modal -->
-<div id="modal" class="modal" style="display:none;">
-  <div class="box">
-    <h3>Bilhete <span id="mId"></span></h3>
-
-    <label>Nome</label><input id="mNome">
-    <label>Telefone</label><input id="mTel">
-    <label>Email</label><input id="mEmail">
-
-    <div class="form-actions">
-      <button class="btn" id="mSave">Confirmar</button>
-      <button class="btn btn-danger" id="mDelete">Eliminar</button>
-      <button class="btn btn-secondary" id="mClose">Fechar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ✅ SUPABASE — DECLARADO UMA ÚNICA VEZ -->
+<!-- SUPABASE — UMA ÚNICA VEZ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  window.supabase = supabase.createClient(
+  window.supabase = window.supabase.createClient(
     "https://ydyuxumwqnuhomahaxet.supabase.co",
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
 </script>
 
-<!-- Admin logic -->
-<script src="js/admin.js" defer></script>
+<!-- ADMIN LOGIC -->
+<script src="js/admin.js"></script>
 
 </body>
 </html>
