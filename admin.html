@@ -11,7 +11,7 @@
 
 <!-- 🔐 Proteção simples -->
 <script>
-  const ADMIN_PASSWORD = "admin2025"; // podes mudar depois
+  const ADMIN_PASSWORD = "admin2025";
   if (!sessionStorage.getItem("admin_access")) {
     const pass = prompt("🔐 Acesso restrito – Introduza a senha:");
     if (pass !== ADMIN_PASSWORD) {
@@ -24,7 +24,7 @@
 </script>
 
 <header class="site-header">
-  <img src="assets/logo.png" class="logo" alt="Logo">
+  <img src="assets/logo.png" class="logo">
   <h1>PARÓQUIA SANTA CATARINA — Painel do Proprietário</h1>
   <p class="subtitle">Gestão da Rifa — 120 bilhetes</p>
 </header>
@@ -32,10 +32,8 @@
 <main class="wrap container">
   <section class="left">
     <div class="controls">
-      <button class="btn" id="exportCsvBtn">Exportar CSV</button>
-      <button class="btn" id="exportJsonBtn">Exportar JSON</button>
-      <button class="btn" id="drawBtn">Sortear Vencedor</button>
-      <button class="btn btn-danger" id="resetBtn">Reiniciar</button>
+      <button class="btn">Exportar CSV</button>
+      <button class="btn">Exportar JSON</button>
       <div>Vendidos: <span id="soldCount">0</span> / 120</div>
     </div>
 
@@ -71,17 +69,17 @@
   </div>
 </div>
 
-<!-- ✅ SUPABASE (CRIADO UMA ÚNICA VEZ) -->
+<!-- ✅ SUPABASE — UMA ÚNICA VEZ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const supabase = window.supabase.createClient(
+  window.supabase = supabase.createClient(
     "https://ydyuxumwqnuhomahaxet.supabase.co",
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
 </script>
 
-<!-- ✅ LÓGICA DO ADMIN (NÃO CRIA SUPABASE) -->
-<script src="js/admin.js"></script>
+<!-- Admin logic (DEPOIS DO DOM) -->
+<script src="js/admin.js" defer></script>
 
 </body>
 </html>
