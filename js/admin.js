@@ -1,18 +1,7 @@
-// ================= SUPABASE =================
-const SUPABASE_URL = "https://ydyuxumwqnuhomahaxet.supabase.co";
-const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
-
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-// ================= ELEMENTOS =================
 const grid = document.getElementById("grid");
 const detailBox = document.getElementById("detailBox");
 const soldCountEl = document.getElementById("soldCount");
 
-// modal
 const modal = document.getElementById("modal");
 const mId = document.getElementById("mId");
 const mNome = document.getElementById("mNome");
@@ -30,12 +19,11 @@ const mClose = document.getElementById("mClose");
 
 let currentRow = null;
 
-// ================= CARREGAR COMPRAS =================
+// ===== CARREGAR COMPRAS =====
 async function carregarCompras() {
   const { data, error } = await supabase
     .from("compras")
-    .select("*")
-    .order("bilhete", { ascending: true });
+    .select("*");
 
   if (error) {
     alert("Erro ao carregar compras");
@@ -46,51 +34,41 @@ async function carregarCompras() {
   grid.innerHTML = "";
   soldCountEl.innerText = data.length;
 
+  const vendidos = data.map(c => c.bilhete);
+
   for (let i = 1; i <= 120; i++) {
     const div = document.createElement("div");
-    div.classList.add("ticket");
+    div.className = "ticket";
     div.innerText = i;
 
-    // 🔑 REGRA FINAL (IGUAL AO INDEX.HTML)
-    const compra = data.find(c => Number(c.bilhete) === i);
+    const compra = data.find(c => c.bilhete === i);
 
-    if (compra) {
-      // 🔒 EXISTE NA TABELA = BLOQUEADO
+    if (vendidos.includes(i)) {
       div.classList.add("sold");
-
-      if (compra.status === "confirmado") {
-        div.classList.add("confirmed");
-      }
-
       div.onclick = () => abrirDetalhes(compra);
     } else {
-      // livre (admin apenas visualiza)
+      div.style.opacity = "0.4";
       div.style.cursor = "default";
-      div.style.opacity = "0.45";
     }
 
     grid.appendChild(div);
   }
 }
 
-// ================= DETALHES =================
+// ===== DETALHES =====
 function abrirDetalhes(compra) {
   currentRow = compra;
 
   detailBox.innerHTML = `
     <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
     <p><strong>Nome:</strong> ${compra.nome}</p>
-    <p><strong>Telefone:</strong> ${compra.telefone}</p>
     <p><strong>Email:</strong> ${compra.email}</p>
-    <p><strong>Status:</strong> ${compra.status}</p>
-    <button class="btn" onclick="abrirModal()">Abrir / Validar</button>
+    <button class="btn" onclick="abrirModal()">Validar</button>
   `;
 }
 
-// ================= MODAL =================
+// ===== MODAL =====
 function abrirModal() {
-  if (!currentRow) return;
-
   modal.style.display = "flex";
 
   mId.innerText = currentRow.bilhete;
@@ -102,72 +80,36 @@ function abrirModal() {
   mPais.value = currentRow.pais;
   mFeedback.value = currentRow.feedback || "";
 
-  if (currentRow.comprovativo_url) {
-    mCompArea.innerHTML = `
-      <a href="${currentRow.comprovativo_url}" target="_blank">
-        Ver comprovativo
-      </a>
-    `;
-  } else {
-    mCompArea.innerHTML = "<em>Sem comprovativo</em>";
-  }
+  mCompArea.innerHTML = currentRow.comprovativo_url
+    ? `<a href="${currentRow.comprovativo_url}" target="_blank">Ver comprovativo</a>`
+    : "<em>Sem comprovativo</em>";
 }
 
-mClose.onclick = () => {
-  modal.style.display = "none";
-  currentRow = null;
-};
+mClose.onclick = () => modal.style.display = "none";
 
-// ================= CONFIRMAR =================
+// ===== CONFIRMAR =====
 mSave.onclick = async () => {
-  if (!currentRow) return;
-
-  const { error } = await supabase
+  await supabase
     .from("compras")
-    .update({
-      nome: mNome.value,
-      telefone: mTel.value,
-      email: mEmail.value,
-      data_nascimento: mNasc.value,
-      cidade: mCidade.value,
-      pais: mPais.value,
-      feedback: mFeedback.value,
-      status: "confirmado"
-    })
+    .update({ status: "confirmado" })
     .eq("id", currentRow.id);
 
-  if (error) {
-    alert("Erro ao atualizar compra");
-    console.error(error);
-    return;
-  }
-
-  alert("Compra confirmada!");
   modal.style.display = "none";
   carregarCompras();
 };
 
-// ================= ELIMINAR =================
+// ===== ELIMINAR =====
 mDelete.onclick = async () => {
-  if (!currentRow) return;
+  if (!confirm("Eliminar compra?")) return;
 
-  if (!confirm("Eliminar esta compra?")) return;
-
-  const { error } = await supabase
+  await supabase
     .from("compras")
     .delete()
     .eq("id", currentRow.id);
 
-  if (error) {
-    alert("Erro ao eliminar compra");
-    console.error(error);
-    return;
-  }
-
-  alert("Compra eliminada!");
   modal.style.display = "none";
   carregarCompras();
 };
 
-// ================= INIT =================
+// INIT
 carregarCompras();
