@@ -24,7 +24,7 @@
 </script>
 
 <header class="site-header">
-  <img src="assets/logo.png" class="logo">
+  <img src="assets/logo.png" class="logo" alt="Logo">
   <h1>PARÓQUIA SANTA CATARINA — Painel do Proprietário</h1>
   <p class="subtitle">Gestão da Rifa — 120 bilhetes</p>
 </header>
@@ -32,16 +32,18 @@
 <main class="wrap container">
   <section class="left">
     <div class="controls">
-      <button class="btn" id="exportCsv">Exportar CSV</button>
-      <button class="btn" id="exportJson">Exportar JSON</button>
+      <button class="btn" id="exportCsvBtn">Exportar CSV</button>
+      <button class="btn" id="exportJsonBtn">Exportar JSON</button>
       <button class="btn" id="drawBtn">🎉 Sortear Vencedor</button>
       <div>Vendidos: <span id="soldCount">0</span> / 120</div>
     </div>
 
     <div id="grid" class="grid"></div>
 
-    <h3>🏆 Histórico de Vencedores</h3>
-    <div id="history" class="history"></div>
+    <div class="panel history-box">
+      <h3>🏆 Histórico de Vencedores</h3>
+      <div id="history"></div>
+    </div>
   </section>
 
   <aside class="right panel">
@@ -59,8 +61,6 @@
     <label>Telefone</label><input id="mTel">
     <label>Email</label><input id="mEmail">
 
-    <div id="mCompArea"></div>
-
     <div class="form-actions">
       <button class="btn" id="mSave">Confirmar</button>
       <button class="btn btn-danger" id="mDelete">Eliminar</button>
@@ -72,7 +72,7 @@
 <!-- ✅ SUPABASE — UMA ÚNICA VEZ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const supabase = window.supabase.createClient(
+  window.supabase = supabase.createClient(
     "https://ydyuxumwqnuhomahaxet.supabase.co",
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
