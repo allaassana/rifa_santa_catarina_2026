@@ -24,7 +24,7 @@
 </script>
 
 <header class="site-header">
-  <img src="assets/logo.png" class="logo" alt="Logo">
+  <img src="assets/logo.png" class="logo">
   <h1>PARÓQUIA SANTA CATARINA — Painel do Proprietário</h1>
   <p class="subtitle">Gestão da Rifa — 120 bilhetes</p>
 </header>
@@ -40,10 +40,8 @@
 
     <div id="grid" class="grid"></div>
 
-    <div class="panel history-box">
-      <h3>🏆 Histórico de Vencedores</h3>
-      <div id="history"></div>
-    </div>
+    <h3>🏆 Histórico de Vencedores</h3>
+    <div id="history" class="history"></div>
   </section>
 
   <aside class="right panel">
@@ -60,6 +58,12 @@
     <label>Nome</label><input id="mNome">
     <label>Telefone</label><input id="mTel">
     <label>Email</label><input id="mEmail">
+    <label>Data Nascimento</label><input id="mNasc" type="date">
+    <label>Cidade</label><input id="mCidade">
+    <label>País</label><input id="mPais">
+    <label>Feedback</label><textarea id="mFeedback"></textarea>
+
+    <div id="mCompArea"></div>
 
     <div class="form-actions">
       <button class="btn" id="mSave">Confirmar</button>
@@ -72,7 +76,7 @@
 <!-- ✅ SUPABASE — UMA ÚNICA VEZ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  window.supabase = supabase.createClient(
+  window.supabaseClient = supabase.createClient(
     "https://ydyuxumwqnuhomahaxet.supabase.co",
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
