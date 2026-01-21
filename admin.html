@@ -9,12 +9,10 @@
 
 <body data-page="admin">
 
-<!-- 🔐 Proteção simples do painel -->
+<!-- 🔐 Proteção simples -->
 <script>
   const ADMIN_PASSWORD = "admin2025";
-  const access = sessionStorage.getItem("admin_access");
-
-  if (!access) {
+  if (!sessionStorage.getItem("admin_access")) {
     const pass = prompt("🔐 Acesso restrito – Introduza a senha:");
     if (pass !== ADMIN_PASSWORD) {
       alert("❌ Acesso negado");
@@ -37,18 +35,11 @@
       <button class="btn" id="exportCsvBtn">Exportar CSV</button>
       <button class="btn" id="exportJsonBtn">Exportar JSON</button>
       <button class="btn" id="drawBtn">Sortear Vencedor</button>
-      <button class="btn btn-danger" id="resetBtn">Reiniciar (quando todos vendidos)</button>
-      <div class="counter-display">
-        Vendidos: <span id="soldCount">0</span> / 120
-      </div>
+      <button class="btn btn-danger" id="resetBtn">Reiniciar</button>
+      <div>Vendidos: <span id="soldCount">0</span> / 120</div>
     </div>
 
     <div id="grid" class="grid"></div>
-
-    <div class="panel history-box">
-      <h3>Histórico de Vencedores</h3>
-      <div id="history" class="history"></div>
-    </div>
   </section>
 
   <aside class="right panel">
@@ -62,26 +53,32 @@
   <div class="box">
     <h3>Bilhete <span id="mId"></span></h3>
 
-    <label>Nome</label><input id="mNome" />
-    <label>Telefone</label><input id="mTel" />
-    <label>Email</label><input id="mEmail" />
-    <label>Data Nascimento</label><input id="mNasc" type="date" />
-    <label>Cidade</label><input id="mCidade" />
-    <label>País</label><input id="mPais" />
-    <label>Feedback</label><textarea id="mFeedback" maxlength="500"></textarea>
+    <label>Nome</label><input id="mNome">
+    <label>Telefone</label><input id="mTel">
+    <label>Email</label><input id="mEmail">
+    <label>Data Nascimento</label><input id="mNasc" type="date">
+    <label>Cidade</label><input id="mCidade">
+    <label>País</label><input id="mPais">
+    <label>Feedback</label><textarea id="mFeedback"></textarea>
 
     <div id="mCompArea"></div>
 
     <div class="form-actions">
-      <button class="btn" id="mSave">Guardar</button>
+      <button class="btn" id="mSave">Confirmar</button>
       <button class="btn btn-danger" id="mDelete">Eliminar</button>
       <button class="btn btn-secondary" id="mClose">Fechar</button>
     </div>
   </div>
 </div>
 
-<!-- Supabase SDK -->
+<!-- ✅ SUPABASE (UMA ÚNICA VEZ) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabase = window.supabase.createClient(
+    "https://ydyuxumwqnuhomahaxet.supabase.co",
+    "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
+  );
+</script>
 
 <!-- Admin logic -->
 <script src="js/admin.js"></script>
