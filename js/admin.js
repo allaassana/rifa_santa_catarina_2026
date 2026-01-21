@@ -1,6 +1,5 @@
-// ================================
-// ELEMENTOS
-// ================================
+const TOTAL = 120;
+
 const grid = document.getElementById("grid");
 const detailBox = document.getElementById("detailBox");
 const soldCountEl = document.getElementById("soldCount");
@@ -21,15 +20,12 @@ const mDelete = document.getElementById("mDelete");
 const mClose = document.getElementById("mClose");
 
 let currentRow = null;
-const TOTAL = 120;
 
-// ================================
+// ========================
 // CARREGAR COMPRAS
-// ================================
+// ========================
 async function carregarCompras() {
-  const { data, error } = await supabase
-    .from("compras")
-    .select("*");
+  const { data, error } = await supabase.from("compras").select("*");
 
   if (error) {
     console.error(error);
@@ -61,30 +57,24 @@ async function carregarCompras() {
   }
 }
 
-// ================================
+// ========================
 // DETALHES
-// ================================
+// ========================
 function abrirDetalhes(compra) {
   currentRow = compra;
-
   detailBox.innerHTML = `
     <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
     <p><strong>Nome:</strong> ${compra.nome}</p>
-    <p><strong>Telefone:</strong> ${compra.telefone}</p>
-    <p><strong>Email:</strong> ${compra.email}</p>
     <p><strong>Status:</strong> ${compra.status}</p>
     <button class="btn" id="openModal">Abrir</button>
   `;
-
   document.getElementById("openModal").onclick = abrirModal;
 }
 
-// ================================
+// ========================
 // MODAL
-// ================================
+// ========================
 function abrirModal() {
-  if (!currentRow) return;
-
   modal.style.display = "flex";
 
   mId.innerText = currentRow.bilhete;
@@ -95,61 +85,21 @@ function abrirModal() {
   mCidade.value = currentRow.cidade;
   mPais.value = currentRow.pais;
   mFeedback.value = currentRow.feedback || "";
-
-  mCompArea.innerHTML = currentRow.comprovativo_url
-    ? `<a href="${currentRow.comprovativo_url}" target="_blank">Ver comprovativo</a>`
-    : "<em>Sem comprovativo</em>";
 }
 
-mClose.onclick = () => {
-  modal.style.display = "none";
-  currentRow = null;
-};
+mClose.onclick = () => modal.style.display = "none";
 
-// ================================
-// CONFIRMAR
-// ================================
-mSave.onclick = async () => {
-  if (!currentRow) return;
-
-  await supabase
-    .from("compras")
-    .update({ status: "confirmado" })
-    .eq("id", currentRow.id);
-
-  modal.style.display = "none";
-};
-
-// ================================
-// ELIMINAR
-// ================================
-mDelete.onclick = async () => {
-  if (!currentRow) return;
-  if (!confirm("Eliminar compra?")) return;
-
-  await supabase
-    .from("compras")
-    .delete()
-    .eq("id", currentRow.id);
-
-  modal.style.display = "none";
-};
-
-// ================================
-// 🔴 REALTIME — SINCRONIZAÇÃO TOTAL
-// ================================
+// ========================
+// REALTIME 🔥
+// ========================
 supabase
   .channel("compras-realtime")
   .on(
     "postgres_changes",
     { event: "*", schema: "public", table: "compras" },
-    () => {
-      carregarCompras(); // 🔥 ATUALIZA AUTOMÁTICO
-    }
+    () => carregarCompras()
   )
   .subscribe();
 
-// ================================
 // INIT
-// ================================
 carregarCompras();
