@@ -1,5 +1,5 @@
 // ================================
-// SUPABASE (JÁ CRIADO NO HTML)
+// USA O SUPABASE JÁ CRIADO NO HTML
 // ================================
 const supabase = window.supabase;
 
@@ -19,9 +19,14 @@ let currentRow = null;
 // CARREGAR COMPRAS
 // ================================
 async function carregarCompras() {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("compras")
     .select("*");
+
+  if (error) {
+    console.error(error);
+    return;
+  }
 
   grid.innerHTML = "";
   soldCountEl.textContent = data.length;
@@ -38,6 +43,7 @@ async function carregarCompras() {
       div.onclick = () => mostrarDetalhes(compra);
     } else {
       div.style.opacity = "0.4";
+      div.style.cursor = "not-allowed";
     }
 
     grid.appendChild(div);
@@ -57,13 +63,19 @@ function mostrarDetalhes(compra) {
 }
 
 // ================================
-// 🎉 SORTEIO
+// 🎉 SORTEAR VENCEDOR
 // ================================
 drawBtn.onclick = async () => {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("compras")
     .select("*")
     .eq("status", "confirmado");
+
+  if (error) {
+    alert("Erro ao buscar compras confirmadas");
+    console.error(error);
+    return;
+  }
 
   if (!data || data.length === 0) {
     alert("Nenhuma compra confirmada.");
@@ -84,13 +96,18 @@ drawBtn.onclick = async () => {
 };
 
 // ================================
-// HISTÓRICO
+// 🏆 HISTÓRICO DE VENCEDORES
 // ================================
 async function carregarVencedores() {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("vencedores")
     .select("*")
     .order("data_sorteio", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
 
   winnersList.innerHTML = "";
 
@@ -102,7 +119,7 @@ async function carregarVencedores() {
 }
 
 // ================================
-// REALTIME
+// 🔴 REALTIME (COMPRAS)
 // ================================
 supabase
   .channel("compras-realtime")
