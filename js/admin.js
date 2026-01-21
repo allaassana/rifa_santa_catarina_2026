@@ -13,12 +13,12 @@ let comprasCache = [];
 // CARREGAR COMPRAS
 // ================================
 async function carregarCompras() {
-  const { data, error } = await window.supabase
+  const { data, error } = await db
     .from("compras")
     .select("*");
 
   if (error) {
-    console.error("Erro compras:", error);
+    console.error(error);
     return;
   }
 
@@ -71,7 +71,7 @@ document.getElementById("drawWinner").onclick = async () => {
   const vencedor =
     confirmadas[Math.floor(Math.random() * confirmadas.length)];
 
-  const { error } = await window.supabase
+  const { error } = await db
     .from("vencedores")
     .insert({
       bilhete: vencedor.bilhete,
@@ -81,7 +81,7 @@ document.getElementById("drawWinner").onclick = async () => {
     });
 
   if (error) {
-    console.error("Erro ao gravar vencedor:", error);
+    console.error(error);
     alert("Erro ao gravar vencedor.");
     return;
   }
@@ -91,19 +91,19 @@ document.getElementById("drawWinner").onclick = async () => {
 };
 
 // ================================
-// CARREGAR HISTÓRICO DE VENCEDORES
+// HISTÓRICO DE VENCEDORES
 // ================================
 async function carregarVencedores() {
   winnersList.innerHTML = "";
 
-  const { data, error } = await window.supabase
+  const { data, error } = await db
     .from("vencedores")
     .select("*")
     .order("data_sorteio", { ascending: false });
 
   if (error) {
-    console.error("Erro vencedores:", error);
-    winnersList.innerHTML = "<li>Erro ao carregar vencedores</li>";
+    console.error(error);
+    winnersList.innerHTML = "<li>Erro ao carregar</li>";
     return;
   }
 
