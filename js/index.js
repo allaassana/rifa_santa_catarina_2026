@@ -1,9 +1,13 @@
-document.addEventListener("DOMContentLoaded", async () => {
+// 🔌 SUPABASE CLIENT
+const SUPABASE_URL = "https://ydyuxumwqnuhomahaxet.supabase.co";
+const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
 
-  if (typeof supabase === "undefined") {
-    alert("❌ Supabase não carregou. Verifica o script no index.html");
-    return;
-  }
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+document.addEventListener("DOMContentLoaded", async () => {
 
   const TOTAL = 120;
 
@@ -18,21 +22,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let selectedTicket = null;
 
+  // 🔄 Carregar bilhetes vendidos
   async function renderGrid() {
     let vendidos = [];
 
-    try {
-      const { data, error } = await supabase
-        .from("compras")
-        .select("bilhete");
+    const { data, error } = await supabase
+      .from("compras")
+      .select("bilhete");
 
-      if (error) {
-        console.error("Erro Supabase:", error);
-      } else if (data) {
-        vendidos = data.map(d => d.bilhete);
-      }
-    } catch (err) {
-      console.error("Erro inesperado:", err);
+    if (!error && data) {
+      vendidos = data.map(d => d.bilhete);
     }
 
     grid.innerHTML = "";
@@ -66,8 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     selectedTicket = null;
     formArea.style.display = "none";
     ["nome", "tel", "email", "nasc", "cidade", "pais", "feedback"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = "";
+      document.getElementById(id).value = "";
     });
     compInput.value = "";
   }
@@ -92,6 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
+      // 📤 Upload comprovativo
       const ext = file.name.split(".").pop();
       const fileName = `bilhete_${selectedTicket}_${Date.now()}.${ext}`;
 
@@ -107,6 +106,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         .from("comprovativos")
         .getPublicUrl(fileName);
 
+      // 🧾 Inserir compra
       const { error: insertError } = await supabase
         .from("compras")
         .insert({
