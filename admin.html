@@ -73,10 +73,10 @@
   </div>
 </div>
 
-<!-- ✅ SUPABASE — DECLARADO UMA ÚNICA VEZ -->
+<!-- ✅ SUPABASE — UMA ÚNICA VEZ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  window.db = supabase.createClient(
+  window.supabaseClient = supabase.createClient(
     "https://ydyuxumwqnuhomahaxet.supabase.co",
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
