@@ -1,7 +1,7 @@
 // ================================
-// SUPABASE (JÁ CRIADO NO HTML)
+// USAR SUPABASE JÁ CRIADO NO HTML
 // ================================
-const supabase = window.db;
+const supabase = window.supabaseClient;
 
 // ================================
 // ELEMENTOS
@@ -38,8 +38,6 @@ async function carregarCompras() {
 
   grid.innerHTML = "";
   soldCountEl.innerText = data.length;
-
-  const vendidos = data.map(c => c.bilhete);
 
   for (let i = 1; i <= TOTAL; i++) {
     const div = document.createElement("div");
@@ -108,6 +106,7 @@ mSave.onclick = async () => {
     .eq("id", currentRow.id);
 
   modal.style.display = "none";
+  carregarCompras();
 };
 
 // ================================
@@ -118,6 +117,7 @@ mDelete.onclick = async () => {
 
   await supabase.from("compras").delete().eq("id", currentRow.id);
   modal.style.display = "none";
+  carregarCompras();
 };
 
 // ================================
@@ -157,11 +157,8 @@ async function carregarVencedores() {
     .order("data_sorteio", { ascending: false });
 
   historyBox.innerHTML = "";
-
   data.forEach(v => {
-    historyBox.innerHTML += `
-      <p>🏆 Bilhete ${v.bilhete} — ${v.nome}</p>
-    `;
+    historyBox.innerHTML += `<p>🏆 Bilhete ${v.bilhete} — ${v.nome}</p>`;
   });
 }
 
