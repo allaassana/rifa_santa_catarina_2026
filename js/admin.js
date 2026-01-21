@@ -1,11 +1,7 @@
-// ================================
-// USA O SUPABASE JÁ CRIADO NO HTML
-// ================================
+// ❗ NÃO DECLARA SUPABASE
+// ❗ APENAS USA O QUE VEM DO HTML
 const supabase = window.supabase;
 
-// ================================
-// ELEMENTOS
-// ================================
 const grid = document.getElementById("grid");
 const soldCountEl = document.getElementById("soldCount");
 const detailBox = document.getElementById("detailBox");
@@ -13,15 +9,12 @@ const winnersList = document.getElementById("winnersList");
 const drawBtn = document.getElementById("drawWinner");
 
 const TOTAL = 120;
-let currentRow = null;
 
-// ================================
+// =======================
 // CARREGAR COMPRAS
-// ================================
+// =======================
 async function carregarCompras() {
-  const { data, error } = await supabase
-    .from("compras")
-    .select("*");
+  const { data, error } = await supabase.from("compras").select("*");
 
   if (error) {
     console.error(error);
@@ -40,42 +33,29 @@ async function carregarCompras() {
 
     if (compra) {
       div.classList.add("sold");
-      div.onclick = () => mostrarDetalhes(compra);
+      div.onclick = () => {
+        detailBox.innerHTML = `
+          <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
+          <p><strong>Nome:</strong> ${compra.nome}</p>
+          <p><strong>Status:</strong> ${compra.status}</p>
+        `;
+      };
     } else {
       div.style.opacity = "0.4";
-      div.style.cursor = "not-allowed";
     }
 
     grid.appendChild(div);
   }
 }
 
-// ================================
-// DETALHES
-// ================================
-function mostrarDetalhes(compra) {
-  currentRow = compra;
-  detailBox.innerHTML = `
-    <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
-    <p><strong>Nome:</strong> ${compra.nome}</p>
-    <p><strong>Status:</strong> ${compra.status}</p>
-  `;
-}
-
-// ================================
-// 🎉 SORTEAR VENCEDOR
-// ================================
+// =======================
+// SORTEIO
+// =======================
 drawBtn.onclick = async () => {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("compras")
     .select("*")
     .eq("status", "confirmado");
-
-  if (error) {
-    alert("Erro ao buscar compras confirmadas");
-    console.error(error);
-    return;
-  }
 
   if (!data || data.length === 0) {
     alert("Nenhuma compra confirmada.");
@@ -95,22 +75,16 @@ drawBtn.onclick = async () => {
   carregarVencedores();
 };
 
-// ================================
-// 🏆 HISTÓRICO DE VENCEDORES
-// ================================
+// =======================
+// HISTÓRICO
+// =======================
 async function carregarVencedores() {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("vencedores")
     .select("*")
     .order("data_sorteio", { ascending: false });
 
-  if (error) {
-    console.error(error);
-    return;
-  }
-
   winnersList.innerHTML = "";
-
   data.forEach(v => {
     const li = document.createElement("li");
     li.textContent = `🎟️ ${v.bilhete} — ${v.nome}`;
@@ -118,9 +92,9 @@ async function carregarVencedores() {
   });
 }
 
-// ================================
-// 🔴 REALTIME (COMPRAS)
-// ================================
+// =======================
+// REALTIME
+// =======================
 supabase
   .channel("compras-realtime")
   .on(
@@ -130,8 +104,6 @@ supabase
   )
   .subscribe();
 
-// ================================
 // INIT
-// ================================
 carregarCompras();
 carregarVencedores();
