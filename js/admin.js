@@ -1,10 +1,7 @@
 // ================================
-// SUPABASE CLIENT (UMA ÚNICA VEZ)
+// SUPABASE (VEM DO admin.html)
 // ================================
-const supabase = window.supabase.createClient(
-  "https://ydyuxumwqnuhomahaxet.supabase.co",
-  "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
-);
+const supabase = window.supabaseClient;
 
 // ================================
 // ELEMENTOS
@@ -26,17 +23,17 @@ async function carregarCompras() {
     .select("*");
 
   if (error) {
-    console.error("Erro compras:", error);
+    console.error("Erro ao carregar compras:", error);
     return;
   }
 
   grid.innerHTML = "";
-  soldCountEl.innerText = data.length;
+  soldCountEl.textContent = data.length;
 
   for (let i = 1; i <= TOTAL; i++) {
     const div = document.createElement("div");
     div.className = "ticket";
-    div.innerText = i;
+    div.textContent = i;
 
     const compra = data.find(c => c.bilhete === i);
 
@@ -51,6 +48,7 @@ async function carregarCompras() {
       };
     } else {
       div.style.opacity = "0.4";
+      div.style.cursor = "not-allowed";
     }
 
     grid.appendChild(div);
@@ -67,7 +65,7 @@ async function carregarVencedores() {
     .order("data_sorteio", { ascending: false });
 
   if (error) {
-    console.error("Erro vencedores:", error);
+    console.error("Erro ao carregar vencedores:", error);
     return;
   }
 
@@ -81,15 +79,15 @@ async function carregarVencedores() {
 }
 
 // ================================
-// SORTEAR VENCEDOR
+// SORTEIO
 // ================================
 drawBtn.onclick = async () => {
-  const { data: compras } = await supabase
+  const { data: compras, error } = await supabase
     .from("compras")
     .select("*")
     .eq("status", "confirmado");
 
-  if (!compras || compras.length === 0) {
+  if (error || !compras || compras.length === 0) {
     alert("Nenhuma compra confirmada.");
     return;
   }
@@ -111,5 +109,7 @@ drawBtn.onclick = async () => {
 // ================================
 // INIT
 // ================================
-carregarCompras();
-carregarVencedores();
+document.addEventListener("DOMContentLoaded", () => {
+  carregarCompras();
+  carregarVencedores();
+});
