@@ -1,7 +1,7 @@
 // ================================
 // USA O CLIENTE GLOBAL
 // ================================
-const db = window.supabaseClient;
+const db = window.db;
 
 // ================================
 // ELEMENTOS
@@ -21,7 +21,7 @@ async function carregarCompras() {
   const { data, error } = await db.from("compras").select("*");
 
   if (error) {
-    console.error(error);
+    console.error("Erro compras:", error);
     return;
   }
 
@@ -46,7 +46,6 @@ async function carregarCompras() {
       };
     } else {
       div.style.opacity = "0.4";
-      div.style.cursor = "not-allowed";
     }
 
     grid.appendChild(div);
@@ -63,7 +62,7 @@ async function carregarVencedores() {
     .order("data_sorteio", { ascending: false });
 
   if (error) {
-    console.error(error);
+    console.error("Erro vencedores:", error);
     return;
   }
 
