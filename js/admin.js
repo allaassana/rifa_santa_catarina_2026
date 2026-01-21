@@ -1,26 +1,15 @@
-// ================================
-// CONFIG
-// ================================
 const TOTAL = 120;
 
-// ================================
-// ELEMENTOS
-// ================================
 const grid = document.getElementById("grid");
 const detailBox = document.getElementById("detailBox");
 const soldCountEl = document.getElementById("soldCount");
 const historyBox = document.getElementById("history");
-const drawBtn = document.getElementById("drawBtn");
 
 const modal = document.getElementById("modal");
 const mId = document.getElementById("mId");
 const mNome = document.getElementById("mNome");
 const mTel = document.getElementById("mTel");
 const mEmail = document.getElementById("mEmail");
-const mNasc = document.getElementById("mNasc");
-const mCidade = document.getElementById("mCidade");
-const mPais = document.getElementById("mPais");
-const mFeedback = document.getElementById("mFeedback");
 const mCompArea = document.getElementById("mCompArea");
 
 const mSave = document.getElementById("mSave");
@@ -33,10 +22,7 @@ let currentRow = null;
 // CARREGAR COMPRAS
 // ================================
 async function carregarCompras() {
-  const { data, error } = await supabase.from("compras").select("*");
-
-  if (error) return console.error(error);
-
+  const { data } = await supabase.from("compras").select("*");
   grid.innerHTML = "";
   soldCountEl.innerText = data.length;
 
@@ -49,12 +35,11 @@ async function carregarCompras() {
 
     const compra = data.find(c => c.bilhete === i);
 
-    if (vendidos.includes(i)) {
+    if (compra) {
       div.classList.add("sold");
       div.onclick = () => abrirDetalhes(compra);
     } else {
       div.style.opacity = "0.4";
-      div.style.cursor = "not-allowed";
     }
 
     grid.appendChild(div);
@@ -70,9 +55,10 @@ function abrirDetalhes(compra) {
     <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
     <p><strong>Nome:</strong> ${compra.nome}</p>
     <p><strong>Status:</strong> ${compra.status}</p>
-    <button class="btn" id="openModal">Abrir</button>
+    <button class="btn" id="openModalBtn">Abrir</button>
   `;
-  document.getElementById("openModal").onclick = abrirModal;
+
+  document.getElementById("openModalBtn").onclick = abrirModal;
 }
 
 // ================================
@@ -80,16 +66,10 @@ function abrirDetalhes(compra) {
 // ================================
 function abrirModal() {
   modal.style.display = "flex";
-
   mId.innerText = currentRow.bilhete;
   mNome.value = currentRow.nome;
   mTel.value = currentRow.telefone;
   mEmail.value = currentRow.email;
-  mNasc.value = currentRow.data_nascimento || "";
-  mCidade.value = currentRow.cidade;
-  mPais.value = currentRow.pais;
-  mFeedback.value = currentRow.feedback || "";
-
   mCompArea.innerHTML = currentRow.comprovativo_url
     ? `<a href="${currentRow.comprovativo_url}" target="_blank">Ver comprovativo</a>`
     : "<em>Sem comprovativo</em>";
@@ -101,10 +81,10 @@ mClose.onclick = () => modal.style.display = "none";
 // CONFIRMAR
 // ================================
 mSave.onclick = async () => {
-  await supabase
-    .from("compras")
+  await supabase.from("compras")
     .update({ status: "confirmado" })
     .eq("id", currentRow.id);
+
   modal.style.display = "none";
 };
 
@@ -118,16 +98,16 @@ mDelete.onclick = async () => {
 };
 
 // ================================
-// 🎲 SORTEIO
+// 🎉 SORTEIO
 // ================================
-drawBtn.onclick = async () => {
+document.getElementById("drawBtn").onclick = async () => {
   const { data } = await supabase
     .from("compras")
     .select("*")
     .eq("status", "confirmado");
 
   if (!data.length) {
-    alert("Nenhuma compra confirmada.");
+    alert("Nenhum bilhete confirmado.");
     return;
   }
 
@@ -140,33 +120,35 @@ drawBtn.onclick = async () => {
     email: vencedor.email
   });
 
-  alert(`🎉 Vencedor: Bilhete ${vencedor.bilhete} — ${vencedor.nome}`);
+  alert(`🎉 Vencedor: Bilhete ${vencedor.bilhete}`);
 };
 
 // ================================
 // HISTÓRICO
 // ================================
-async function carregarHistorico() {
+async function carregarVencedores() {
   const { data } = await supabase
     .from("vencedores")
     .select("*")
     .order("data_sorteio", { ascending: false });
 
   historyBox.innerHTML = data.map(v =>
-    `<p>🎉 ${v.nome} — Bilhete ${v.bilhete}</p>`
+    `<p>🎟 ${v.bilhete} — ${v.nome}</p>`
   ).join("");
 }
 
 // ================================
-// 🔴 REALTIME TOTAL
+// REALTIME
 // ================================
-supabase.channel("realtime-all")
-  .on("postgres_changes", { event: "*", schema: "public", table: "compras" }, carregarCompras)
-  .on("postgres_changes", { event: "*", schema: "public", table: "vencedores" }, carregarHistorico)
+supabase.channel("realtime-compras")
+  .on("postgres_changes", { event: "*", schema: "public", table: "compras" }, () => {
+    carregarCompras();
+  })
+  .on("postgres_changes", { event: "*", schema: "public", table: "vencedores" }, () => {
+    carregarVencedores();
+  })
   .subscribe();
 
-// ================================
 // INIT
-// ================================
 carregarCompras();
-carregarHistorico();
+carregarVencedores();
