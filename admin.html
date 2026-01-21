@@ -48,11 +48,17 @@
   </aside>
 </main>
 
-<!-- SUPABASE SDK (apenas a biblioteca) -->
+<!-- SUPABASE (UMA ÚNICA VEZ) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  window.db = supabase.createClient(
+    "https://ydyuxumwqnuhomahaxet.supabase.co",
+    "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
+  );
+</script>
 
-<!-- Admin logic -->
-<script src="js/admin.js" defer></script>
+<!-- LÓGICA DO ADMIN -->
+<script src="js/admin.js"></script>
 
 </body>
 </html>
