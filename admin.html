@@ -71,16 +71,10 @@
   </div>
 </div>
 
-<!-- ✅ SUPABASE (UMA ÚNICA VEZ) -->
+<!-- ✅ Supabase SDK (SEM criar cliente aqui) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const supabase = window.supabase.createClient(
-    "https://ydyuxumwqnuhomahaxet.supabase.co",
-    "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
-  );
-</script>
 
-<!-- Admin logic -->
+<!-- ✅ Lógica do Admin (aqui sim cria o supabase) -->
 <script src="js/admin.js"></script>
 
 </body>
