@@ -9,6 +9,7 @@
 
 <body data-page="admin">
 
+<!-- 🔐 Proteção simples -->
 <script>
   const ADMIN_PASSWORD = "admin2025";
   if (!sessionStorage.getItem("admin_access")) {
@@ -48,7 +49,7 @@
   </aside>
 </main>
 
-<!-- SUPABASE (UMA ÚNICA VEZ) -->
+<!-- ✅ SUPABASE (DECLARADO UMA ÚNICA VEZ) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   window.db = supabase.createClient(
@@ -57,8 +58,8 @@
   );
 </script>
 
-<!-- LÓGICA DO ADMIN -->
-<script src="js/admin.js"></script>
+<!-- ✅ LÓGICA DO ADMIN (COM DEFER) -->
+<script src="js/admin.js" defer></script>
 
 </body>
 </html>
