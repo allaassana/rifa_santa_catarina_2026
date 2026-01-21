@@ -1,7 +1,7 @@
 // ================================
-// SUPABASE (VEM DO admin.html)
+// USA O CLIENTE GLOBAL
 // ================================
-const supabase = window.supabaseClient;
+const db = window.supabaseClient;
 
 // ================================
 // ELEMENTOS
@@ -18,12 +18,10 @@ const TOTAL = 120;
 // CARREGAR COMPRAS
 // ================================
 async function carregarCompras() {
-  const { data, error } = await supabase
-    .from("compras")
-    .select("*");
+  const { data, error } = await db.from("compras").select("*");
 
   if (error) {
-    console.error("Erro ao carregar compras:", error);
+    console.error(error);
     return;
   }
 
@@ -56,21 +54,20 @@ async function carregarCompras() {
 }
 
 // ================================
-// CARREGAR VENCEDORES
+// VENCEDORES
 // ================================
 async function carregarVencedores() {
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from("vencedores")
     .select("*")
     .order("data_sorteio", { ascending: false });
 
   if (error) {
-    console.error("Erro ao carregar vencedores:", error);
+    console.error(error);
     return;
   }
 
   winnersList.innerHTML = "";
-
   data.forEach(v => {
     const li = document.createElement("li");
     li.textContent = `🎟️ ${v.bilhete} — ${v.nome}`;
@@ -82,19 +79,19 @@ async function carregarVencedores() {
 // SORTEIO
 // ================================
 drawBtn.onclick = async () => {
-  const { data: compras, error } = await supabase
+  const { data, error } = await db
     .from("compras")
     .select("*")
     .eq("status", "confirmado");
 
-  if (error || !compras || compras.length === 0) {
+  if (error || !data || data.length === 0) {
     alert("Nenhuma compra confirmada.");
     return;
   }
 
-  const vencedor = compras[Math.floor(Math.random() * compras.length)];
+  const vencedor = data[Math.floor(Math.random() * data.length)];
 
-  await supabase.from("vencedores").insert({
+  await db.from("vencedores").insert({
     bilhete: vencedor.bilhete,
     nome: vencedor.nome,
     telefone: vencedor.telefone,
@@ -102,7 +99,6 @@ drawBtn.onclick = async () => {
   });
 
   alert(`🎉 Vencedor: ${vencedor.nome} (Bilhete ${vencedor.bilhete})`);
-
   carregarVencedores();
 };
 
