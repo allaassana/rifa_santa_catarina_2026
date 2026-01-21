@@ -1,13 +1,13 @@
-// 🔌 SUPABASE CLIENT
+// 🔌 SUPABASE CLIENT (CRIADO UMA ÚNICA VEZ)
 const SUPABASE_URL = "https://ydyuxumwqnuhomahaxet.supabase.co";
 const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
 
-const supabase = window.supabase.createClient(
+const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
 
   const TOTAL = 120;
 
@@ -22,17 +22,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let selectedTicket = null;
 
-  // 🔄 Carregar bilhetes vendidos
   async function renderGrid() {
-    let vendidos = [];
-
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("compras")
       .select("bilhete");
 
-    if (!error && data) {
-      vendidos = data.map(d => d.bilhete);
-    }
+    const vendidos = data ? data.map(d => d.bilhete) : [];
 
     grid.innerHTML = "";
 
@@ -44,7 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (vendidos.includes(i)) {
         d.classList.add("sold");
       } else {
-        d.addEventListener("click", () => openForm(i));
+        d.onclick = () => openForm(i);
       }
 
       grid.appendChild(d);
@@ -58,23 +53,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     selectedTicket = n;
     ticketNumberEl.innerText = n;
     formArea.style.display = "block";
-    window.scrollTo({ top: formArea.offsetTop, behavior: "smooth" });
   }
 
   function resetForm() {
     selectedTicket = null;
     formArea.style.display = "none";
-    ["nome", "tel", "email", "nasc", "cidade", "pais", "feedback"].forEach(id => {
+    ["nome","tel","email","nasc","cidade","pais","feedback"].forEach(id => {
       document.getElementById(id).value = "";
     });
     compInput.value = "";
   }
 
-  confirmBtn.addEventListener("click", async () => {
-    if (!selectedTicket) {
-      alert("Seleciona um bilhete.");
-      return;
-    }
+  confirmBtn.onclick = async () => {
+    if (!selectedTicket) return alert("Seleciona um bilhete.");
 
     const nome = val("nome");
     const telefone = val("tel");
@@ -85,50 +76,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     const file = compInput.files[0];
 
     if (!nome || !telefone || !email || !nasc || !cidade || !pais || !file) {
-      alert("Preenche todos os campos e envia o comprovativo.");
-      return;
+      return alert("Preenche todos os campos.");
     }
 
     try {
-      // 📤 Upload comprovativo
-      const ext = file.name.split(".").pop();
-      const fileName = `bilhete_${selectedTicket}_${Date.now()}.${ext}`;
+      const fileName = `bilhete_${selectedTicket}_${Date.now()}`;
 
-      const { error: uploadError } = await supabase
+      await supabaseClient
         .storage
         .from("comprovativos")
         .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase
+      const { data: url } = supabaseClient
         .storage
         .from("comprovativos")
         .getPublicUrl(fileName);
 
-      // 🧾 Inserir compra
-      const { error: insertError } = await supabase
-        .from("compras")
-        .insert({
-          bilhete: selectedTicket,
-          nome,
-          telefone,
-          email,
-          data_nascimento: nasc,
-          cidade,
-          pais,
-          comprovativo_url: urlData.publicUrl,
-          status: "pendente"
-        });
+      await supabaseClient.from("compras").insert({
+        bilhete: selectedTicket,
+        nome,
+        telefone,
+        email,
+        data_nascimento: nasc,
+        cidade,
+        pais,
+        comprovativo_url: url.publicUrl,
+        status: "pendente"
+      });
 
-      if (insertError?.code === "23505") {
-        alert("❌ Este bilhete já foi comprado.");
-        return;
-      }
-
-      if (insertError) throw insertError;
-
-      alert("✅ Compra registada com sucesso!");
+      alert("✅ Compra registada!");
       resetForm();
       renderGrid();
 
@@ -136,9 +112,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error(err);
       alert("Erro ao processar a compra.");
     }
-  });
+  };
 
-  cancelBtn.addEventListener("click", resetForm);
+  cancelBtn.onclick = resetForm;
 
   function val(id) {
     return document.getElementById(id).value.trim();
