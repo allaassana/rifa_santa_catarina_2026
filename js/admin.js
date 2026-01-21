@@ -1,8 +1,16 @@
+// ================================
+// CONFIG
+// ================================
 const TOTAL = 120;
 
+// ================================
+// ELEMENTOS
+// ================================
 const grid = document.getElementById("grid");
 const detailBox = document.getElementById("detailBox");
 const soldCountEl = document.getElementById("soldCount");
+const historyBox = document.getElementById("history");
+const drawBtn = document.getElementById("drawBtn");
 
 const modal = document.getElementById("modal");
 const mId = document.getElementById("mId");
@@ -21,16 +29,13 @@ const mClose = document.getElementById("mClose");
 
 let currentRow = null;
 
-// ========================
+// ================================
 // CARREGAR COMPRAS
-// ========================
+// ================================
 async function carregarCompras() {
   const { data, error } = await supabase.from("compras").select("*");
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+  if (error) return console.error(error);
 
   grid.innerHTML = "";
   soldCountEl.innerText = data.length;
@@ -44,7 +49,6 @@ async function carregarCompras() {
 
     const compra = data.find(c => c.bilhete === i);
 
-    // 🔒 MESMA REGRA DO INDEX.HTML
     if (vendidos.includes(i)) {
       div.classList.add("sold");
       div.onclick = () => abrirDetalhes(compra);
@@ -57,9 +61,9 @@ async function carregarCompras() {
   }
 }
 
-// ========================
+// ================================
 // DETALHES
-// ========================
+// ================================
 function abrirDetalhes(compra) {
   currentRow = compra;
   detailBox.innerHTML = `
@@ -71,9 +75,9 @@ function abrirDetalhes(compra) {
   document.getElementById("openModal").onclick = abrirModal;
 }
 
-// ========================
+// ================================
 // MODAL
-// ========================
+// ================================
 function abrirModal() {
   modal.style.display = "flex";
 
@@ -85,21 +89,84 @@ function abrirModal() {
   mCidade.value = currentRow.cidade;
   mPais.value = currentRow.pais;
   mFeedback.value = currentRow.feedback || "";
+
+  mCompArea.innerHTML = currentRow.comprovativo_url
+    ? `<a href="${currentRow.comprovativo_url}" target="_blank">Ver comprovativo</a>`
+    : "<em>Sem comprovativo</em>";
 }
 
 mClose.onclick = () => modal.style.display = "none";
 
-// ========================
-// REALTIME 🔥
-// ========================
-supabase
-  .channel("compras-realtime")
-  .on(
-    "postgres_changes",
-    { event: "*", schema: "public", table: "compras" },
-    () => carregarCompras()
-  )
+// ================================
+// CONFIRMAR
+// ================================
+mSave.onclick = async () => {
+  await supabase
+    .from("compras")
+    .update({ status: "confirmado" })
+    .eq("id", currentRow.id);
+  modal.style.display = "none";
+};
+
+// ================================
+// ELIMINAR
+// ================================
+mDelete.onclick = async () => {
+  if (!confirm("Eliminar compra?")) return;
+  await supabase.from("compras").delete().eq("id", currentRow.id);
+  modal.style.display = "none";
+};
+
+// ================================
+// 🎲 SORTEIO
+// ================================
+drawBtn.onclick = async () => {
+  const { data } = await supabase
+    .from("compras")
+    .select("*")
+    .eq("status", "confirmado");
+
+  if (!data.length) {
+    alert("Nenhuma compra confirmada.");
+    return;
+  }
+
+  const vencedor = data[Math.floor(Math.random() * data.length)];
+
+  await supabase.from("vencedores").insert({
+    bilhete: vencedor.bilhete,
+    nome: vencedor.nome,
+    telefone: vencedor.telefone,
+    email: vencedor.email
+  });
+
+  alert(`🎉 Vencedor: Bilhete ${vencedor.bilhete} — ${vencedor.nome}`);
+};
+
+// ================================
+// HISTÓRICO
+// ================================
+async function carregarHistorico() {
+  const { data } = await supabase
+    .from("vencedores")
+    .select("*")
+    .order("data_sorteio", { ascending: false });
+
+  historyBox.innerHTML = data.map(v =>
+    `<p>🎉 ${v.nome} — Bilhete ${v.bilhete}</p>`
+  ).join("");
+}
+
+// ================================
+// 🔴 REALTIME TOTAL
+// ================================
+supabase.channel("realtime-all")
+  .on("postgres_changes", { event: "*", schema: "public", table: "compras" }, carregarCompras)
+  .on("postgres_changes", { event: "*", schema: "public", table: "vencedores" }, carregarHistorico)
   .subscribe();
 
+// ================================
 // INIT
+// ================================
 carregarCompras();
+carregarHistorico();
