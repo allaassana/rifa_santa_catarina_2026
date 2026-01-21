@@ -1,13 +1,5 @@
-// ===== SUPABASE =====
-const SUPABASE_URL = "https://ydyuxumwqnuhomahaxet.supabase.co";
-const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
+const supabase = window.supabaseClient;
 
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-// ===== ELEMENTOS =====
 const grid = document.getElementById("grid");
 const detailBox = document.getElementById("detailBox");
 const soldCountEl = document.getElementById("soldCount");
@@ -17,19 +9,11 @@ const mId = document.getElementById("mId");
 const mNome = document.getElementById("mNome");
 const mTel = document.getElementById("mTel");
 const mEmail = document.getElementById("mEmail");
-const mNasc = document.getElementById("mNasc");
-const mCidade = document.getElementById("mCidade");
-const mPais = document.getElementById("mPais");
-const mFeedback = document.getElementById("mFeedback");
-const mCompArea = document.getElementById("mCompArea");
-
-const mSave = document.getElementById("mSave");
-const mDelete = document.getElementById("mDelete");
+const mStatus = document.getElementById("mStatus");
 const mClose = document.getElementById("mClose");
 
-let currentRow = null;
+let cache = "";
 
-// ===== CARREGAR COMPRAS =====
 async function carregarCompras() {
   const { data, error } = await supabase
     .from("compras")
@@ -37,78 +21,50 @@ async function carregarCompras() {
 
   if (error) {
     console.error(error);
-    alert("Erro ao carregar compras");
     return;
   }
 
+  const hash = JSON.stringify(data);
+  if (hash === cache) return;
+  cache = hash;
+
   grid.innerHTML = "";
-  soldCountEl.innerText = data.length;
+  soldCountEl.textContent = data.length;
+
+  const vendidos = data.map(c => c.bilhete);
 
   for (let i = 1; i <= 120; i++) {
-    const ticket = document.createElement("div");
-    ticket.className = "ticket";
-    ticket.innerText = i;
+    const div = document.createElement("div");
+    div.className = "ticket";
+    div.textContent = i;
 
     const compra = data.find(c => c.bilhete === i);
 
-    // 🔒 REGRA FINAL (IGUAL AO INDEX.HTML)
-    if (compra) {
-      ticket.classList.add("sold");
-      ticket.onclick = () => abrirDetalhes(compra);
+    if (vendidos.includes(i)) {
+      div.classList.add("sold");
+      div.onclick = () => abrirModal(compra);
     } else {
-      ticket.style.opacity = "0.4";
-      ticket.style.cursor = "default";
+      div.style.opacity = "0.4";
+      div.style.cursor = "default";
     }
 
-    grid.appendChild(ticket);
+    grid.appendChild(div);
   }
 }
 
-// ===== DETALHES =====
-function abrirDetalhes(compra) {
-  currentRow = compra;
-
-  detailBox.innerHTML = `
-    <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
-    <p><strong>Nome:</strong> ${compra.nome}</p>
-    <p><strong>Telefone:</strong> ${compra.telefone}</p>
-    <p><strong>Email:</strong> ${compra.email}</p>
-    <p><strong>Status:</strong> ${compra.status}</p>
-    <button class="btn" onclick="abrirModal()">Abrir</button>
-  `;
-}
-
-// ===== MODAL =====
-function abrirModal() {
-  modal.style.display = "block";
-
-  mId.innerText = currentRow.bilhete;
-  mNome.value = currentRow.nome;
-  mTel.value = currentRow.telefone;
-  mEmail.value = currentRow.email;
-  mNasc.value = currentRow.data_nascimento || "";
-  mCidade.value = currentRow.cidade;
-  mPais.value = currentRow.pais;
-  mFeedback.value = currentRow.feedback || "";
+function abrirModal(compra) {
+  modal.style.display = "flex";
+  mId.textContent = compra.bilhete;
+  mNome.value = compra.nome;
+  mTel.value = compra.telefone;
+  mEmail.value = compra.email;
+  mStatus.value = compra.status;
 }
 
 mClose.onclick = () => {
   modal.style.display = "none";
-  currentRow = null;
 };
 
-// ===== REALTIME 🔥 =====
-supabase
-  .channel("compras-realtime")
-  .on(
-    "postgres_changes",
-    { event: "*", schema: "public", table: "compras" },
-    () => {
-      console.log("🔄 Atualização em tempo real");
-      carregarCompras();
-    }
-  )
-  .subscribe();
-
-// ===== INIT =====
+// 🔁 sincronização automática (index ↔ admin)
 carregarCompras();
+setInterval(carregarCompras, 5000);
