@@ -1,5 +1,5 @@
 // ================================
-// USA O CLIENTE GLOBAL (DO admin.html)
+// CLIENTE SUPABASE (GLOBAL)
 // ================================
 const db = window.db;
 
@@ -10,7 +10,6 @@ const grid = document.getElementById("grid");
 const soldCountEl = document.getElementById("soldCount");
 const detailBox = document.getElementById("detailBox");
 const winnersList = document.getElementById("winnersList");
-const drawBtn = document.getElementById("drawWinner");
 
 const TOTAL = 120;
 
@@ -18,9 +17,7 @@ const TOTAL = 120;
 // CARREGAR COMPRAS
 // ================================
 async function carregarCompras() {
-  const { data, error } = await db
-    .from("compras")
-    .select("*");
+  const { data, error } = await db.from("compras").select("*");
 
   if (error) {
     console.error("Erro ao carregar compras:", error);
@@ -48,7 +45,6 @@ async function carregarCompras() {
       };
     } else {
       div.style.opacity = "0.4";
-      div.style.cursor = "not-allowed";
     }
 
     grid.appendChild(div);
@@ -56,67 +52,64 @@ async function carregarCompras() {
 }
 
 // ================================
-// CARREGAR VENCEDORES
+// CARREGAR VENCEDOR
 // ================================
-async function carregarVencedores() {
-  const { data, error } = await db
-    .from("vencedores")
-    .select("*")
-    .order("data_sorteio", { ascending: false });
+async function carregarVencedor() {
+  const { data, error } = await db.from("vencedores").select("*");
 
   if (error) {
-    console.error("Erro ao carregar vencedores:", error);
+    console.error("Erro ao carregar vencedor:", error);
     return;
   }
 
-  // 🔴 ERRO CORRIGIDO AQUI
   winnersList.innerHTML = "";
 
-  data.forEach(v => {
+  if (data.length > 0) {
+    const v = data[0];
     const li = document.createElement("li");
-    li.textContent = `🎟️ ${v.bilhete} — ${v.nome}`;
+    li.textContent = `🎉 Bilhete ${v.bilhete} — ${v.nome}`;
     winnersList.appendChild(li);
-  });
+  }
 }
 
 // ================================
-// SORTEAR VENCEDOR
+// SORTEIO AUTOMÁTICO
 // ================================
-drawBtn.onclick = async () => {
-  const { data, error } = await db
+async function sortearAutomaticamente() {
+  // Verifica se já existe vencedor
+  const { data: existentes } = await db.from("vencedores").select("*");
+
+  if (existentes && existentes.length > 0) return;
+
+  // Busca compras confirmadas
+  const { data: compras, error } = await db
     .from("compras")
     .select("*")
     .eq("status", "confirmado");
 
-  if (error || !data || data.length === 0) {
-    alert("Nenhuma compra confirmada.");
+  if (error || !compras || compras.length === 0) {
+    console.warn("Nenhuma compra confirmada para sorteio.");
     return;
   }
 
-  const vencedor = data[Math.floor(Math.random() * data.length)];
+  // Sorteia
+  const vencedor = compras[Math.floor(Math.random() * compras.length)];
 
-  const { error: insertError } = await db
-    .from("vencedores")
-    .insert({
-      bilhete: vencedor.bilhete,
-      nome: vencedor.nome,
-      telefone: vencedor.telefone,
-      email: vencedor.email
-    });
+  await db.from("vencedores").insert({
+    bilhete: vencedor.bilhete,
+    nome: vencedor.nome,
+    telefone: vencedor.telefone,
+    email: vencedor.email
+  });
 
-  if (insertError) {
-    console.error("Erro ao salvar vencedor:", insertError);
-    return;
-  }
-
-  alert(`🎉 Vencedor: ${vencedor.nome} (Bilhete ${vencedor.bilhete})`);
-  carregarVencedores();
-};
+  alert(`🎉 Vencedor automático: ${vencedor.nome} (Bilhete ${vencedor.bilhete})`);
+}
 
 // ================================
 // INIT
 // ================================
-document.addEventListener("DOMContentLoaded", () => {
-  carregarCompras();
-  carregarVencedores();
+document.addEventListener("DOMContentLoaded", async () => {
+  await carregarCompras();
+  await sortearAutomaticamente();
+  await carregarVencedor();
 });
