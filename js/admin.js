@@ -1,4 +1,4 @@
-// ===== CONFIGURAÇÃO SUPABASE =====
+// ================= SUPABASE =================
 const SUPABASE_URL = "https://ydyuxumwqnuhomahaxet.supabase.co";
 const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
 
@@ -7,7 +7,7 @@ const supabase = window.supabase.createClient(
   SUPABASE_KEY
 );
 
-// ===== ELEMENTOS =====
+// ================= ELEMENTOS =================
 const grid = document.getElementById("grid");
 const detailBox = document.getElementById("detailBox");
 const soldCountEl = document.getElementById("soldCount");
@@ -30,7 +30,7 @@ const mClose = document.getElementById("mClose");
 
 let currentRow = null;
 
-// ===== CARREGAR COMPRAS =====
+// ================= CARREGAR COMPRAS =================
 async function carregarCompras() {
   const { data, error } = await supabase
     .from("compras")
@@ -46,35 +46,34 @@ async function carregarCompras() {
   grid.innerHTML = "";
   soldCountEl.innerText = data.length;
 
-  const vendidos = data.map(c => c.bilhete);
-
   for (let i = 1; i <= 120; i++) {
     const div = document.createElement("div");
-    div.className = "ticket";
+    div.classList.add("ticket");
     div.innerText = i;
 
-    const compra = data.find(c => c.bilhete === i);
+    // 🔑 REGRA FINAL (IGUAL AO INDEX.HTML)
+    const compra = data.find(c => Number(c.bilhete) === i);
 
-    // 🔒 REGRA FINAL (igual ao index.html)
-    if (vendidos.includes(i)) {
+    if (compra) {
+      // 🔒 EXISTE NA TABELA = BLOQUEADO
       div.classList.add("sold");
 
-      if (compra?.status === "confirmado") {
+      if (compra.status === "confirmado") {
         div.classList.add("confirmed");
       }
 
       div.onclick = () => abrirDetalhes(compra);
     } else {
+      // livre (admin apenas visualiza)
       div.style.cursor = "default";
-      div.style.opacity = "0.5";
+      div.style.opacity = "0.45";
     }
 
     grid.appendChild(div);
   }
 }
 
-
-// ===== ABRIR DETALHES =====
+// ================= DETALHES =================
 function abrirDetalhes(compra) {
   currentRow = compra;
 
@@ -88,11 +87,11 @@ function abrirDetalhes(compra) {
   `;
 }
 
-// ===== MODAL =====
+// ================= MODAL =================
 function abrirModal() {
   if (!currentRow) return;
 
-  modal.style.display = "block";
+  modal.style.display = "flex";
 
   mId.innerText = currentRow.bilhete;
   mNome.value = currentRow.nome;
@@ -119,7 +118,7 @@ mClose.onclick = () => {
   currentRow = null;
 };
 
-// ===== GUARDAR (CONFIRMAR) =====
+// ================= CONFIRMAR =================
 mSave.onclick = async () => {
   if (!currentRow) return;
 
@@ -148,7 +147,7 @@ mSave.onclick = async () => {
   carregarCompras();
 };
 
-// ===== ELIMINAR =====
+// ================= ELIMINAR =================
 mDelete.onclick = async () => {
   if (!currentRow) return;
 
@@ -170,5 +169,5 @@ mDelete.onclick = async () => {
   carregarCompras();
 };
 
-// ===== INIT =====
+// ================= INIT =================
 carregarCompras();
