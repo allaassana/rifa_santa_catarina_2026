@@ -46,6 +46,8 @@ async function carregarCompras() {
   grid.innerHTML = "";
   soldCountEl.innerText = data.length;
 
+  const vendidos = data.map(c => c.bilhete);
+
   for (let i = 1; i <= 120; i++) {
     const div = document.createElement("div");
     div.className = "ticket";
@@ -53,13 +55,17 @@ async function carregarCompras() {
 
     const compra = data.find(c => c.bilhete === i);
 
-    if (compra) {
+    // 🔒 REGRA CORRETA: EXISTE NA TABELA = VENDIDO
+    if (vendidos.includes(i)) {
       div.classList.add("sold");
+
       if (compra.status === "confirmado") {
         div.classList.add("confirmed");
       }
 
       div.onclick = () => abrirDetalhes(compra);
+    } else {
+      div.classList.add("available");
     }
 
     grid.appendChild(div);
@@ -76,4 +82,91 @@ function abrirDetalhes(compra) {
     <p><strong>Telefone:</strong> ${compra.telefone}</p>
     <p><strong>Email:</strong> ${compra.email}</p>
     <p><strong>Status:</strong> ${compra.status}</p>
-    <button class="btn" onclick="abrirModal()">Abrir / Val
+    <button class="btn" onclick="abrirModal()">Abrir / Validar</button>
+  `;
+}
+
+// ===== MODAL =====
+function abrirModal() {
+  if (!currentRow) return;
+
+  modal.style.display = "block";
+
+  mId.innerText = currentRow.bilhete;
+  mNome.value = currentRow.nome;
+  mTel.value = currentRow.telefone;
+  mEmail.value = currentRow.email;
+  mNasc.value = currentRow.data_nascimento || "";
+  mCidade.value = currentRow.cidade;
+  mPais.value = currentRow.pais;
+  mFeedback.value = currentRow.feedback || "";
+
+  if (currentRow.comprovativo_url) {
+    mCompArea.innerHTML = `
+      <a href="${currentRow.comprovativo_url}" target="_blank">
+        Ver comprovativo
+      </a>
+    `;
+  } else {
+    mCompArea.innerHTML = "<em>Sem comprovativo</em>";
+  }
+}
+
+mClose.onclick = () => {
+  modal.style.display = "none";
+  currentRow = null;
+};
+
+// ===== GUARDAR (CONFIRMAR) =====
+mSave.onclick = async () => {
+  if (!currentRow) return;
+
+  const { error } = await supabase
+    .from("compras")
+    .update({
+      nome: mNome.value,
+      telefone: mTel.value,
+      email: mEmail.value,
+      data_nascimento: mNasc.value,
+      cidade: mCidade.value,
+      pais: mPais.value,
+      feedback: mFeedback.value,
+      status: "confirmado"
+    })
+    .eq("id", currentRow.id);
+
+  if (error) {
+    alert("Erro ao atualizar compra");
+    console.error(error);
+    return;
+  }
+
+  alert("Compra confirmada!");
+  modal.style.display = "none";
+  carregarCompras();
+};
+
+// ===== ELIMINAR =====
+mDelete.onclick = async () => {
+  if (!currentRow) return;
+
+  if (!confirm("Eliminar esta compra?")) return;
+
+  const { error } = await supabase
+    .from("compras")
+    .delete()
+    .eq("id", currentRow.id);
+
+  if (error) {
+    alert("Erro ao eliminar compra");
+    console.error(error);
+    return;
+  }
+
+  alert("Compra eliminada!");
+  modal.style.display = "none";
+  carregarCompras();
+};
+
+// ===== INIT =====
+carregarCompras();
