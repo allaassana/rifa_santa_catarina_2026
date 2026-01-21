@@ -55,22 +55,24 @@ async function carregarCompras() {
 
     const compra = data.find(c => c.bilhete === i);
 
-    // 🔒 REGRA CORRETA: EXISTE NA TABELA = VENDIDO
+    // 🔒 REGRA FINAL (igual ao index.html)
     if (vendidos.includes(i)) {
       div.classList.add("sold");
 
-      if (compra.status === "confirmado") {
+      if (compra?.status === "confirmado") {
         div.classList.add("confirmed");
       }
 
       div.onclick = () => abrirDetalhes(compra);
     } else {
-      div.classList.add("available");
+      div.style.cursor = "default";
+      div.style.opacity = "0.5";
     }
 
     grid.appendChild(div);
   }
 }
+
 
 // ===== ABRIR DETALHES =====
 function abrirDetalhes(compra) {
