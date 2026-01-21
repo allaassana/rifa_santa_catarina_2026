@@ -1,6 +1,6 @@
-// ❗ NÃO DECLARA SUPABASE
-// ❗ APENAS USA O QUE VEM DO HTML
-const supabase = window.supabase;
+// ❌ NÃO EXISTE supabase AQUI
+// ✅ usamos APENAS o DB vindo do HTML
+const db = window.DB;
 
 const grid = document.getElementById("grid");
 const soldCountEl = document.getElementById("soldCount");
@@ -10,11 +10,11 @@ const drawBtn = document.getElementById("drawWinner");
 
 const TOTAL = 120;
 
-// =======================
+// ==================
 // CARREGAR COMPRAS
-// =======================
+// ==================
 async function carregarCompras() {
-  const { data, error } = await supabase.from("compras").select("*");
+  const { data, error } = await db.from("compras").select("*");
 
   if (error) {
     console.error(error);
@@ -48,11 +48,11 @@ async function carregarCompras() {
   }
 }
 
-// =======================
+// ==================
 // SORTEIO
-// =======================
+// ==================
 drawBtn.onclick = async () => {
-  const { data } = await supabase
+  const { data } = await db
     .from("compras")
     .select("*")
     .eq("status", "confirmado");
@@ -64,7 +64,7 @@ drawBtn.onclick = async () => {
 
   const vencedor = data[Math.floor(Math.random() * data.length)];
 
-  await supabase.from("vencedores").insert({
+  await db.from("vencedores").insert({
     bilhete: vencedor.bilhete,
     nome: vencedor.nome,
     telefone: vencedor.telefone,
@@ -75,11 +75,11 @@ drawBtn.onclick = async () => {
   carregarVencedores();
 };
 
-// =======================
+// ==================
 // HISTÓRICO
-// =======================
+// ==================
 async function carregarVencedores() {
-  const { data } = await supabase
+  const { data } = await db
     .from("vencedores")
     .select("*")
     .order("data_sorteio", { ascending: false });
@@ -92,11 +92,10 @@ async function carregarVencedores() {
   });
 }
 
-// =======================
+// ==================
 // REALTIME
-// =======================
-supabase
-  .channel("compras-realtime")
+// ==================
+db.channel("compras-realtime")
   .on(
     "postgres_changes",
     { event: "*", schema: "public", table: "compras" },
