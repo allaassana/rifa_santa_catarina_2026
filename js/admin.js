@@ -1,10 +1,15 @@
-const supabase = window.supabaseClient;
+// ================================
+// SUPABASE (JÁ CRIADO NO HTML)
+// ================================
+const supabase = window.db;
 
+// ================================
+// ELEMENTOS
+// ================================
 const grid = document.getElementById("grid");
 const detailBox = document.getElementById("detailBox");
 const soldCountEl = document.getElementById("soldCount");
 const historyBox = document.getElementById("history");
-const drawBtn = document.getElementById("drawBtn");
 
 const modal = document.getElementById("modal");
 const mId = document.getElementById("mId");
@@ -20,18 +25,21 @@ const mCompArea = document.getElementById("mCompArea");
 const mSave = document.getElementById("mSave");
 const mDelete = document.getElementById("mDelete");
 const mClose = document.getElementById("mClose");
+const drawBtn = document.getElementById("drawBtn");
 
 let currentRow = null;
 const TOTAL = 120;
 
-/* ===============================
-   CARREGAR COMPRAS
-================================ */
+// ================================
+// CARREGAR COMPRAS
+// ================================
 async function carregarCompras() {
   const { data } = await supabase.from("compras").select("*");
 
   grid.innerHTML = "";
   soldCountEl.innerText = data.length;
+
+  const vendidos = data.map(c => c.bilhete);
 
   for (let i = 1; i <= TOTAL; i++) {
     const div = document.createElement("div");
@@ -52,9 +60,9 @@ async function carregarCompras() {
   }
 }
 
-/* ===============================
-   DETALHES
-================================ */
+// ================================
+// DETALHES
+// ================================
 function abrirDetalhes(compra) {
   currentRow = compra;
 
@@ -68,9 +76,9 @@ function abrirDetalhes(compra) {
   document.getElementById("openModal").onclick = abrirModal;
 }
 
-/* ===============================
-   MODAL
-================================ */
+// ================================
+// MODAL
+// ================================
 function abrirModal() {
   modal.style.display = "flex";
 
@@ -82,13 +90,17 @@ function abrirModal() {
   mCidade.value = currentRow.cidade;
   mPais.value = currentRow.pais;
   mFeedback.value = currentRow.feedback || "";
+
+  mCompArea.innerHTML = currentRow.comprovativo_url
+    ? `<a href="${currentRow.comprovativo_url}" target="_blank">Ver comprovativo</a>`
+    : "<em>Sem comprovativo</em>";
 }
 
 mClose.onclick = () => modal.style.display = "none";
 
-/* ===============================
-   CONFIRMAR
-================================ */
+// ================================
+// CONFIRMAR
+// ================================
 mSave.onclick = async () => {
   await supabase
     .from("compras")
@@ -96,12 +108,21 @@ mSave.onclick = async () => {
     .eq("id", currentRow.id);
 
   modal.style.display = "none";
-  carregarCompras();
 };
 
-/* ===============================
-   SORTEIO
-================================ */
+// ================================
+// ELIMINAR
+// ================================
+mDelete.onclick = async () => {
+  if (!confirm("Eliminar compra?")) return;
+
+  await supabase.from("compras").delete().eq("id", currentRow.id);
+  modal.style.display = "none";
+};
+
+// ================================
+// 🎉 SORTEIO
+// ================================
 drawBtn.onclick = async () => {
   const { data } = await supabase
     .from("compras")
@@ -123,35 +144,29 @@ drawBtn.onclick = async () => {
   });
 
   alert(`🎉 Vencedor: Bilhete ${winner.bilhete} — ${winner.nome}`);
-  carregarHistorico();
+  carregarVencedores();
 };
 
-/* ===============================
-   HISTÓRICO
-================================ */
-async function carregarHistorico() {
+// ================================
+// HISTÓRICO
+// ================================
+async function carregarVencedores() {
   const { data } = await supabase
     .from("vencedores")
     .select("*")
     .order("data_sorteio", { ascending: false });
 
-  historyBox.innerHTML = data.map(v =>
-    `<p>🏆 ${v.bilhete} — ${v.nome}</p>`
-  ).join("");
+  historyBox.innerHTML = "";
+
+  data.forEach(v => {
+    historyBox.innerHTML += `
+      <p>🏆 Bilhete ${v.bilhete} — ${v.nome}</p>
+    `;
+  });
 }
 
-/* ===============================
-   REALTIME
-================================ */
-supabase
-  .channel("compras-realtime")
-  .on(
-    "postgres_changes",
-    { event: "*", schema: "public", table: "compras" },
-    carregarCompras
-  )
-  .subscribe();
-
-/* INIT */
+// ================================
+// INIT
+// ================================
 carregarCompras();
-carregarHistorico();
+carregarVencedores();
