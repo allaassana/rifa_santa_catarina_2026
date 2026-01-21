@@ -1,5 +1,6 @@
-const TOTAL = 120;
-
+// ================================
+// ELEMENTOS
+// ================================
 const grid = document.getElementById("grid");
 const detailBox = document.getElementById("detailBox");
 const soldCountEl = document.getElementById("soldCount");
@@ -10,19 +11,24 @@ const mId = document.getElementById("mId");
 const mNome = document.getElementById("mNome");
 const mTel = document.getElementById("mTel");
 const mEmail = document.getElementById("mEmail");
-const mCompArea = document.getElementById("mCompArea");
 
 const mSave = document.getElementById("mSave");
 const mDelete = document.getElementById("mDelete");
 const mClose = document.getElementById("mClose");
 
 let currentRow = null;
+const TOTAL = 120;
 
 // ================================
 // CARREGAR COMPRAS
 // ================================
 async function carregarCompras() {
-  const { data } = await supabase.from("compras").select("*");
+  const { data, error } = await window.supabase
+    .from("compras")
+    .select("*");
+
+  if (error) return console.error(error);
+
   grid.innerHTML = "";
   soldCountEl.innerText = data.length;
 
@@ -35,7 +41,7 @@ async function carregarCompras() {
 
     const compra = data.find(c => c.bilhete === i);
 
-    if (compra) {
+    if (vendidos.includes(i)) {
       div.classList.add("sold");
       div.onclick = () => abrirDetalhes(compra);
     } else {
@@ -51,37 +57,39 @@ async function carregarCompras() {
 // ================================
 function abrirDetalhes(compra) {
   currentRow = compra;
+
   detailBox.innerHTML = `
     <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
     <p><strong>Nome:</strong> ${compra.nome}</p>
     <p><strong>Status:</strong> ${compra.status}</p>
-    <button class="btn" id="openModalBtn">Abrir</button>
+    <button class="btn" id="openModal">Abrir</button>
   `;
 
-  document.getElementById("openModalBtn").onclick = abrirModal;
+  document.getElementById("openModal").onclick = () => {
+    modal.style.display = "flex";
+    mId.innerText = compra.bilhete;
+    mNome.value = compra.nome;
+    mTel.value = compra.telefone;
+    mEmail.value = compra.email;
+  };
 }
 
 // ================================
 // MODAL
 // ================================
-function abrirModal() {
-  modal.style.display = "flex";
-  mId.innerText = currentRow.bilhete;
-  mNome.value = currentRow.nome;
-  mTel.value = currentRow.telefone;
-  mEmail.value = currentRow.email;
-  mCompArea.innerHTML = currentRow.comprovativo_url
-    ? `<a href="${currentRow.comprovativo_url}" target="_blank">Ver comprovativo</a>`
-    : "<em>Sem comprovativo</em>";
-}
-
-mClose.onclick = () => modal.style.display = "none";
+mClose.onclick = () => {
+  modal.style.display = "none";
+  currentRow = null;
+};
 
 // ================================
 // CONFIRMAR
 // ================================
 mSave.onclick = async () => {
-  await supabase.from("compras")
+  if (!currentRow) return;
+
+  await window.supabase
+    .from("compras")
     .update({ status: "confirmado" })
     .eq("id", currentRow.id);
 
@@ -92,8 +100,14 @@ mSave.onclick = async () => {
 // ELIMINAR
 // ================================
 mDelete.onclick = async () => {
+  if (!currentRow) return;
   if (!confirm("Eliminar compra?")) return;
-  await supabase.from("compras").delete().eq("id", currentRow.id);
+
+  await window.supabase
+    .from("compras")
+    .delete()
+    .eq("id", currentRow.id);
+
   modal.style.display = "none";
 };
 
@@ -101,19 +115,19 @@ mDelete.onclick = async () => {
 // 🎉 SORTEIO
 // ================================
 document.getElementById("drawBtn").onclick = async () => {
-  const { data } = await supabase
+  const { data } = await window.supabase
     .from("compras")
     .select("*")
     .eq("status", "confirmado");
 
-  if (!data.length) {
-    alert("Nenhum bilhete confirmado.");
+  if (!data || data.length === 0) {
+    alert("Nenhuma compra confirmada.");
     return;
   }
 
   const vencedor = data[Math.floor(Math.random() * data.length)];
 
-  await supabase.from("vencedores").insert({
+  await window.supabase.from("vencedores").insert({
     bilhete: vencedor.bilhete,
     nome: vencedor.nome,
     telefone: vencedor.telefone,
@@ -121,34 +135,36 @@ document.getElementById("drawBtn").onclick = async () => {
   });
 
   alert(`🎉 Vencedor: Bilhete ${vencedor.bilhete}`);
+  carregarVencedores();
 };
 
 // ================================
 // HISTÓRICO
 // ================================
 async function carregarVencedores() {
-  const { data } = await supabase
+  const { data } = await window.supabase
     .from("vencedores")
     .select("*")
     .order("data_sorteio", { ascending: false });
 
   historyBox.innerHTML = data.map(v =>
-    `<p>🎟 ${v.bilhete} — ${v.nome}</p>`
+    `<p>🏆 ${v.bilhete} — ${v.nome}</p>`
   ).join("");
 }
 
 // ================================
 // REALTIME
 // ================================
-supabase.channel("realtime-compras")
-  .on("postgres_changes", { event: "*", schema: "public", table: "compras" }, () => {
-    carregarCompras();
-  })
-  .on("postgres_changes", { event: "*", schema: "public", table: "vencedores" }, () => {
-    carregarVencedores();
-  })
+window.supabase
+  .channel("compras-realtime")
+  .on("postgres_changes",
+    { event: "*", schema: "public", table: "compras" },
+    carregarCompras
+  )
   .subscribe();
 
+// ================================
 // INIT
+// ================================
 carregarCompras();
 carregarVencedores();
