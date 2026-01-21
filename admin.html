@@ -1,97 +1,99 @@
 <!doctype html>
 <html lang="pt">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Painel Admin – Rifa Santa Catarina</title>
-
-<link rel="stylesheet" href="css/style.css">
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const supabase = supabase.createClient(
-    "https://ydyuxumwqnuhomahaxet.supabase.co",
-    "SUA_SECRET_KEY_AQUI"
-  );
-</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rifa Santa Catarina 2025 - Admin</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
-<h1>🎛️ Painel Admin – Rifa Santa Catarina</h1>
+<body data-page="admin">
 
-<table border="1" cellpadding="8" cellspacing="0" width="100%">
-  <thead>
-    <tr>
-      <th>Bilhete</th>
-      <th>Nome</th>
-      <th>Telefone</th>
-      <th>Email</th>
-      <th>Cidade</th>
-      <th>País</th>
-      <th>Status</th>
-      <th>Comprovativo</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
-  <tbody id="lista"></tbody>
-</table>
-
+<!-- 🔐 Proteção simples do painel -->
 <script>
-async function carregarCompras() {
-  const { data, error } = await supabase
-    .from("compras")
-    .select("*")
-    .order("bilhete", { ascending: true });
+  const ADMIN_PASSWORD = "admin2025"; // 🔴 MUDA ISTO
+  const access = sessionStorage.getItem("admin_access");
 
-  if (error) {
-    alert("Erro ao carregar compras");
-    console.error(error);
-    return;
+  if (!access) {
+    const pass = prompt("🔐 Acesso restrito – Introduza a senha:");
+    if (pass !== ADMIN_PASSWORD) {
+      alert("❌ Acesso negado");
+      location.href = "index.html";
+    } else {
+      sessionStorage.setItem("admin_access", "true");
+    }
   }
-
-  const tbody = document.getElementById("lista");
-  tbody.innerHTML = "";
-
-  data.forEach(c => {
-    const tr = document.createElement("tr");
-
-    tr.innerHTML = `
-      <td>${c.bilhete}</td>
-      <td>${c.nome}</td>
-      <td>${c.telefone}</td>
-      <td>${c.email}</td>
-      <td>${c.cidade}</td>
-      <td>${c.pais}</td>
-      <td><strong>${c.status}</strong></td>
-      <td>
-        <a href="${c.comprovativo_url}" target="_blank">📄 Ver</a>
-      </td>
-      <td>
-        <button onclick="atualizar('${c.id}','confirmado')">✅</button>
-        <button onclick="atualizar('${c.id}','rejeitado')">❌</button>
-      </td>
-    `;
-
-    tbody.appendChild(tr);
-  });
-}
-
-async function atualizar(id, status) {
-  const { error } = await supabase
-    .from("compras")
-    .update({ status })
-    .eq("id", id);
-
-  if (error) {
-    alert("Erro ao atualizar");
-    console.error(error);
-  } else {
-    carregarCompras();
-  }
-}
-
-carregarCompras();
 </script>
+
+<header class="site-header">
+  <img src="assets/logo.png" class="logo" alt="Logo">
+  <h1>PARÓQUIA SANTA CATARINA — Painel do Proprietário</h1>
+  <p class="subtitle">Gestão da Rifa — 120 bilhetes</p>
+</header>
+
+<main class="wrap container">
+  <section class="left">
+    <div class="controls">
+      <button class="btn" id="exportCsvBtn">Exportar CSV</button>
+      <button class="btn" id="exportJsonBtn">Exportar JSON</button>
+      <button class="btn" id="drawBtn">Sortear Vencedor</button>
+      <button class="btn btn-danger" id="resetBtn">Reiniciar (quando todos vendidos)</button>
+      <div class="counter-display">
+        Vendidos: <span id="soldCount">0</span> / 120
+      </div>
+    </div>
+
+    <div id="grid" class="grid"></div>
+
+    <div class="panel history-box">
+      <h3>Histórico de Vencedores</h3>
+      <div id="history" class="history"></div>
+    </div>
+  </section>
+
+  <aside class="right panel">
+    <h3>Detalhes / Ações</h3>
+    <div id="detailBox">Nenhum bilhete selecionado</div>
+  </aside>
+</main>
+
+<!-- Modal -->
+<div id="modal" class="modal" style="display:none;">
+  <div class="box">
+    <h3>Bilhete <span id="mId"></span></h3>
+
+    <label>Nome</label><input id="mNome" />
+    <label>Telefone</label><input id="mTel" />
+    <label>Email</label><input id="mEmail" />
+    <label>Data Nascimento</label><input id="mNasc" type="date" />
+    <label>Cidade</label><input id="mCidade" />
+    <label>País</label><input id="mPais" />
+    <label>Feedback</label><textarea id="mFeedback" maxlength="500"></textarea>
+
+    <div id="mCompArea"></div>
+
+    <div class="form-actions">
+      <button class="btn" id="mSave">Guardar</button>
+      <button class="btn btn-danger" id="mDelete">Eliminar</button>
+      <button class="btn btn-secondary" id="mClose">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://ydyuxumwqnuhomahaxet.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_TUA_CHAVE_AQUI";
+
+  const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+</script>
+
+<!-- Admin logic -->
+<script src="js/admin.js"></script>
 
 </body>
 </html>
