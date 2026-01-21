@@ -11,7 +11,7 @@
 
 <!-- 🔐 Proteção simples do painel -->
 <script>
-  const ADMIN_PASSWORD = "admin2025"; // 🔴 MUDA ISTO
+  const ADMIN_PASSWORD = "admin2025";
   const access = sessionStorage.getItem("admin_access");
 
   if (!access) {
@@ -80,17 +80,8 @@
   </div>
 </div>
 
-<!-- ✅ Supabase -->
+<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = "https://ydyuxumwqnuhomahaxet.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_TUA_CHAVE_AQUI";
-
-  const supabase = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-</script>
 
 <!-- Admin logic -->
 <script src="js/admin.js"></script>
