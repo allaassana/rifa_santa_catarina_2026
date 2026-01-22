@@ -21,35 +21,32 @@
     <div class="counter">Disponíveis: <span id="availCount">120</span></div>
   </section>
 
-  <div id="ticketGrid" class="grid" aria-label="Grelha de bilhetes"></div>
+  <div id="ticketGrid" class="grid"></div>
 
+  <!-- FORMULÁRIO -->
   <section id="formArea" class="form-box" style="display:none;">
     <h3>Comprar Bilhete Nº <span id="ticketNumber"></span></h3>
 
     <label>Nome *</label>
-    <input id="nome" />
+    <input id="nome">
 
     <label>Telefone *</label>
-    <input id="tel" />
+    <input id="tel">
 
     <label>Email *</label>
-    <input id="email" type="email" />
+    <input id="email" type="email">
 
     <label>Data de nascimento *</label>
-    <input id="nasc" type="date" />
+    <input id="nasc" type="date">
 
     <label>Cidade *</label>
-    <input id="cidade" />
+    <input id="cidade">
 
     <label>País *</label>
-    <input id="pais" />
+    <input id="pais">
 
-    <label>Reclamações / Sugestões (500 máx.)</label>
-    <textarea id="feedback" maxlength="500"></textarea>
-
-    <label>Comprovativo (imagem) *</label>
-    <input id="comp" type="file" accept="image/*" />
-    <img id="compPreview" alt="Pré-visualização do comprovativo" />
+    <label>Comprovativo *</label>
+    <input id="comp" type="file" accept="image/*">
 
     <div class="form-actions">
       <button id="confirmBtn">Confirmar Compra (20€)</button>
@@ -57,53 +54,32 @@
     </div>
   </section>
 
-  <section id="receiptBox" class="form-box" style="display:none;">
-    <h3>✅ Recibo da Compra</h3>
+</main>
+
+<!-- 🧾 MODAL RECIBO -->
+<div id="receiptModal" class="modal" style="display:none;">
+  <div class="box">
+    <h3>✅ Compra Confirmada</h3>
     <p><strong>Bilhete:</strong> <span id="rBilhete"></span></p>
     <p><strong>Nome:</strong> <span id="rNome"></span></p>
     <p><strong>Telefone:</strong> <span id="rTel"></span></p>
     <p><strong>Email:</strong> <span id="rEmail"></span></p>
-    <p><strong>Valor pago:</strong> 20€</p>
-  </section>
+    <p><strong>Valor:</strong> 20€</p>
 
-  <aside class="info-box">
-    <h3>Dados Bancários & Pontos Focais</h3>
+    <button id="whatsappBtn">📲 Enviar recibo por WhatsApp</button>
+    <button onclick="fecharModal()">Fechar</button>
+  </div>
+</div>
 
-    <p><strong>BCA – Banco Comercial do Atlântico</strong><br>
-      CLIENTE: 2544214 — CONTA: 254421410001 — IBAN: CV64 0003 0000 02544214 101 76 — SWIFT: BCATCVCV
-    </p>
-
-    <p><strong>CECV – Caixa Económica</strong><br>
-      CONTA: 384413710002 — IBAN: CV64 0002 0000 03844137 102 02 — SWIFT: CXECCVCV
-    </p>
-
-    <p>Suíça: Silvestre — 0041767689933 — deustenstallone@gmail.com</p>
-    <p>Holanda: Cecilia — 0618223937 — Cdaveiga@hotmail.nl</p>
-    <p>Paris: Neusa — neusav152@gmail.com</p>
-    <p>Nice/Cannes: Maria — 0621885006 — furtadovarelamaria@gmail.com</p>
-
-    <p>
-      <button onclick="window.open(
-        'https://drive.google.com/file/d/1TeVBGckN8YbeV2g_-cvc-qTAL_SoVhso/view?usp=sharing',
-        '_blank'
-      )">
-        📄 Ver Regulamento
-      </button>
-    </p>
-  </aside>
-
-</main>
-
-<!-- 🔌 SUPABASE -->
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const supabaseUrl = "https://ydyuxumwqnuhomahaxet.supabase.co";
-  const supabaseKey = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  window.db = supabase.createClient(
+    "https://ydyuxumwqnuhomahaxet.supabase.co",
+    "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
+  );
 </script>
 
-<!-- 🚀 APP -->
 <script src="js/index.js"></script>
-
 </body>
 </html>
