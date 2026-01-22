@@ -1,14 +1,10 @@
-const SUPABASE_URL = "https://ydyuxumwqnuhomahaxet.supabase.co";
-const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
-
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+// ⚠️ NÃO criar Supabase aqui
+// Ele já é criado no index.html
 
 document.addEventListener("DOMContentLoaded", () => {
 
   const TOTAL = 120;
+
   const grid = document.getElementById("ticketGrid");
   const soldCountEl = document.getElementById("soldCount");
   const availCountEl = document.getElementById("availCount");
@@ -17,11 +13,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let selectedTicket = null;
 
+  // ================================
+  // GRID
+  // ================================
   async function renderGrid() {
-    const { data } = await supabaseClient.from("compras").select("bilhete");
+    const { data, error } = await supabase
+      .from("compras")
+      .select("bilhete");
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
     const vendidos = data.map(d => d.bilhete);
 
     grid.innerHTML = "";
+
     for (let i = 1; i <= TOTAL; i++) {
       const d = document.createElement("div");
       d.className = "ticket";
@@ -32,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         d.onclick = () => openForm(i);
       }
+
       grid.appendChild(d);
     }
 
@@ -39,13 +48,37 @@ document.addEventListener("DOMContentLoaded", () => {
     availCountEl.textContent = TOTAL - vendidos.length;
   }
 
+  // ================================
+  // FORM
+  // ================================
   function openForm(n) {
     selectedTicket = n;
     document.getElementById("ticketNumber").textContent = n;
     formArea.style.display = "block";
+    receiptBox.style.display = "none";
   }
 
+  function resetForm() {
+    selectedTicket = null;
+    formArea.style.display = "none";
+    receiptBox.style.display = "none";
+
+    ["nome","tel","email","nasc","cidade","pais","feedback"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+  }
+
+  // ================================
+  // CONFIRMAR COMPRA
+  // ================================
   document.getElementById("confirmBtn").onclick = async () => {
+
+    if (!selectedTicket) {
+      alert("Seleciona um bilhete.");
+      return;
+    }
+
     const nome = val("nome");
     const telefone = val("tel");
     const email = val("email");
@@ -53,21 +86,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const cidade = val("cidade");
     const pais = val("pais");
 
-    if (!nome || !telefone || !email) {
-      return alert("Preenche todos os campos obrigatórios.");
+    if (!nome || !telefone || !email || !nasc || !cidade || !pais) {
+      alert("Preenche todos os campos obrigatórios.");
+      return;
     }
 
-    await supabaseClient.from("compras").insert({
+    const { error } = await supabase.from("compras").insert({
       bilhete: selectedTicket,
       nome,
       telefone,
       email,
       data_nascimento: nasc,
       cidade,
-      pais
+      pais,
+      status: "confirmado"
     });
 
-    // Recibo
+    if (error) {
+      console.error(error);
+      alert("Erro ao registar a compra.");
+      return;
+    }
+
+    // ================================
+    // RECIBO
+    // ================================
     document.getElementById("rBilhete").textContent = selectedTicket;
     document.getElementById("rNome").textContent = nome;
     document.getElementById("rTel").textContent = telefone;
@@ -76,14 +119,22 @@ document.addEventListener("DOMContentLoaded", () => {
     formArea.style.display = "none";
     receiptBox.style.display = "block";
 
-    // WhatsApp
+    // ================================
+    // WHATSAPP
+    // ================================
+    const msg = encodeURIComponent(
+      `✅ Compra confirmada!\nBilhete Nº ${selectedTicket}\nRifa Santa Catarina 2025`
+    );
+
     window.open(
-      `https://wa.me/238${telefone}?text=Confirmo%20a%20compra%20do%20bilhete%20${selectedTicket}%20na%20Rifa%20Santa%20Catarina`,
+      `https://wa.me/238${telefone}?text=${msg}`,
       "_blank"
     );
 
     renderGrid();
   };
+
+  document.getElementById("cancelBtn").onclick = resetForm;
 
   function val(id) {
     return document.getElementById(id).value.trim();
