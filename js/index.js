@@ -5,7 +5,7 @@ const grid = document.getElementById("ticketGrid");
 const soldCount = document.getElementById("soldCount");
 const availCount = document.getElementById("availCount");
 const formArea = document.getElementById("formArea");
-const receiptModal = document.getElementById("receiptModal");
+const modal = document.getElementById("receiptModal");
 
 let selectedTicket = null;
 
@@ -16,17 +16,17 @@ async function renderGrid() {
   grid.innerHTML = "";
 
   for (let i = 1; i <= TOTAL; i++) {
-    const div = document.createElement("div");
-    div.className = "ticket";
-    div.textContent = i;
+    const d = document.createElement("div");
+    d.className = "ticket";
+    d.textContent = i;
 
     if (vendidos.includes(i)) {
-      div.classList.add("sold");
+      d.classList.add("sold");
     } else {
-      div.onclick = () => openForm(i);
+      d.onclick = () => openForm(i);
     }
 
-    grid.appendChild(div);
+    grid.appendChild(d);
   }
 
   soldCount.textContent = vendidos.length;
@@ -40,55 +40,63 @@ function openForm(n) {
 }
 
 document.getElementById("confirmBtn").onclick = async () => {
-  const nome = val("nome");
-  const tel = val("tel");
-  const email = val("email");
+  const nome = nomeEl.value.trim();
+  const tel = telEl.value.trim();
+  const email = emailEl.value.trim();
+  const file = comp.files[0];
 
-  if (!nome || !tel || !email) {
-    alert("Preencha todos os campos obrigatórios");
-    return;
+  if (!nome || !tel || !email || !file) {
+    return alert("Preencha tudo");
   }
+
+  // Upload comprovativo
+  const path = `bilhete_${selectedTicket}_${Date.now()}`;
+  await db.storage.from("comprovativos").upload(path, file);
+  const { data: pub } = db.storage.from("comprovativos").getPublicUrl(path);
 
   const { error } = await db.from("compras").insert({
     bilhete: selectedTicket,
     nome,
     telefone: tel,
-    email
+    email,
+    comprovativo_url: pub.publicUrl
   });
 
   if (error) {
-    alert("❌ Este bilhete já foi vendido. Escolha outro.");
-    formArea.style.display = "none";
-    renderGrid();
+    alert("❌ Este bilhete já foi vendido");
     return;
   }
 
-  document.getElementById("rBilhete").textContent = selectedTicket;
-  document.getElementById("rNome").textContent = nome;
-  document.getElementById("rTel").textContent = tel;
-  document.getElementById("rEmail").textContent = email;
+  // Recibo
+  rBilhete.textContent = selectedTicket;
+  rNome.textContent = nome;
 
-  receiptModal.style.display = "block";
+  modal.style.display = "block";
   formArea.style.display = "none";
 
-  document.getElementById("whatsappBtn").onclick = () => {
-    const msg = `Olá, aqui está o bilhete número ${selectedTicket}. Compra confirmada!`;
-    window.open(`https://wa.me/238${tel}?text=${encodeURIComponent(msg)}`);
+  whatsappBtn.onclick = () => {
+    window.open(
+      `https://wa.me/238${tel}?text=Olá, aqui está o bilhete número ${selectedTicket}. Compra confirmada!`,
+      "_blank"
+    );
+  };
+
+  pdfBtn.onclick = () => {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+    pdf.text(`Bilhete: ${selectedTicket}`, 20, 20);
+    pdf.text(`Nome: ${nome}`, 20, 30);
+    pdf.text(`Rifa Santa Catarina 2025`, 20, 50);
+    pdf.save(`bilhete_${selectedTicket}.pdf`);
   };
 
   renderGrid();
 };
 
-document.getElementById("cancelBtn").onclick = () => {
-  formArea.style.display = "none";
-};
-
-window.fecharModal = () => {
-  receiptModal.style.display = "none";
-};
-
-function val(id) {
-  return document.getElementById(id).value.trim();
+function fecharModal() {
+  modal.style.display = "none";
 }
+
+cancelBtn.onclick = () => formArea.style.display = "none";
 
 renderGrid();
