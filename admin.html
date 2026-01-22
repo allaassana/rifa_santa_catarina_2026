@@ -3,58 +3,41 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Rifa Santa Catarina 2025 - Admin</title>
+  <title>Admin - Rifa Santa Catarina</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body data-page="admin">
+<body>
 
-<!-- 🔐 Proteção simples -->
 <script>
   const ADMIN_PASSWORD = "admin2025";
-  if (!sessionStorage.getItem("admin_access")) {
-    const pass = prompt("🔐 Acesso restrito – Introduza a senha:");
-    if (pass !== ADMIN_PASSWORD) {
-      alert("❌ Acesso negado");
-      location.href = "index.html";
-    } else {
-      sessionStorage.setItem("admin_access", "true");
-    }
+  if (!sessionStorage.getItem("admin")) {
+    const p = prompt("Senha de admin:");
+    if (p !== ADMIN_PASSWORD) location.href = "index.html";
+    sessionStorage.setItem("admin", "ok");
   }
 </script>
 
 <header class="site-header">
-  <h1>PARÓQUIA SANTA CATARINA — Painel do Proprietário</h1>
-  <p class="subtitle">Gestão da Rifa — 120 bilhetes</p>
+  <h1>Painel do Admin</h1>
+  <p>Gestão da Rifa</p>
 </header>
 
-<main class="wrap container">
-  <section class="left">
-    <div class="controls">
-      <button class="btn" id="exportCsv">Exportar CSV</button>
-      <button class="btn" id="exportJson">Exportar JSON</button>
+<main class="container">
+  <button onclick="limparTudo()">🧹 Limpar Todas as Compras</button>
+  <div>Vendidos: <span id="soldCount">0</span></div>
 
-      <!-- ✅ BOTÃO EXISTE -->
-      <button class="btn btn-primary" id="drawWinner">
-        🎉 Sortear Vencedor
-      </button>
+  <div id="grid" class="grid"></div>
 
-      <div>Vendidos: <span id="soldCount">0</span> / 120</div>
-    </div>
+  <h3>Detalhes</h3>
+  <div id="detailBox"></div>
 
-    <div id="grid" class="grid"></div>
+  <h3>🏆 Vencedores</h3>
+  <ul id="winnersList"></ul>
 
-    <h3>🏆 Histórico de Vencedores</h3>
-    <ul id="winnersList"></ul>
-  </section>
-
-  <aside class="right panel">
-    <h3>Detalhes do Comprador</h3>
-    <div id="detailBox">Nenhum bilhete selecionado</div>
-  </aside>
+  <button id="drawWinner">🎉 Sortear Vencedor</button>
 </main>
 
-<!-- ✅ SUPABASE (UMA ÚNICA VEZ) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   window.db = supabase.createClient(
@@ -63,8 +46,6 @@
   );
 </script>
 
-<!-- ✅ JS DO ADMIN -->
-<script src="js/admin.js" defer></script>
-
+<script src="js/admin.js"></script>
 </body>
 </html>
