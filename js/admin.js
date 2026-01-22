@@ -1,15 +1,18 @@
 const db = window.db;
-const TOTAL = 120;
 
 const grid = document.getElementById("grid");
-const soldCount = document.getElementById("soldCount");
+const soldCountEl = document.getElementById("soldCount");
 const detailBox = document.getElementById("detailBox");
+const winnersList = document.getElementById("winnersList");
+const drawBtn = document.getElementById("drawWinner");
+
+const TOTAL = 120;
 
 async function carregarCompras() {
   const { data = [] } = await db.from("compras").select("*");
 
   grid.innerHTML = "";
-  soldCount.textContent = data.length;
+  soldCountEl.textContent = data.length;
 
   for (let i = 1; i <= TOTAL; i++) {
     const div = document.createElement("div");
@@ -22,10 +25,11 @@ async function carregarCompras() {
       div.classList.add("sold");
       div.onclick = () => {
         detailBox.innerHTML = `
-          <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
-          <p><strong>Nome:</strong> ${compra.nome}</p>
-          <p><strong>Telefone:</strong> ${compra.telefone}</p>
-          <p><strong>Email:</strong> ${compra.email}</p>
+          <p><b>Bilhete:</b> ${compra.bilhete}</p>
+          <p><b>Nome:</b> ${compra.nome}</p>
+          <p><b>Telefone:</b> ${compra.telefone}</p>
+          <p><b>Email:</b> ${compra.email}</p>
+          <p><a href="${compra.comprovativo_url}" target="_blank">📎 Ver comprovativo</a></p>
           <button onclick="remover(${compra.bilhete})">❌ Eliminar</button>
         `;
       };
@@ -42,4 +46,28 @@ async function remover(bilhete) {
   carregarCompras();
 }
 
-carregarCompras();
+async function carregarVencedores() {
+  const { data = [] } = await db.from("vencedores").select("*");
+  winnersList.innerHTML = "";
+  data.forEach(v => {
+    const li = document.createElement("li");
+    li.textContent = `🎉 Bilhete ${v.bilhete} — ${v.nome}`;
+    winnersList.appendChild(li);
+  });
+}
+
+drawBtn.onclick = async () => {
+  const { data } = await db.from("compras").select("*");
+  if (!data.length) return alert("Sem compras");
+
+  const v = data[Math.floor(Math.random() * data.length)];
+  await db.from("vencedores").insert(v);
+
+  alert(`🎉 Vencedor: ${v.nome}`);
+  carregarVencedores();
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  carregarCompras();
+  carregarVencedores();
+});
