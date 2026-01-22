@@ -15,27 +15,37 @@
 
 <main class="container">
 
-  <div>
+  <p>
     Vendidos: <span id="soldCount">0</span> |
     Disponíveis: <span id="availCount">120</span>
-  </div>
+  </p>
 
   <div id="ticketGrid" class="grid"></div>
 
+  <!-- FORMULÁRIO -->
   <section id="formArea" style="display:none;">
     <h3>Bilhete Nº <span id="ticketNumber"></span></h3>
 
     <input id="nome" placeholder="Nome *">
     <input id="tel" placeholder="Telefone *">
     <input id="email" placeholder="Email *">
+    <input id="nasc" type="date">
     <input id="comp" type="file" accept="image/*,application/pdf">
 
     <button id="confirmBtn">Confirmar Compra</button>
     <button id="cancelBtn">Cancelar</button>
   </section>
 
-  <h3>💳 Dados Bancários</h3>
-  <p>BCA – IBAN: CV64 0003 0000 02544214 101 76</p>
+  <!-- INFO FIXA -->
+  <section class="info-box">
+    <h3>💳 Dados Bancários</h3>
+    <p><strong>BCA</strong><br>IBAN: CV64 0003 0000 02544214 101 76</p>
+    <p><strong>CECV</strong><br>IBAN: CV64 0002 0000 03844137 102 02</p>
+
+    <h3>📞 Contactos</h3>
+    <p>📱 +238 936 45 17</p>
+    <p>✉️ paroquia@santacatarina.cv</p>
+  </section>
 
 </main>
 
