@@ -6,18 +6,12 @@ const soldCount = document.getElementById("soldCount");
 const availCount = document.getElementById("availCount");
 const formArea = document.getElementById("formArea");
 
-let vendidos = [];
 let selectedTicket = null;
 
-// =====================
-// CARREGAR ESTADO
-// =====================
-async function carregar() {
+async function carregarBilhetes() {
   const { data = [] } = await db.from("compras").select("bilhete");
-  vendidos = data.map(d => d.bilhete);
 
-  soldCount.textContent = vendidos.length;
-  availCount.textContent = TOTAL - vendidos.length;
+  const vendidos = data.map(x => x.bilhete);
 
   grid.innerHTML = "";
 
@@ -34,78 +28,85 @@ async function carregar() {
 
     grid.appendChild(d);
   }
+
+  soldCount.textContent = vendidos.length;
+  availCount.textContent = TOTAL - vendidos.length;
 }
 
 function abrirFormulario(n) {
-  if (vendidos.includes(n)) {
-    alert("❌ Este bilhete já foi vendido.");
-    return;
-  }
-
   selectedTicket = n;
   document.getElementById("ticketNumber").textContent = n;
   formArea.style.display = "block";
 }
 
-// =====================
-// CANCELAR
-// =====================
 document.getElementById("cancelBtn").onclick = () => {
   formArea.style.display = "none";
 };
 
-// =====================
-// CONFIRMAR
-// =====================
 document.getElementById("confirmBtn").onclick = async () => {
-  const nome = val("nome");
-  const tel = val("tel");
-  const email = val("email");
-  const nasc = val("nasc");
-  const file = document.getElementById("comp").files[0];
+  const nome = nomeVal();
+  const tel = telVal();
+  const email = emailVal();
+  const nasc = document.getElementById("nasc").value;
+  const file = document.getElementById("comprovativo").files[0];
 
-  if (!nome || !tel || !email || !nasc || !file) {
-    alert("Preencha todos os campos");
+  if (!nome || !tel || !email || !file) {
+    alert("Preencha todos os campos e anexe o comprovativo.");
     return;
   }
 
-  // Upload comprovativo
-  const path = `bilhete_${selectedTicket}_${Date.now()}`;
+  // UPLOAD
+  const fileName = `${Date.now()}_${file.name}`;
   const { error: upErr } = await db.storage
     .from("comprovativos")
-    .upload(path, file);
+    .upload(fileName, file);
 
   if (upErr) {
     alert("Erro no upload do comprovativo");
     return;
   }
 
-  // Inserção segura
+  const { data: urlData } = db.storage
+    .from("comprovativos")
+    .getPublicUrl(fileName);
+
+  // INSERT FINAL
   const { error } = await db.from("compras").insert({
     bilhete: selectedTicket,
     nome,
     telefone: tel,
     email,
     data_nascimento: nasc,
-    comprovativo_url: path
+    comprovativo_url: urlData.publicUrl
   });
 
   if (error) {
-    alert("❌ Este bilhete já foi vendido.");
+    alert("Este bilhete já foi vendido. Escolha outro.");
     return;
   }
 
-  window.open(
-    `https://wa.me/238${tel}?text=Olá, aqui está o bilhete número ${selectedTicket}. Compra confirmada!`,
-    "_blank"
-  );
+  document.getElementById("mBilhete").textContent = selectedTicket;
+  document.getElementById("mNome").textContent = nome;
 
+  document.getElementById("whatsBtn").onclick = () => {
+    window.open(
+      `https://wa.me/238${tel}?text=Olá, aqui está o bilhete número ${selectedTicket}. Compra confirmada!`,
+      "_blank"
+    );
+  };
+
+  document.getElementById("modal").style.display = "block";
   formArea.style.display = "none";
-  carregar();
+
+  carregarBilhetes();
 };
 
-function val(id) {
-  return document.getElementById(id).value.trim();
+function fecharModal() {
+  document.getElementById("modal").style.display = "none";
 }
 
-carregar();
+function nomeVal(){ return document.getElementById("nome").value.trim(); }
+function telVal(){ return document.getElementById("tel").value.trim(); }
+function emailVal(){ return document.getElementById("email").value.trim(); }
+
+carregarBilhetes();
