@@ -27,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         div.onclick = () => openForm(i);
       }
-
       grid.appendChild(div);
     }
 
@@ -45,16 +44,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const nome = val("nome");
     const tel = val("tel");
     const email = val("email");
+    const file = document.getElementById("comp").files[0];
 
-    if (!nome || !tel || !email) {
-      return alert("Preencha os campos obrigatórios");
+    if (!nome || !tel || !email || !file) {
+      return alert("Preencha todos os campos e anexe o comprovativo");
     }
+
+    const fileName = `bilhete_${selectedTicket}_${Date.now()}`;
+    await db.storage.from("comprovativos").upload(fileName, file);
+    const { data: url } = db.storage.from("comprovativos").getPublicUrl(fileName);
 
     await db.from("compras").insert({
       bilhete: selectedTicket,
       nome,
       telefone: tel,
-      email
+      email,
+      comprovativo_url: url.publicUrl
     });
 
     document.getElementById("rBilhete").textContent = selectedTicket;
@@ -67,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("whatsappBtn").onclick = () => {
       window.open(
-        `https://wa.me/238${tel}?text=Compra confirmada! Bilhete ${selectedTicket}`,
+        `https://wa.me/238${tel}?text=Olá,%20aqui%20está%20o%20bilhete%20número%20${selectedTicket}.%0ACompra%20confirmada!`,
         "_blank"
       );
     };
