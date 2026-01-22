@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body data-page="participante">
+<body>
 
 <header class="site-header">
   <img src="assets/logo.png" class="logo" alt="Logo">
@@ -34,6 +34,7 @@
     <input id="nasc" type="date">
     <input id="cidade" placeholder="Cidade">
     <input id="pais" placeholder="País">
+    <input id="comp" type="file" accept="image/*">
 
     <div class="form-actions">
       <button id="confirmBtn">Confirmar Compra (20€)</button>
@@ -41,7 +42,7 @@
     </div>
   </section>
 
-  <!-- ℹ️ DADOS BANCÁRIOS -->
+  <!-- DADOS BANCÁRIOS -->
   <aside class="info-box">
     <h3>💳 Dados Bancários</h3>
     <p><strong>BCA</strong><br>IBAN: CV64 0003 0000 02544214 101 76</p>
@@ -54,7 +55,7 @@
 
 </main>
 
-<!-- 🧾 MODAL RECIBO -->
+<!-- MODAL RECIBO -->
 <div id="receiptModal" class="modal" style="display:none;">
   <div class="box">
     <h3>✅ Compra Confirmada</h3>
@@ -68,7 +69,6 @@
   </div>
 </div>
 
-<!-- SUPABASE (ÚNICO CLIENTE) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   window.db = supabase.createClient(
