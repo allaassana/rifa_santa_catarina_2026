@@ -1,11 +1,5 @@
-// ================================
-// CLIENTE SUPABASE
-// ================================
 const db = window.db;
 
-// ================================
-// ELEMENTOS
-// ================================
 const grid = document.getElementById("grid");
 const soldCountEl = document.getElementById("soldCount");
 const detailBox = document.getElementById("detailBox");
@@ -21,7 +15,7 @@ async function carregarCompras() {
   const { data, error } = await db.from("compras").select("*");
 
   if (error) {
-    console.error("Erro ao carregar compras:", error);
+    console.error(error);
     return;
   }
 
@@ -41,12 +35,13 @@ async function carregarCompras() {
         detailBox.innerHTML = `
           <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
           <p><strong>Nome:</strong> ${compra.nome}</p>
-          <p><strong>Telefone:</strong> ${compra.telefone || "-"}</p>
-          <p><strong>Email:</strong> ${compra.email || "-"}</p>
+          <p><strong>Telefone:</strong> ${compra.telefone}</p>
+          <p><strong>Email:</strong> ${compra.email}</p>
+          <p><strong>Status:</strong> confirmado</p>
         `;
       };
     } else {
-      div.style.opacity = "0.4";
+      div.style.opacity = "0.3";
     }
 
     grid.appendChild(div);
@@ -57,64 +52,53 @@ async function carregarCompras() {
 // CARREGAR VENCEDORES
 // ================================
 async function carregarVencedores() {
-  const { data, error } = await db
+  const { data } = await db
     .from("vencedores")
     .select("*")
-    .order("id", { ascending: false });
-
-  if (error) {
-    console.error("Erro ao carregar vencedores:", error);
-    return;
-  }
+    .order("criado_em", { ascending: false });
 
   winnersList.innerHTML = "";
 
-  data.forEach(v => {
-    const li = document.createElement("li");
-    li.textContent = `🎉 Bilhete ${v.bilhete} — ${v.nome}`;
-    winnersList.appendChild(li);
-  });
+  if (data && data.length > 0) {
+    data.forEach(v => {
+      const li = document.createElement("li");
+      li.textContent = `🎉 Bilhete ${v.bilhete} — ${v.nome}`;
+      winnersList.appendChild(li);
+    });
+  }
 }
 
 // ================================
-// SORTEAR VENCEDOR (BOTÃO)
+// SORTEAR VENCEDOR (MANUAL)
 // ================================
-drawBtn.onclick = async () => {
-  // Verifica se já existe vencedor
-  const { data: jaExiste } = await db.from("vencedores").select("*");
+async function sortearVencedor() {
+  const { data: compras } = await db.from("compras").select("*");
 
-  if (jaExiste && jaExiste.length > 0) {
-    alert("⚠️ Já existe um vencedor registado.");
+  if (!compras || compras.length === 0) {
+    alert("Nenhuma compra encontrada.");
     return;
   }
 
-  // Buscar todas as compras (todas confirmadas)
-  const { data: compras, error } = await db.from("compras").select("*");
-
-  if (error || !compras || compras.length === 0) {
-    alert("Nenhuma compra disponível para sorteio.");
-    return;
-  }
-
-  // Sorteio aleatório
   const vencedor = compras[Math.floor(Math.random() * compras.length)];
 
-  const { error: insertError } = await db.from("vencedores").insert({
+  const { error } = await db.from("vencedores").insert({
     bilhete: vencedor.bilhete,
     nome: vencedor.nome,
     telefone: vencedor.telefone,
     email: vencedor.email
   });
 
-  if (insertError) {
-    console.error(insertError);
+  if (error) {
+    console.error(error);
     alert("Erro ao registar vencedor.");
     return;
   }
 
-  alert(`🎉 Vencedor sorteado!\n${vencedor.nome} (Bilhete ${vencedor.bilhete})`);
+  alert(`🎉 Vencedor sorteado:\n${vencedor.nome}\nBilhete ${vencedor.bilhete}`);
   carregarVencedores();
-};
+}
+
+drawBtn.onclick = sortearVencedor;
 
 // ================================
 // INIT
