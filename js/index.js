@@ -1,17 +1,12 @@
 // ===============================
-// SUPABASE (UMA ÚNICA VEZ)
+// SUPABASE (ÚNICO CLIENTE)
 // ===============================
-const SUPABASE_URL = "https://ydyuxumwqnuhomahaxet.supabase.co";
-const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
-
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+const db = supabase.createClient(
+  "https://ydyuxumwqnuhomahaxet.supabase.co",
+  "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
 );
 
-// ===============================
 document.addEventListener("DOMContentLoaded", () => {
-
   const TOTAL = 120;
 
   const grid = document.getElementById("ticketGrid");
@@ -23,18 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedTicket = null;
 
   // ===============================
-  // RENDER GRID
+  // GRELHA
   // ===============================
   async function renderGrid() {
-    const { data, error } = await supabaseClient
-      .from("compras")
-      .select("bilhete");
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
+    const { data = [] } = await db.from("compras").select("bilhete");
     const vendidos = data.map(d => d.bilhete);
 
     grid.innerHTML = "";
@@ -57,7 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
     availCountEl.textContent = TOTAL - vendidos.length;
   }
 
-  // ===============================
   function openForm(n) {
     selectedTicket = n;
     document.getElementById("ticketNumber").textContent = n;
@@ -66,18 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===============================
-  document.getElementById("cancelBtn").onclick = () => {
-    formArea.style.display = "none";
-    selectedTicket = null;
-  };
-
+  // CONFIRMAR COMPRA
   // ===============================
   document.getElementById("confirmBtn").onclick = async () => {
-
-    if (!selectedTicket) {
-      alert("Seleciona um bilhete.");
-      return;
-    }
+    if (!selectedTicket) return alert("Selecione um bilhete");
 
     const nome = val("nome");
     const telefone = val("tel");
@@ -86,27 +64,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const cidade = val("cidade");
     const pais = val("pais");
 
-    if (!nome || !telefone || !email || !nasc || !cidade || !pais) {
-      alert("Preenche todos os campos obrigatórios.");
-      return;
+    if (!nome || !telefone || !email) {
+      return alert("Preencha todos os campos obrigatórios");
     }
 
-    const { error } = await supabaseClient
-      .from("compras")
-      .insert({
-        bilhete: selectedTicket,
-        nome,
-        telefone,
-        email,
-        data_nascimento: nasc,
-        cidade,
-        pais,
-        status: "confirmado"
-      });
+    const { error } = await db.from("compras").insert({
+      bilhete: selectedTicket,
+      nome,
+      telefone,
+      email,
+      data_nascimento: nasc,
+      cidade,
+      pais
+    });
 
     if (error) {
-      console.error(error);
-      alert("Erro ao registar compra.");
+      alert("Erro ao registar compra");
       return;
     }
 
@@ -121,11 +94,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // WHATSAPP
     window.open(
-      `https://wa.me/238${telefone}?text=Confirmo%20a%20compra%20do%20bilhete%20${selectedTicket}%20na%20Rifa%20Santa%20Catarina`,
+      `https://wa.me/238${telefone}?text=✅ Compra confirmada! Bilhete nº ${selectedTicket} — Rifa Santa Catarina`,
       "_blank"
     );
 
     renderGrid();
+  };
+
+  document.getElementById("cancelBtn").onclick = () => {
+    formArea.style.display = "none";
   };
 
   function val(id) {
