@@ -33,7 +33,6 @@
     <div class="controls">
       <button class="btn" id="exportCsv">Exportar CSV</button>
       <button class="btn" id="exportJson">Exportar JSON</button>
-      <button class="btn" id="drawWinner">🎉 Sortear Vencedor</button>
       <div>Vendidos: <span id="soldCount">0</span> / 120</div>
     </div>
 
@@ -44,12 +43,12 @@
   </section>
 
   <aside class="right panel">
-    <h3>Detalhes / Ações</h3>
+    <h3>Detalhes do Comprador</h3>
     <div id="detailBox">Nenhum bilhete selecionado</div>
   </aside>
 </main>
 
-<!-- ✅ SUPABASE (DECLARADO UMA ÚNICA VEZ) -->
+<!-- ✅ SUPABASE (UMA ÚNICA VEZ) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   window.db = supabase.createClient(
@@ -58,7 +57,7 @@
   );
 </script>
 
-<!-- ✅ LÓGICA DO ADMIN (COM DEFER) -->
+<!-- ✅ ADMIN -->
 <script src="js/admin.js" defer></script>
 
 </body>
