@@ -1,11 +1,5 @@
-// ================================
-// SUPABASE
-// ================================
 const db = window.db;
 
-// ================================
-// ELEMENTOS
-// ================================
 const grid = document.getElementById("grid");
 const soldCountEl = document.getElementById("soldCount");
 const detailBox = document.getElementById("detailBox");
@@ -14,16 +8,8 @@ const drawBtn = document.getElementById("drawWinner");
 
 const TOTAL = 120;
 
-// ================================
-// CARREGAR COMPRAS
-// ================================
 async function carregarCompras() {
-  const { data, error } = await db.from("compras").select("*");
-
-  if (error) {
-    console.error(error);
-    return;
-  }
+  const { data } = await db.from("compras").select("*");
 
   grid.innerHTML = "";
   soldCountEl.textContent = data.length;
@@ -46,86 +32,57 @@ async function carregarCompras() {
   }
 }
 
-// ================================
-// DETALHES + ELIMINAR
-// ================================
 function mostrarDetalhes(c) {
   detailBox.innerHTML = `
     <p><strong>Bilhete:</strong> ${c.bilhete}</p>
     <p><strong>Nome:</strong> ${c.nome}</p>
     <p><strong>Telefone:</strong> ${c.telefone}</p>
     <p><strong>Email:</strong> ${c.email}</p>
-    <button class="btn btn-danger" id="deleteBtn">❌ Eliminar compra</button>
+
+    <button onclick="eliminarBilhete(${c.bilhete})" class="btn btn-danger">
+      ❌ Eliminar Bilhete
+    </button>
   `;
-
-  document.getElementById("deleteBtn").onclick = async () => {
-    if (!confirm("Eliminar esta compra?")) return;
-
-    await db.from("compras").delete().eq("id", c.id);
-    detailBox.innerHTML = "Compra eliminada.";
-    carregarCompras();
-  };
 }
 
-// ================================
-// VENCEDOR
-// ================================
-async function carregarVencedor() {
-  const { data } = await db
-    .from("vencedores")
-    .select("*")
-    .order("data_sorteio", { ascending: false })
-    .limit(1);
+async function eliminarBilhete(bilhete) {
+  if (!confirm("Eliminar este bilhete?")) return;
 
-  winnersList.innerHTML = "";
-
-  if (data && data.length > 0) {
-    const v = data[0];
-    winnersList.innerHTML = `<li>🎉 ${v.nome} — Bilhete ${v.bilhete}</li>`;
-  }
+  await db.from("compras").delete().eq("bilhete", bilhete);
+  detailBox.innerHTML = "Bilhete eliminado.";
+  carregarCompras();
 }
 
-// ================================
-// SORTEAR VENCEDOR (MANUAL)
-// ================================
 drawBtn.onclick = async () => {
   const { data: compras } = await db.from("compras").select("*");
 
-  if (!compras || compras.length === 0) {
-    alert("Nenhuma compra registrada.");
-    return;
-  }
-
-  // Verifica se já existe vencedor
-  const { data: existe } = await db.from("vencedores").select("id").limit(1);
-  if (existe.length > 0) {
-    alert("⚠️ O vencedor já foi sorteado.");
-    return;
-  }
+  if (!compras.length) return alert("Sem compras.");
 
   const vencedor = compras[Math.floor(Math.random() * compras.length)];
 
-  const { error } = await db.from("vencedores").insert({
+  await db.from("vencedores").insert({
     bilhete: vencedor.bilhete,
     nome: vencedor.nome,
     telefone: vencedor.telefone,
     email: vencedor.email
   });
 
-  if (error) {
-    console.error(error);
-    alert("Erro ao registar vencedor.");
-    return;
-  }
-
-  alert(`🎉 Vencedor: ${vencedor.nome}`);
-  carregarVencedor();
+  alert(`🎉 Vencedor: ${vencedor.nome} (Bilhete ${vencedor.bilhete})`);
+  carregarVencedores();
 };
 
-// ================================
-// INIT
-// ================================
+async function carregarVencedores() {
+  const { data } = await db.from("vencedores").select("*").order("created_at", { ascending: false });
+
+  winnersList.innerHTML = "";
+  data.forEach(v => {
+    const li = document.createElement("li");
+    li.textContent = `🎉 Bilhete ${v.bilhete} — ${v.nome}`;
+    winnersList.appendChild(li);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   carregarCompras();
-  carregarVencedor();
+  carregarVencedores();
 });
