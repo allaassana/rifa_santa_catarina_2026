@@ -1,74 +1,74 @@
 <!doctype html>
 <html lang="pt">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rifa Santa Catarina 2025</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rifa Santa Catarina 2025</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
+
 <header class="site-header">
+  <img src="assets/logo.png" class="logo" alt="Logo">
   <h1>Rifa Santa Catarina 2025</h1>
-  <p>Centro Pastoral Santa Ana & São Joaquim</p>
+  <p class="subtitle">Centro Pastoral Santa Ana & São Joaquim — Comprar Bilhetes</p>
 </header>
 
 <main class="container">
 
-<div class="counters">
-  Vendidos: <span id="soldCount">0</span> |
-  Disponíveis: <span id="availCount">120</span>
-</div>
+  <section class="counters">
+    <div>Vendidos: <span id="soldCount">0</span></div>
+    <div>Disponíveis: <span id="availCount">120</span></div>
+  </section>
 
-<div id="ticketGrid" class="grid"></div>
+  <div id="ticketGrid" class="grid"></div>
 
-<section id="formArea" style="display:none">
-  <h3>Bilhete Nº <span id="ticketNumber"></span></h3>
+  <section id="formArea" class="form-box" style="display:none;">
+    <h3>Comprar Bilhete Nº <span id="ticketNumber"></span></h3>
 
-  <input id="nome" placeholder="Nome *">
-  <input id="tel" placeholder="Telefone *">
-  <input id="email" placeholder="Email *">
+    <input id="nome" placeholder="Nome *">
+    <input id="tel" placeholder="Telefone *">
+    <input id="email" type="email" placeholder="Email *">
+    <input id="comp" type="file" accept="image/*">
 
-  <label>Comprovativo *</label>
-  <input type="file" id="comp" accept="image/*">
+    <div class="form-actions">
+      <button id="confirmBtn">Confirmar Compra (20€)</button>
+      <button id="cancelBtn">Cancelar</button>
+    </div>
+  </section>
 
-  <button id="confirmBtn">Confirmar (20€)</button>
-  <button id="cancelBtn">Cancelar</button>
-</section>
+  <aside class="info-box">
+    <h3>💳 Dados Bancários</h3>
+    <p><strong>BCA</strong><br>IBAN: CV64 0003 0000 02544214 101 76</p>
+    <p><strong>CECV</strong><br>IBAN: CV64 0002 0000 03844137 102 02</p>
 
-<section class="info-box">
-  <h3>💳 Dados Bancários</h3>
-  <p><b>BCA</b><br>IBAN: CV64 0003 0000 02544214 101 76</p>
-  <p><b>CECV</b><br>IBAN: CV64 0002 0000 03844137 102 02</p>
-
-  <button onclick="window.open('https://drive.google.com/file/d/1TeVBGckN8YbeV2g_-cvc-qTAL_SoVhso/view')">
-    📄 Ver Regulamento
-  </button>
-</section>
+    <button onclick="window.open('https://drive.google.com/file/d/1TeVBGckN8YbeV2g_-cvc-qTAL_SoVhso/view','_blank')">
+      📄 Ver Regulamento
+    </button>
+  </aside>
 
 </main>
 
-<!-- RECIBO -->
-<div id="receiptModal" class="modal" style="display:none">
+<div id="receiptModal" class="modal" style="display:none;">
   <div class="box">
     <h3>✅ Compra Confirmada</h3>
     <p>Bilhete: <span id="rBilhete"></span></p>
     <p>Nome: <span id="rNome"></span></p>
+    <p>Telefone: <span id="rTel"></span></p>
+    <p>Email: <span id="rEmail"></span></p>
 
-    <button id="pdfBtn">📄 Baixar PDF</button>
-    <button id="whatsappBtn">📲 WhatsApp</button>
+    <button id="whatsappBtn">📲 Enviar por WhatsApp</button>
     <button onclick="fecharModal()">Fechar</button>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <script>
-window.db = supabase.createClient(
-  "https://ydyuxumwqnuhomahaxet.supabase.co",
-  "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
-);
+  window.db = supabase.createClient(
+    "https://ydyuxumwqnuhomahaxet.supabase.co",
+    "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
+  );
 </script>
 
 <script src="js/index.js"></script>
