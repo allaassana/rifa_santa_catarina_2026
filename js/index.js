@@ -1,6 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
+const db = window.db;
 
-  const db = window.supabaseClient;
+document.addEventListener("DOMContentLoaded", () => {
   const TOTAL = 120;
 
   const grid = document.getElementById("ticketGrid");
@@ -11,13 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let selectedTicket = null;
 
-  // ================================
-  // GRID
-  // ================================
   async function renderGrid() {
-    const { data, error } = await db
-      .from("compras")
-      .select("bilhete");
+    const { data, error } = await db.from("compras").select("bilhete");
 
     if (error) {
       console.error(error);
@@ -46,36 +41,14 @@ document.addEventListener("DOMContentLoaded", () => {
     availCountEl.textContent = TOTAL - vendidos.length;
   }
 
-  // ================================
-  // FORM
-  // ================================
   function openForm(n) {
     selectedTicket = n;
     document.getElementById("ticketNumber").textContent = n;
     formArea.style.display = "block";
-    receiptBox.style.display = "none";
   }
 
-  function resetForm() {
-    selectedTicket = null;
-    formArea.style.display = "none";
-    receiptBox.style.display = "none";
-
-    ["nome","tel","email","nasc","cidade","pais","feedback"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = "";
-    });
-  }
-
-  // ================================
-  // CONFIRMAR COMPRA
-  // ================================
   document.getElementById("confirmBtn").onclick = async () => {
-
-    if (!selectedTicket) {
-      alert("Seleciona um bilhete.");
-      return;
-    }
+    if (!selectedTicket) return alert("Seleciona um bilhete.");
 
     const nome = val("nome");
     const telefone = val("tel");
@@ -85,8 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const pais = val("pais");
 
     if (!nome || !telefone || !email || !nasc || !cidade || !pais) {
-      alert("Preenche todos os campos obrigatórios.");
-      return;
+      return alert("Preenche todos os campos obrigatórios.");
     }
 
     const { error } = await db.from("compras").insert({
@@ -102,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (error) {
       console.error(error);
-      alert("Erro ao registar a compra.");
+      alert("Erro ao registar compra.");
       return;
     }
 
@@ -115,17 +87,14 @@ document.addEventListener("DOMContentLoaded", () => {
     formArea.style.display = "none";
     receiptBox.style.display = "block";
 
-    // WHATSAPP
-    const msg = encodeURIComponent(
-      `✅ Compra confirmada!\nBilhete Nº ${selectedTicket}\nRifa Santa Catarina 2025`
+    // WhatsApp
+    window.open(
+      `https://wa.me/238${telefone}?text=Confirmação%20da%20compra%20do%20bilhete%20${selectedTicket}%20na%20Rifa%20Santa%20Catarina`,
+      "_blank"
     );
-
-    window.open(`https://wa.me/238${telefone}?text=${msg}`, "_blank");
 
     renderGrid();
   };
-
-  document.getElementById("cancelBtn").onclick = resetForm;
 
   function val(id) {
     return document.getElementById(id).value.trim();
