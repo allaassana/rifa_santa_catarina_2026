@@ -17,7 +17,7 @@ const TOTAL = 120;
 // CARREGAR COMPRAS
 // ================================
 async function carregarCompras() {
-  const { data, error } = await db.from("compras").select("*");
+  const { data: compras, error } = await db.from("compras").select("*");
 
   if (error) {
     console.error("Erro ao carregar compras:", error);
@@ -25,14 +25,14 @@ async function carregarCompras() {
   }
 
   grid.innerHTML = "";
-  soldCountEl.textContent = data.length;
+  soldCountEl.textContent = compras.length;
 
   for (let i = 1; i <= TOTAL; i++) {
     const div = document.createElement("div");
     div.className = "ticket";
     div.textContent = i;
 
-    const compra = data.find(c => c.bilhete === i);
+    const compra = compras.find(c => c.bilhete === i);
 
     if (compra) {
       div.classList.add("sold");
@@ -40,11 +40,15 @@ async function carregarCompras() {
         detailBox.innerHTML = `
           <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
           <p><strong>Nome:</strong> ${compra.nome}</p>
-          <p><strong>Status:</strong> ${compra.status}</p>
+          <p><strong>Telefone:</strong> ${compra.telefone || "-"}</p>
+          <p><strong>Email:</strong> ${compra.email || "-"}</p>
+          <p><strong>Cidade:</strong> ${compra.cidade || "-"}</p>
+          <p><strong>País:</strong> ${compra.pais || "-"}</p>
         `;
       };
     } else {
       div.style.opacity = "0.4";
+      div.style.cursor = "not-allowed";
     }
 
     grid.appendChild(div);
@@ -55,7 +59,11 @@ async function carregarCompras() {
 // CARREGAR VENCEDOR
 // ================================
 async function carregarVencedor() {
-  const { data, error } = await db.from("vencedores").select("*");
+  const { data, error } = await db
+    .from("vencedores")
+    .select("*")
+    .order("data_sorteio", { ascending: false })
+    .limit(1);
 
   if (error) {
     console.error("Erro ao carregar vencedor:", error);
@@ -64,7 +72,7 @@ async function carregarVencedor() {
 
   winnersList.innerHTML = "";
 
-  if (data.length > 0) {
+  if (data && data.length > 0) {
     const v = data[0];
     const li = document.createElement("li");
     li.textContent = `🎉 Bilhete ${v.bilhete} — ${v.nome}`;
@@ -76,23 +84,16 @@ async function carregarVencedor() {
 // SORTEIO AUTOMÁTICO
 // ================================
 async function sortearAutomaticamente() {
-  // Verifica se já existe vencedor
-  const { data: existentes } = await db.from("vencedores").select("*");
+  // Já existe vencedor?
+  const { data: existentes } = await db.from("vencedores").select("id");
 
   if (existentes && existentes.length > 0) return;
 
-  // Busca compras confirmadas
-  const { data: compras, error } = await db
-    .from("compras")
-    .select("*")
-    .eq("status", "confirmado");
+  // Buscar compras
+  const { data: compras, error } = await db.from("compras").select("*");
 
-  if (error || !compras || compras.length === 0) {
-    console.warn("Nenhuma compra confirmada para sorteio.");
-    return;
-  }
+  if (error || !compras || compras.length === 0) return;
 
-  // Sorteia
   const vencedor = compras[Math.floor(Math.random() * compras.length)];
 
   await db.from("vencedores").insert({
@@ -102,7 +103,7 @@ async function sortearAutomaticamente() {
     email: vencedor.email
   });
 
-  alert(`🎉 Vencedor automático: ${vencedor.nome} (Bilhete ${vencedor.bilhete})`);
+  alert(`🎉 Vencedor sorteado automaticamente:\n${vencedor.nome}\nBilhete ${vencedor.bilhete}`);
 }
 
 // ================================
