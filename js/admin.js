@@ -1,5 +1,5 @@
 // ================================
-// CLIENTE SUPABASE
+// SUPABASE
 // ================================
 const db = window.db;
 
@@ -41,12 +41,13 @@ async function carregarCompras() {
         detailBox.innerHTML = `
           <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
           <p><strong>Nome:</strong> ${compra.nome}</p>
-          <p><strong>Telefone:</strong> ${compra.telefone || "-"}</p>
-          <p><strong>Email:</strong> ${compra.email || "-"}</p>
+          <p><strong>Telefone:</strong> ${compra.telefone ?? "-"}</p>
+          <p><strong>Email:</strong> ${compra.email ?? "-"}</p>
         `;
       };
     } else {
       div.style.opacity = "0.4";
+      div.style.cursor = "not-allowed";
     }
 
     grid.appendChild(div);
@@ -71,32 +72,24 @@ async function carregarVencedores() {
 
   data.forEach(v => {
     const li = document.createElement("li");
-    li.textContent = `🏆 Bilhete ${v.bilhete} — ${v.nome}`;
+    li.textContent = `🎉 Bilhete ${v.bilhete} — ${v.nome}`;
     winnersList.appendChild(li);
   });
 }
 
 // ================================
-// SORTEIO MANUAL (BOTÃO)
+// SORTEAR VENCEDOR (MANUAL)
 // ================================
-drawBtn.onclick = async () => {
-  // Verifica se já existe vencedor
-  const { data: jaExiste } = await db.from("vencedores").select("id");
-
-  if (jaExiste && jaExiste.length > 0) {
-    alert("⚠️ Já existe um vencedor sorteado.");
-    return;
-  }
-
-  // Busca TODAS as compras (sem status)
-  const { data: compras, error } = await db.from("compras").select("*");
+async function sortearVencedor() {
+  const { data: compras, error } = await db
+    .from("compras")
+    .select("*");
 
   if (error || !compras || compras.length === 0) {
-    alert("Nenhuma compra encontrada para sorteio.");
+    alert("❌ Nenhuma compra encontrada.");
     return;
   }
 
-  // Sorteio
   const vencedor = compras[Math.floor(Math.random() * compras.length)];
 
   const { error: insertError } = await db.from("vencedores").insert({
@@ -107,20 +100,24 @@ drawBtn.onclick = async () => {
   });
 
   if (insertError) {
-    console.error("Erro ao salvar vencedor:", insertError);
-    alert("Erro ao salvar vencedor.");
+    console.error(insertError);
+    alert("Erro ao registar vencedor.");
     return;
   }
 
-  alert(`🎉 Vencedor sorteado!\n${vencedor.nome} (Bilhete ${vencedor.bilhete})`);
-
+  alert(`🎉 Vencedor sorteado!\n${vencedor.nome} — Bilhete ${vencedor.bilhete}`);
   carregarVencedores();
-};
+}
 
 // ================================
 // INIT
 // ================================
-document.addEventListener("DOMContentLoaded", async () => {
-  await carregarCompras();
-  await carregarVencedores();
+document.addEventListener("DOMContentLoaded", () => {
+  carregarCompras();
+  carregarVencedores();
+
+  // ✅ SÓ adiciona evento se o botão existir
+  if (drawBtn) {
+    drawBtn.addEventListener("click", sortearVencedor);
+  }
 });
