@@ -1,8 +1,6 @@
-// ⚠️ NÃO criar Supabase aqui
-// Ele já é criado no index.html
-
 document.addEventListener("DOMContentLoaded", () => {
 
+  const db = window.supabaseClient;
   const TOTAL = 120;
 
   const grid = document.getElementById("ticketGrid");
@@ -17,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // GRID
   // ================================
   async function renderGrid() {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from("compras")
       .select("bilhete");
 
@@ -91,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const { error } = await supabase.from("compras").insert({
+    const { error } = await db.from("compras").insert({
       bilhete: selectedTicket,
       nome,
       telefone,
@@ -108,9 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ================================
     // RECIBO
-    // ================================
     document.getElementById("rBilhete").textContent = selectedTicket;
     document.getElementById("rNome").textContent = nome;
     document.getElementById("rTel").textContent = telefone;
@@ -119,17 +115,12 @@ document.addEventListener("DOMContentLoaded", () => {
     formArea.style.display = "none";
     receiptBox.style.display = "block";
 
-    // ================================
     // WHATSAPP
-    // ================================
     const msg = encodeURIComponent(
       `✅ Compra confirmada!\nBilhete Nº ${selectedTicket}\nRifa Santa Catarina 2025`
     );
 
-    window.open(
-      `https://wa.me/238${telefone}?text=${msg}`,
-      "_blank"
-    );
+    window.open(`https://wa.me/238${telefone}?text=${msg}`, "_blank");
 
     renderGrid();
   };
