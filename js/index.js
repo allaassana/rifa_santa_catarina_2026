@@ -1,11 +1,4 @@
-// 🔌 SUPABASE CLIENT (CRIADO UMA ÚNICA VEZ)
-const SUPABASE_URL = "https://ydyuxumwqnuhomahaxet.supabase.co";
-const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const db = window.db;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -22,12 +15,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let selectedTicket = null;
 
+  // =========================
+  // GRID
+  // =========================
   async function renderGrid() {
-    const { data, error } = await supabaseClient
-      .from("compras")
-      .select("bilhete");
-
-    const vendidos = data ? data.map(d => d.bilhete) : [];
+    const { data } = await db.from("compras").select("bilhete");
+    const vendidos = data.map(d => d.bilhete);
 
     grid.innerHTML = "";
 
@@ -41,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         d.onclick = () => openForm(i);
       }
-
       grid.appendChild(d);
     }
 
@@ -58,14 +50,17 @@ document.addEventListener("DOMContentLoaded", () => {
   function resetForm() {
     selectedTicket = null;
     formArea.style.display = "none";
-    ["nome","tel","email","nasc","cidade","pais","feedback"].forEach(id => {
+    ["nome","tel","email","nasc","cidade","pais"].forEach(id => {
       document.getElementById(id).value = "";
     });
     compInput.value = "";
   }
 
+  // =========================
+  // CONFIRMAR COMPRA
+  // =========================
   confirmBtn.onclick = async () => {
-    if (!selectedTicket) return alert("Seleciona um bilhete.");
+    if (!selectedTicket) return;
 
     const nome = val("nome");
     const telefone = val("tel");
@@ -75,46 +70,58 @@ document.addEventListener("DOMContentLoaded", () => {
     const pais = val("pais");
     const file = compInput.files[0];
 
-    if (!nome || !telefone || !email || !nasc || !cidade || !pais || !file) {
+    if (!nome || !telefone || !email || !file) {
       return alert("Preenche todos os campos.");
     }
 
-    try {
-      const fileName = `bilhete_${selectedTicket}_${Date.now()}`;
+    const fileName = `bilhete_${selectedTicket}_${Date.now()}`;
 
-      await supabaseClient
-        .storage
-        .from("comprovativos")
-        .upload(fileName, file);
+    await db.storage.from("comprovativos").upload(fileName, file);
 
-      const { data: url } = supabaseClient
-        .storage
-        .from("comprovativos")
-        .getPublicUrl(fileName);
+    const { data: url } = db.storage
+      .from("comprovativos")
+      .getPublicUrl(fileName);
 
-      await supabaseClient.from("compras").insert({
-        bilhete: selectedTicket,
-        nome,
-        telefone,
-        email,
-        data_nascimento: nasc,
-        cidade,
-        pais,
-        comprovativo_url: url.publicUrl,
-        status: "pendente"
-      });
+    await db.from("compras").insert({
+      bilhete: selectedTicket,
+      nome,
+      telefone,
+      email,
+      data_nascimento: nasc,
+      cidade,
+      pais,
+      comprovativo_url: url.publicUrl,
+      status: "confirmado"
+    });
 
-      alert("✅ Compra registada!");
-      resetForm();
-      renderGrid();
-
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao processar a compra.");
-    }
+    mostrarRecibo({ bilhete: selectedTicket, nome, telefone, email });
+    resetForm();
+    renderGrid();
   };
 
   cancelBtn.onclick = resetForm;
+
+  // =========================
+  // RECIBO + WHATSAPP
+  // =========================
+  function mostrarRecibo(d) {
+    document.getElementById("rBilhete").innerText = d.bilhete;
+    document.getElementById("rNome").innerText = d.nome;
+    document.getElementById("rTel").innerText = d.telefone;
+    document.getElementById("rEmail").innerText = d.email;
+
+    const msg = `Olá ${d.nome} 👋%0A%0A✅ Compra confirmada!%0A🎟 Bilhete: ${d.bilhete}%0A💶 Valor: 20€%0A%0ABoa sorte 🍀`;
+
+    document.getElementById("whatsappBtn").onclick = () => {
+      window.open(`https://wa.me/${d.telefone}?text=${msg}`, "_blank");
+    };
+
+    document.getElementById("receiptModal").style.display = "flex";
+  }
+
+  window.fecharModal = () => {
+    document.getElementById("receiptModal").style.display = "none";
+  };
 
   function val(id) {
     return document.getElementById(id).value.trim();
