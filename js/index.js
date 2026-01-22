@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         div.onclick = () => openForm(i);
       }
+
       grid.appendChild(div);
     }
 
@@ -41,26 +42,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.getElementById("confirmBtn").onclick = async () => {
+    if (!selectedTicket) return;
+
     const nome = val("nome");
     const tel = val("tel");
     const email = val("email");
-    const file = document.getElementById("comp").files[0];
 
-    if (!nome || !tel || !email || !file) {
-      return alert("Preencha todos os campos e anexe o comprovativo");
+    if (!nome || !tel || !email) {
+      alert("Preencha todos os campos obrigatórios");
+      return;
     }
 
-    const fileName = `bilhete_${selectedTicket}_${Date.now()}`;
-    await db.storage.from("comprovativos").upload(fileName, file);
-    const { data: url } = db.storage.from("comprovativos").getPublicUrl(fileName);
-
-    await db.from("compras").insert({
+    const { error } = await db.from("compras").insert({
       bilhete: selectedTicket,
       nome,
       telefone: tel,
-      email,
-      comprovativo_url: url.publicUrl
+      email
     });
+
+    if (error) {
+      if (error.code === "23505") {
+        alert("❌ Este bilhete já foi vendido.");
+        formArea.style.display = "none";
+        renderGrid();
+        return;
+      }
+
+      alert("Erro ao registar compra");
+      return;
+    }
 
     document.getElementById("rBilhete").textContent = selectedTicket;
     document.getElementById("rNome").textContent = nome;
@@ -71,8 +81,9 @@ document.addEventListener("DOMContentLoaded", () => {
     formArea.style.display = "none";
 
     document.getElementById("whatsappBtn").onclick = () => {
+      const msg = `Olá, aqui está o bilhete número ${selectedTicket}. Compra confirmada!`;
       window.open(
-        `https://wa.me/238${tel}?text=Olá,%20aqui%20está%20o%20bilhete%20número%20${selectedTicket}.%0ACompra%20confirmada!`,
+        `https://wa.me/238${tel}?text=${encodeURIComponent(msg)}`,
         "_blank"
       );
     };
