@@ -3,11 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Rifa Santa Catarina 2025 - Comprar</title>
+  <title>Rifa Santa Catarina 2025</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body data-page="participante">
+
 <header class="site-header">
   <img src="assets/logo.png" class="logo" alt="Logo">
   <h1>Rifa Santa Catarina 2025</h1>
@@ -17,8 +18,8 @@
 <main class="container">
 
   <section class="counters">
-    <div class="counter">Vendidos: <span id="soldCount">0</span></div>
-    <div class="counter">Disponíveis: <span id="availCount">120</span></div>
+    <div>Vendidos: <span id="soldCount">0</span></div>
+    <div>Disponíveis: <span id="availCount">120</span></div>
   </section>
 
   <div id="ticketGrid" class="grid"></div>
@@ -27,32 +28,29 @@
   <section id="formArea" class="form-box" style="display:none;">
     <h3>Comprar Bilhete Nº <span id="ticketNumber"></span></h3>
 
-    <label>Nome *</label>
-    <input id="nome">
-
-    <label>Telefone *</label>
-    <input id="tel">
-
-    <label>Email *</label>
-    <input id="email" type="email">
-
-    <label>Data de nascimento *</label>
+    <input id="nome" placeholder="Nome *">
+    <input id="tel" placeholder="Telefone *">
+    <input id="email" type="email" placeholder="Email *">
     <input id="nasc" type="date">
-
-    <label>Cidade *</label>
-    <input id="cidade">
-
-    <label>País *</label>
-    <input id="pais">
-
-    <label>Comprovativo *</label>
-    <input id="comp" type="file" accept="image/*">
+    <input id="cidade" placeholder="Cidade">
+    <input id="pais" placeholder="País">
 
     <div class="form-actions">
       <button id="confirmBtn">Confirmar Compra (20€)</button>
-      <button id="cancelBtn" class="btn-secondary">Cancelar</button>
+      <button id="cancelBtn">Cancelar</button>
     </div>
   </section>
+
+  <!-- ℹ️ DADOS BANCÁRIOS -->
+  <aside class="info-box">
+    <h3>💳 Dados Bancários</h3>
+    <p><strong>BCA</strong><br>IBAN: CV64 0003 0000 02544214 101 76</p>
+    <p><strong>CECV</strong><br>IBAN: CV64 0002 0000 03844137 102 02</p>
+
+    <button onclick="window.open('https://drive.google.com/file/d/1TeVBGckN8YbeV2g_-cvc-qTAL_SoVhso/view','_blank')">
+      📄 Ver Regulamento
+    </button>
+  </aside>
 
 </main>
 
@@ -60,18 +58,17 @@
 <div id="receiptModal" class="modal" style="display:none;">
   <div class="box">
     <h3>✅ Compra Confirmada</h3>
-    <p><strong>Bilhete:</strong> <span id="rBilhete"></span></p>
-    <p><strong>Nome:</strong> <span id="rNome"></span></p>
-    <p><strong>Telefone:</strong> <span id="rTel"></span></p>
-    <p><strong>Email:</strong> <span id="rEmail"></span></p>
-    <p><strong>Valor:</strong> 20€</p>
+    <p>Bilhete: <span id="rBilhete"></span></p>
+    <p>Nome: <span id="rNome"></span></p>
+    <p>Telefone: <span id="rTel"></span></p>
+    <p>Email: <span id="rEmail"></span></p>
 
-    <button id="whatsappBtn">📲 Enviar recibo por WhatsApp</button>
+    <button id="whatsappBtn">📲 Enviar por WhatsApp</button>
     <button onclick="fecharModal()">Fechar</button>
   </div>
 </div>
 
-<!-- SUPABASE -->
+<!-- SUPABASE (ÚNICO CLIENTE) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   window.db = supabase.createClient(
