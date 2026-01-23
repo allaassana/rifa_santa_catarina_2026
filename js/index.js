@@ -9,10 +9,14 @@ const formArea = document.getElementById("formArea");
 let selectedTicket = null;
 
 async function carregarBilhetes() {
-  const { data = [] } = await db.from("compras").select("bilhete");
+  const { data, error } = await db.from("compras").select("bilhete");
 
-  const vendidos = data.map(x => x.bilhete);
+  if (error) {
+    alert("Erro ao carregar bilhetes");
+    return;
+  }
 
+  const vendidos = data.map(d => d.bilhete);
   grid.innerHTML = "";
 
   for (let i = 1; i <= TOTAL; i++) {
@@ -44,9 +48,9 @@ document.getElementById("cancelBtn").onclick = () => {
 };
 
 document.getElementById("confirmBtn").onclick = async () => {
-  const nome = nomeVal();
-  const tel = telVal();
-  const email = emailVal();
+  const nome = document.getElementById("nome").value.trim();
+  const tel = document.getElementById("tel").value.trim();
+  const email = document.getElementById("email").value.trim();
   const nasc = document.getElementById("nasc").value;
   const file = document.getElementById("comprovativo").files[0];
 
@@ -55,33 +59,36 @@ document.getElementById("confirmBtn").onclick = async () => {
     return;
   }
 
-  // UPLOAD
-  const fileName = `${Date.now()}_${file.name}`;
-  const { error: upErr } = await db.storage
-    .from("comprovativos")
-    .upload(fileName, file);
+  const path = `${selectedTicket}/${Date.now()}_${file.name}`;
 
-  if (upErr) {
-    alert("Erro no upload do comprovativo");
+  const upload = await db.storage
+    .from("comprovativos")
+    .upload(path, file);
+
+  if (upload.error) {
+    alert("Erro ao enviar comprovativo");
     return;
   }
 
-  const { data: urlData } = db.storage
+  const { data: url } = db.storage
     .from("comprovativos")
-    .getPublicUrl(fileName);
+    .getPublicUrl(path);
 
-  // INSERT FINAL
-  const { error } = await db.from("compras").insert({
+  const insert = await db.from("compras").insert({
     bilhete: selectedTicket,
     nome,
     telefone: tel,
     email,
     data_nascimento: nasc,
-    comprovativo_url: urlData.publicUrl
+    comprovativo_url: url.publicUrl
   });
 
-  if (error) {
-    alert("Este bilhete já foi vendido. Escolha outro.");
+  if (insert.error) {
+    if (insert.error.code === "23505") {
+      alert("Este bilhete já foi vendido. Escolha outro.");
+    } else {
+      alert("Erro ao registar compra.");
+    }
     return;
   }
 
@@ -104,9 +111,5 @@ document.getElementById("confirmBtn").onclick = async () => {
 function fecharModal() {
   document.getElementById("modal").style.display = "none";
 }
-
-function nomeVal(){ return document.getElementById("nome").value.trim(); }
-function telVal(){ return document.getElementById("tel").value.trim(); }
-function emailVal(){ return document.getElementById("email").value.trim(); }
 
 carregarBilhetes();
