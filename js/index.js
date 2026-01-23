@@ -9,28 +9,23 @@ const formArea = document.getElementById("formArea");
 let selectedTicket = null;
 
 async function carregarBilhetes() {
-  const { data, error } = await db.from("compras").select("bilhete");
-
-  if (error) {
-    alert("Erro ao carregar bilhetes");
-    return;
-  }
-
+  const { data = [] } = await db.from("compras").select("bilhete");
   const vendidos = data.map(d => d.bilhete);
+
   grid.innerHTML = "";
 
   for (let i = 1; i <= TOTAL; i++) {
-    const d = document.createElement("div");
-    d.className = "ticket";
-    d.textContent = i;
+    const div = document.createElement("div");
+    div.className = "ticket";
+    div.textContent = i;
 
     if (vendidos.includes(i)) {
-      d.classList.add("sold");
+      div.classList.add("sold");
     } else {
-      d.onclick = () => abrirFormulario(i);
+      div.onclick = () => abrirFormulario(i);
     }
 
-    grid.appendChild(d);
+    grid.appendChild(div);
   }
 
   soldCount.textContent = vendidos.length;
@@ -51,44 +46,50 @@ document.getElementById("confirmBtn").onclick = async () => {
   const nome = document.getElementById("nome").value.trim();
   const tel = document.getElementById("tel").value.trim();
   const email = document.getElementById("email").value.trim();
-  const nasc = document.getElementById("nasc").value;
+  const nasc = document.getElementById("nasc").value || null;
+  const cidade = document.getElementById("cidade").value || null;
+  const pais = document.getElementById("pais").value || null;
   const file = document.getElementById("comprovativo").files[0];
 
   if (!nome || !tel || !email || !file) {
-    alert("Preencha todos os campos e anexe o comprovativo.");
+    alert("Preencha os campos obrigatórios e anexe o comprovativo.");
     return;
   }
 
-  const path = `${selectedTicket}/${Date.now()}_${file.name}`;
-
-  const upload = await db.storage
+  // UPLOAD
+  const fileName = `${Date.now()}_${file.name}`;
+  const { error: uploadError } = await db
+    .storage
     .from("comprovativos")
-    .upload(path, file);
+    .upload(fileName, file);
 
-  if (upload.error) {
-    alert("Erro ao enviar comprovativo");
+  if (uploadError) {
+    console.error(uploadError);
+    alert("Erro no upload do comprovativo.");
     return;
   }
 
-  const { data: url } = db.storage
+  const { data: urlData } = db
+    .storage
     .from("comprovativos")
-    .getPublicUrl(path);
+    .getPublicUrl(fileName);
 
-  const insert = await db.from("compras").insert({
+  // INSERT FINAL
+  const { error } = await db.from("compras").insert({
     bilhete: selectedTicket,
     nome,
     telefone: tel,
     email,
     data_nascimento: nasc,
-    comprovativo_url: url.publicUrl
+    cidade,
+    pais,
+    status: "pendente",
+    comprovativo_url: urlData.publicUrl
   });
 
-  if (insert.error) {
-    if (insert.error.code === "23505") {
-      alert("Este bilhete já foi vendido. Escolha outro.");
-    } else {
-      alert("Erro ao registar compra.");
-    }
+  if (error) {
+    console.error(error);
+    alert("Erro ao registar compra.");
     return;
   }
 
