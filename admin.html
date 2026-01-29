@@ -3,37 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <title>Painel do Admin</title>
-  <link rel="stylesheet" href="./css/style.css">
-  <link rel="icon" href="./assets/logo_paroquia.png">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-  <header class="topo">
-    <div class="logos-topo">
-      <img src="./assets/logo_diocese.png" alt="Diocese de Santiago" class="logo-topo">
-      <img src="./assets/logo_paroquia.png" alt="Paróquia de Santa Catarina" class="logo-topo">
-    </div>
 
-    <h1>Painel do Admin</h1>
-    <p>Gestão da Rifa</p>
-  </header>
+<header class="topo">
+  <div class="logos">
+    <img src="assets/logo_diocese.png" class="logo">
+    <img src="assets/logo_paroquia.png" class="logo">
+  </div>
 
-  <main class="container">
-    <button class="btn-danger" onclick="limparCompras()">
-      🧹 Limpar Todas as Compras
-    </button>
+  <h1>Painel do Admin</h1>
+  <p>Gestão da Rifa</p>
+</header>
 
-    <p>Vendidos: <span id="vendidos">0</span></p>
+<main>
 
-    <div id="bilhetes" class="grid-bilhetes"></div>
+  <button id="limparCompras" class="btn-danger">
+    🧹 Limpar Todas as Compras
+  </button>
 
-    <section class="detalhes">
-      <h3>🎉 Vencedores</h3>
-      <button onclick="sortearVencedor()">🎲 Sortear Vencedor</button>
-      <div id="resultado-vencedor"></div>
-    </section>
-  </main>
+  <p><strong>Vendidos:</strong> <span id="vendidos">0</span></p>
 
-  <script src="./js/admin.js"></script>
+  <div id="bilhetes" class="grid"></div>
+
+  <section class="vencedores">
+    <h3>🎉 Vencedores</h3>
+    <button id="sortearVencedor">Sortear Vencedor</button>
+  </section>
+
+</main>
+
+<script src="js/admin.js"></script>
 </body>
 </html>
