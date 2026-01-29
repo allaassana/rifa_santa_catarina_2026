@@ -10,16 +10,19 @@
 <body>
 
 <header class="site-header">
+  <div class="logos-top">
+    <img src="assets/logo_diocese.png" alt="Diocese de Santiago de Cabo Verde">
+    <img src="assets/logo_paroquia.png" alt="Paróquia de Santa Catarina de Santiago">
+  </div>
+
   <h1>Rifa Santa Catarina 2025</h1>
   <p>Centro Pastoral Santa Ana & São Joaquim</p>
 </header>
 
 <main class="container">
 
-  <p>
-    <strong>Vendidos:</strong> <span id="soldCount">0</span> |
-    <strong>Disponíveis:</strong> <span id="availCount">120</span>
-  </p>
+  <p><strong>Vendidos:</strong> <span id="soldCount">0</span> |
+     <strong>Disponíveis:</strong> <span id="availCount">120</span></p>
 
   <div id="ticketGrid" class="grid"></div>
 
@@ -31,27 +34,30 @@
     <input id="tel" placeholder="Telefone *">
     <input id="email" type="email" placeholder="Email *">
     <input id="nasc" type="date">
-    <input id="cidade" placeholder="Cidade">
-    <input id="pais" placeholder="País">
-
     <input id="comprovativo" type="file" accept="image/*,application/pdf">
 
     <button id="confirmBtn">Confirmar Compra</button>
     <button id="cancelBtn">Cancelar</button>
   </section>
 
-  <!-- PREÇO -->
-  <div class="price-box">
-    <h3>💶 Valor do Bilhete</h3>
+  <!-- VALOR DO BILHETE -->
+  <div class="ticket-price-box">
+    <strong>💶 Valor do Bilhete</strong>
     <div class="price">20 € / 2.200 CVE</div>
-    <p>Pagamento via transferência bancária</p>
+    <small>Pagamento via transferência bancária</small>
   </div>
 
   <!-- DADOS BANCÁRIOS -->
   <section>
     <h3>💳 Dados Bancários</h3>
-    <p><strong>BCA</strong><br>IBAN: CV64 0003 0000 02544214 101 76</p>
-    <p><strong>CECV</strong><br>IBAN: CV64 0002 0000 03844137 102 02</p>
+
+    <p><strong>BCA</strong><br>
+      IBAN: CV64 0003 0000 02544214 101 76
+    </p>
+
+    <p><strong>CECV</strong><br>
+      IBAN: CV64 0002 0000 03844137 102 02
+    </p>
 
     <button onclick="window.open('https://drive.google.com/file/d/1TeVBGckN8YbeV2g_-cvc-qTAL_SoVhso/view')">
       Ver Regulamento
@@ -70,12 +76,10 @@
 <div id="modal" style="display:none">
   <div class="box">
     <h3>✅ Compra Confirmada</h3>
-    <p><b>Bilhete:</b> <span id="mBilhete"></span></p>
-    <p><b>Nome:</b> <span id="mNome"></span></p>
-    <p><b>Valor:</b> 20 € / 2.200 CVE</p>
+    <p>Bilhete: <span id="mBilhete"></span></p>
+    <p>Nome: <span id="mNome"></span></p>
 
-    <button id="downloadBtn">📄 Download Recibo</button>
-    <button id="whatsBtn">📲 Enviar por WhatsApp</button>
+    <button id="whatsBtn">Enviar por WhatsApp</button>
     <button onclick="fecharModal()">Fechar</button>
   </div>
 </div>
@@ -87,7 +91,7 @@
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
 </script>
-
 <script src="js/index.js"></script>
+
 </body>
 </html>
