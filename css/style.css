@@ -1,105 +1,140 @@
-:root{
-  --brand:#2c3e50;
-  --available:#2ecc71;
-  --sold:#7f8c8d;
-  --confirmed:#34495e;
-  --winner:gold
+/* ===== RESET BÁSICO ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-*{box-sizing:border-box}
-
-body{
-  font-family:Arial,Helvetica,sans-serif;
-  margin:0;
-  background:#f7f7f7;
-  color:#222
+/* ===== LAYOUT GERAL ===== */
+body {
+  background: #f4f6f8;
+  color: #333;
 }
 
-.site-header{
-  background:var(--brand);
-  color:#fff;
-  padding:18px;
-  text-align:center
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
 }
 
-.logo{
-  height:90px;
-  display:block;
-  margin:0 auto 8px
+/* ===== HEADER ===== */
+.site-header {
+  background: #2c3e50;
+  color: #fff;
+  padding: 25px 15px;
+  text-align: center;
 }
 
-.container{
-  max-width:1200px;
-  margin:18px auto;
-  padding:0 18px
+.site-header h1 {
+  margin-bottom: 5px;
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(15,1fr);
-  gap:10px;
-  margin-top:18px
+/* ===== GRID DE BILHETES ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+  gap: 10px;
+  margin: 20px 0;
 }
 
-/* 🔹 BASE */
-.ticket{
-  padding:10px;
-  text-align:center;
-  border-radius:6px;
-  color:#fff;
-  font-weight:bold;
-  cursor:pointer;
-  background:var(--available);
+.ticket {
+  background: #6bcf7c;
+  color: #fff;
+  padding: 12px 0;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
-/* 🔒 VENDIDO */
-.ticket.sold{
-  background:var(--sold) !important;
-  cursor:pointer;
-  opacity:0.9;
+.ticket:hover {
+  background: #5bb96b;
 }
 
-/* ✅ CONFIRMADO */
-.ticket.confirmed{
-  background:var(--confirmed) !important;
+.ticket.sold {
+  background: #9e9e9e;
+  cursor: not-allowed;
 }
 
-/* 🏆 VENCEDOR */
-.ticket.winner{
-  background:var(--winner);
-  color:#000;
+/* ===== FORMULÁRIO ===== */
+#formArea {
+  margin-top: 20px;
 }
 
-button,.btn{
-  padding:10px 14px;
-  background:var(--brand);
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  cursor:pointer
+#formArea input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
-.btn-secondary{background:#7f8c8d}
-.btn-danger{background:#c0392b}
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.6);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:2000
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.modal .box{
-  background:#fff;
-  padding:18px;
-  border-radius:8px;
-  width:520px;
-  max-width:95%
+#confirmBtn {
+  background: #2c3e50;
+  color: #fff;
 }
 
-@media (max-width:900px){
-  .grid{grid-template-columns:repeat(8,1fr)}
+#cancelBtn {
+  background: #bbb;
+}
+
+/* ===== PREÇO DO BILHETE ===== */
+.price-box {
+  background: #ffffff;
+  border: 2px solid #2c3e50;
+  border-radius: 10px;
+  padding: 18px;
+  margin: 25px 0;
+  text-align: center;
+}
+
+.price-box h3 {
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.price-box .price {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #1e7f34;
+  margin: 8px 0;
+}
+
+/* ===== DADOS BANCÁRIOS ===== */
+section h3 {
+  margin: 15px 0 10px;
+}
+
+section p {
+  margin-bottom: 10px;
+}
+
+/* ===== MODAL ===== */
+#modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#modal .box {
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+}
+
+#modal button {
+  margin-top: 10px;
+  width: 100%;
 }
