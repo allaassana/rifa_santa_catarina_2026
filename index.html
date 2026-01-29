@@ -31,43 +31,33 @@
     <input id="tel" placeholder="Telefone *">
     <input id="email" type="email" placeholder="Email *">
     <input id="nasc" type="date">
+    <input id="cidade" placeholder="Cidade">
+    <input id="pais" placeholder="País">
+
     <input id="comprovativo" type="file" accept="image/*,application/pdf">
 
     <button id="confirmBtn">Confirmar Compra</button>
     <button id="cancelBtn">Cancelar</button>
   </section>
 
-  <hr>
-
-  <!-- PREÇO DO BILHETE -->
-  <section class="price-box">
-    <h3>🎟️ Preço do Bilhete</h3>
-    <p class="price">
-      <strong>20 € (EUR)</strong>
-    </p>
-    <p>Pagamento por transferência bancária</p>
-  </section>
+  <!-- PREÇO -->
+  <div class="price-box">
+    <h3>💶 Valor do Bilhete</h3>
+    <div class="price">20 € / 2.200 CVE</div>
+    <p>Pagamento via transferência bancária</p>
+  </div>
 
   <!-- DADOS BANCÁRIOS -->
   <section>
     <h3>💳 Dados Bancários</h3>
-
-    <p>
-      <strong>BCA</strong><br>
-      IBAN: CV64 0003 0000 02544214 101 76
-    </p>
-
-    <p>
-      <strong>CECV</strong><br>
-      IBAN: CV64 0002 0000 03844137 102 02
-    </p>
+    <p><strong>BCA</strong><br>IBAN: CV64 0003 0000 02544214 101 76</p>
+    <p><strong>CECV</strong><br>IBAN: CV64 0002 0000 03844137 102 02</p>
 
     <button onclick="window.open('https://drive.google.com/file/d/1TeVBGckN8YbeV2g_-cvc-qTAL_SoVhso/view')">
       Ver Regulamento
     </button>
   </section>
 
-  <!-- CONTACTOS -->
   <section>
     <h3>📩 Contactos</h3>
     <p>Esmeraldo Borges – miraborges10@hotmail.com</p>
@@ -80,10 +70,12 @@
 <div id="modal" style="display:none">
   <div class="box">
     <h3>✅ Compra Confirmada</h3>
-    <p>Bilhete: <span id="mBilhete"></span></p>
-    <p>Nome: <span id="mNome"></span></p>
+    <p><b>Bilhete:</b> <span id="mBilhete"></span></p>
+    <p><b>Nome:</b> <span id="mNome"></span></p>
+    <p><b>Valor:</b> 20 € / 2.200 CVE</p>
 
-    <button id="whatsBtn">Enviar por WhatsApp</button>
+    <button id="downloadBtn">📄 Download Recibo</button>
+    <button id="whatsBtn">📲 Enviar por WhatsApp</button>
     <button onclick="fecharModal()">Fechar</button>
   </div>
 </div>
@@ -97,6 +89,5 @@
 </script>
 
 <script src="js/index.js"></script>
-
 </body>
 </html>
