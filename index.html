@@ -1,69 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>Rifa Santa Catarina 2025</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
 
+  <!-- CSS (CORRIGIDO) -->
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- Favicon -->
-  <link rel="icon" href="assets/logo_paroquia.png">
 </head>
-
 <body>
 
-<header class="site-header">
+<header class="topo">
   <div class="logos">
-    <img src="assets/logo_diocese.png" alt="Diocese">
-    <img src="assets/logo_paroquia.png" alt="Paróquia">
+    <img src="assets/logo_diocese.png" alt="Diocese" class="logo">
+    <img src="assets/logo_paroquia.png" alt="Paróquia" class="logo">
   </div>
 
   <h1>Rifa Santa Catarina 2025</h1>
   <p>Centro Pastoral Santa Ana & São Joaquim</p>
 </header>
 
-<main class="container">
+<main>
 
-  <p><strong>Vendidos:</strong> <span id="soldCount">0</span> |
-     <strong>Disponíveis:</strong> <span id="availCount">120</span></p>
+  <p><strong>Vendidos:</strong> <span id="vendidos">0</span> | 
+     <strong>Disponíveis:</strong> <span id="disponiveis">120</span></p>
 
-  <div id="ticketGrid" class="grid"></div>
+  <!-- GRELHA DOS BILHETES -->
+  <div id="bilhetes" class="grid"></div>
 
-  <!-- FORM -->
-  <section id="formArea" style="display:none">
-    <h3>Bilhete Nº <span id="ticketNumber"></span></h3>
-
-    <input id="nome" placeholder="Nome *">
-    <input id="telefone" placeholder="Telefone / WhatsApp *">
-    <input id="email" type="email" placeholder="Email *">
-    <input id="nasc" type="date">
-    <input id="cidade" placeholder="Cidade">
-    <input id="pais" placeholder="País">
-    <input id="comprovativo" type="file" accept="image/*,application/pdf">
-
-    <button id="confirmBtn">Confirmar Compra</button>
-    <button id="cancelBtn">Cancelar</button>
-  </section>
-
-  <!-- VALOR -->
-  <div class="price-box">
-    💳 <strong>Valor do Bilhete</strong><br>
-    <span>20 € / 2.200 CVE</span><br>
+  <!-- CAIXA DE VALOR -->
+  <div class="valor-bilhete">
+    <strong>💶 Valor do Bilhete</strong>
+    <div class="preco">20 € / 2.200 CVE</div>
     <small>Pagamento via transferência bancária</small>
   </div>
 
-  <section>
-    <h3>📌 Dados Bancários</h3>
-    <p><strong>BCA</strong><br>IBAN: CV64 0003 0000 02544214 101 76</p>
-    <p><strong>CECV</strong><br>IBAN: CV64 0002 0000 03844137 102 02</p>
+  <!-- DADOS BANCÁRIOS -->
+  <section class="bancos">
+    <h3>🏦 Dados Bancários</h3>
 
-    <button onclick="window.open('https://drive.google.com/file/d/1TeVBGckN8YbeV2g_-cvc-qTAL_SoVhso/view')">
+    <p><strong>BCA</strong><br>
+      IBAN: CV64 0003 0000 02544214 101 76
+    </p>
+
+    <p><strong>CECV</strong><br>
+      IBAN: CV64 0002 0000 03844137 102 02
+    </p>
+
+    <button onclick="window.open('regulamento.pdf','_blank')">
       Ver Regulamento
     </button>
   </section>
 
-  <section>
+  <section class="contactos">
     <h3>📞 Contactos</h3>
     <p>Esmeraldo Borges – miraborges10@hotmail.com</p>
     <p>Ana Maria Carvalho – dinaleia@hotmail.com</p>
@@ -71,25 +60,7 @@
 
 </main>
 
-<!-- MODAL -->
-<div id="modal" style="display:none">
-  <div class="box">
-    <h3>✅ Compra Confirmada</h3>
-    <p>Bilhete: <span id="mBilhete"></span></p>
-    <p>Nome: <span id="mNome"></span></p>
-
-    <button id="whatsBtn">Enviar WhatsApp</button>
-    <button onclick="fecharModal()">Fechar</button>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  window.db = supabase.createClient(
-    "https://ydyuxumwqnuhomahaxet.supabase.co",
-    "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
-  );
-</script>
+<!-- JS (NO FIM, CORRETO) -->
 <script src="js/index.js"></script>
 
 </body>
