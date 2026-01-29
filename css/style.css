@@ -1,112 +1,84 @@
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
-  background: #f6f7f9;
-  color: #222;
+  background: #f4f6f8;
+  margin: 0;
 }
 
-.site-header {
-  background: #2c3e50;
-  color: #fff;
+.topo {
+  background: #2f4054;
+  color: white;
   text-align: center;
-  padding: 15px 10px;
+  padding: 15px;
 }
 
-.logos-top {
+.logos-topo {
   display: flex;
   justify-content: center;
   gap: 20px;
   margin-bottom: 10px;
 }
 
-.logos-top img {
+.logo-topo {
   height: 60px;
   object-fit: contain;
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 900px;
   margin: auto;
   padding: 20px;
 }
 
-.grid {
+.grid-bilhetes {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
   gap: 8px;
   margin: 20px 0;
 }
 
-.ticket {
-  background: #6bcf7a;
-  color: #fff;
-  text-align: center;
-  padding: 10px 0;
+.grid-bilhetes button {
+  padding: 8px;
+  border: none;
   border-radius: 6px;
+  background: #6bcf7a;
+  color: white;
   cursor: pointer;
-  font-weight: bold;
 }
 
-.ticket.sold {
-  background: #bbb;
+.grid-bilhetes button.vendido {
+  background: #bdbdbd;
   cursor: not-allowed;
 }
 
-.ticket-price-box {
-  border: 2px solid #2c3e50;
+.valor-bilhete-box {
+  border: 2px solid #2f4054;
   border-radius: 8px;
   padding: 10px 14px;
-  margin: 20px 0;
   display: inline-block;
-  text-align: left;
-  background: #fff;
+  margin: 15px 0;
+  background: white;
 }
 
-.ticket-price-box .price {
-  font-size: 20px;
+.valor-bilhete-box .valor {
+  font-size: 18px;
   font-weight: bold;
   color: #2e7d32;
-  margin: 4px 0;
+}
+
+.dados-bancarios,
+.contactos {
+  margin-top: 20px;
 }
 
 button {
-  background: #2c3e50;
-  color: #fff;
+  background: #2f4054;
+  color: white;
+  padding: 8px 12px;
   border: none;
-  padding: 8px 14px;
   border-radius: 6px;
   cursor: pointer;
 }
 
-button:hover {
-  opacity: 0.9;
-}
-
-input {
-  display: block;
-  margin: 6px 0;
-  padding: 8px;
-  width: 100%;
-  max-width: 350px;
-}
-
-#modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-}
-
-#modal .box {
-  background: #fff;
-  padding: 20px;
-  max-width: 300px;
-  margin: 15% auto;
-  border-radius: 8px;
-  text-align: center;
-}
-
-@media (max-width: 600px) {
-  .logos-top img {
-    height: 45px;
-  }
+.btn-danger {
+  background: #c0392b;
 }
