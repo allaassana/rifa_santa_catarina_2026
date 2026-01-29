@@ -1,22 +1,29 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const btnConfirmar = document.getElementById("confirmarCompra");
-  const btnCancelar = document.getElementById("cancelarCompra");
+  const grid = document.getElementById("numeros");
+  if (!grid) return;
 
-  if (btnConfirmar) {
-    btnConfirmar.addEventListener("click", confirmarCompra);
+  const TOTAL = 120;
+
+  for (let i = 1; i <= TOTAL; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    btn.className = "numero";
+
+    btn.addEventListener("click", () => {
+      selecionarBilhete(i);
+    });
+
+    grid.appendChild(btn);
   }
-
-  if (btnCancelar) {
-    btnCancelar.addEventListener("click", cancelarCompra);
-  }
-
 });
 
-function confirmarCompra() {
-  // lógica que já tinhas
-}
+function selecionarBilhete(numero) {
+  const form = document.getElementById("formCompra");
+  if (!form) return;
 
-function cancelarCompra() {
-  // lógica que já tinhas
+  document.getElementById("bilheteSelecionado").textContent =
+    `Bilhete Nº ${numero}`;
+
+  form.style.display = "block";
 }
