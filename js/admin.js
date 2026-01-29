@@ -1,22 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const btnLimpar = document.getElementById("limparCompras");
-  const btnSortear = document.getElementById("sortearVencedor");
-
-  if (btnLimpar) {
-    btnLimpar.addEventListener("click", limparTodasAsCompras);
+  const limparBtn = document.getElementById("limparCompras");
+  if (limparBtn) {
+    limparBtn.addEventListener("click", () => {
+      if (confirm("Tem a certeza que quer apagar todas as compras?")) {
+        limparCompras();
+      }
+    });
   }
 
-  if (btnSortear) {
-    btnSortear.addEventListener("click", sortearVencedor);
+  const sortearBtn = document.getElementById("sortearVencedor");
+  if (sortearBtn) {
+    sortearBtn.addEventListener("click", sortear);
   }
-
 });
 
-function limparTodasAsCompras() {
-  // lógica existente
+function limparCompras() {
+  alert("Compras limpas (simulação)");
 }
 
-function sortearVencedor() {
-  // lógica existente
+function sortear() {
+  alert("Vencedor sorteado 🎉");
 }
