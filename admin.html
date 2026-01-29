@@ -1,55 +1,39 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="utf-8">
-  <title>Admin - Rifa Santa Catarina</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-
-  <!-- FAVICON -->
-  <link rel="icon" type="image/png" href="assets/logo.png">
-
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <title>Painel do Admin</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="icon" href="./assets/logo_paroquia.png">
 </head>
 
 <body>
+  <header class="topo">
+    <div class="logos-topo">
+      <img src="./assets/logo_diocese.png" alt="Diocese de Santiago" class="logo-topo">
+      <img src="./assets/logo_paroquia.png" alt="Paróquia de Santa Catarina" class="logo-topo">
+    </div>
 
-<script>
-  const ADMIN_PASSWORD = "admin2025";
-  if (!sessionStorage.getItem("admin")) {
-    const p = prompt("Senha de admin:");
-    if (p !== ADMIN_PASSWORD) location.href = "index.html";
-    sessionStorage.setItem("admin", "ok");
-  }
-</script>
+    <h1>Painel do Admin</h1>
+    <p>Gestão da Rifa</p>
+  </header>
 
-<header class="site-header">
-  <h1>Painel do Admin</h1>
-  <p>Gestão da Rifa</p>
-</header>
+  <main class="container">
+    <button class="btn-danger" onclick="limparCompras()">
+      🧹 Limpar Todas as Compras
+    </button>
 
-<main class="container">
-  <button onclick="limparTudo()">🧹 Limpar Todas as Compras</button>
-  <div>Vendidos: <span id="soldCount">0</span></div>
+    <p>Vendidos: <span id="vendidos">0</span></p>
 
-  <div id="grid" class="grid"></div>
+    <div id="bilhetes" class="grid-bilhetes"></div>
 
-  <h3>Detalhes</h3>
-  <div id="detailBox"></div>
+    <section class="detalhes">
+      <h3>🎉 Vencedores</h3>
+      <button onclick="sortearVencedor()">🎲 Sortear Vencedor</button>
+      <div id="resultado-vencedor"></div>
+    </section>
+  </main>
 
-  <h3>🏆 Vencedores</h3>
-  <ul id="winnersList"></ul>
-
-  <button id="drawWinner">🎉 Sortear Vencedor</button>
-</main>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  window.db = supabase.createClient(
-    "https://ydyuxumwqnuhomahaxet.supabase.co",
-    "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
-  );
-</script>
-
-<script src="js/admin.js"></script>
+  <script src="./js/admin.js"></script>
 </body>
 </html>
