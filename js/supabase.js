@@ -1,9 +1,10 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://SEU_PROJECT_ID.supabase.co";
+  const SUPABASE_ANON_KEY = "SUA_ANON_PUBLIC_KEY";
 
-export const SUPABASE_URL = "https://TEU_PROJECT_ID.supabase.co";
-export const SUPABASE_ANON_KEY = "TEU_ANON_KEY";
-
-export const supabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+  const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+</script>
