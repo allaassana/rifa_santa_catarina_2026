@@ -8,30 +8,22 @@
 <body>
 
 <header class="topo">
-  <div class="logos">
-    <img src="assets/logo_diocese.png" class="logo">
-    <img src="assets/logo_paroquia.png" class="logo">
-  </div>
-
   <h1>Painel do Admin</h1>
   <p>Gestão da Rifa</p>
 </header>
 
 <main class="container">
 
-  <button class="btn-danger" id="limparCompras">
-    🧹 Limpar Todas as Compras
-  </button>
+  <button id="limparCompras" class="btn-danger">🧹 Limpar Todas as Compras</button>
+  <p><strong>Vendidos:</strong> <span id="vendidos">0</span></p>
 
-  <p><strong>Vendidos:</strong> 0</p>
+  <div id="listaCompras"></div>
 
-  <section class="vencedores">
-    <h3>🎉 Vencedores</h3>
-    <button id="sortearVencedor">Sortear Vencedor</button>
-  </section>
+  <button id="sortearVencedor">🎉 Sortear Vencedor</button>
 
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/admin.js"></script>
 </body>
 </html>
