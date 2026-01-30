@@ -1,3 +1,5 @@
+import { supabase } from "./supabase.js";
+
 document.addEventListener("DOMContentLoaded", carregarAdmin);
 
 async function carregarAdmin() {
@@ -16,12 +18,8 @@ async function carregarAdmin() {
   });
 }
 
-async function limparCompras() {
+document.getElementById("limpar").onclick = async () => {
   if (!confirm("Tens a certeza?")) return;
   await supabase.from("compras").delete().neq("id", 0);
   location.reload();
-}
-
-function sortear() {
-  alert("Sorteio manual (fase seguinte)");
-}
+};
