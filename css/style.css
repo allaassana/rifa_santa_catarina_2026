@@ -1,21 +1,20 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f4f6f8;
   margin: 0;
+  background: #f4f6f8;
 }
 
 .topo {
   background: #2f4054;
   color: white;
   text-align: center;
-  padding: 20px;
+  padding: 15px;
 }
 
 .logos {
   display: flex;
   justify-content: center;
   gap: 20px;
-  margin-bottom: 10px;
 }
 
 .logo {
@@ -28,57 +27,50 @@ body {
   padding: 20px;
 }
 
-.status {
-  margin-bottom: 15px;
-}
-
-/* GRELHA */
 .grid-bilhetes {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
   gap: 8px;
-  margin-bottom: 25px;
 }
 
 .grid-bilhetes button {
   padding: 8px;
-  border: none;
-  border-radius: 6px;
   background: #6bcf7a;
-  color: white;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-/* VALOR */
-.valor-bilhete-box {
-  border: 2px solid #2f4054;
-  border-radius: 8px;
-  padding: 12px;
-  background: white;
-  margin-bottom: 20px;
-}
-
-.valor {
-  font-size: 20px;
-  color: #2e7d32;
-  font-weight: bold;
-}
-
-/* BOTÕES */
-button {
-  background: #2f4054;
-  color: white;
-  padding: 8px 12px;
   border: none;
   border-radius: 6px;
-  cursor: pointer;
+  color: white;
+}
+
+.grid-bilhetes button.vendido {
+  background: #999;
+  cursor: not-allowed;
+}
+
+.form-box {
+  background: white;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+}
+
+.hidden {
+  display: none;
+}
+
+input {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 8px;
+}
+
+.valor-bilhete-box {
+  margin-top: 20px;
+  border: 2px solid #2f4054;
+  padding: 10px;
 }
 
 .btn-danger {
   background: #c0392b;
-}
-
-section {
-  margin-top: 20px;
+  color: white;
+  padding: 8px;
 }
