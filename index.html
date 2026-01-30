@@ -18,11 +18,14 @@
 
 <main class="container">
 
-  <p><strong>Vendidos:</strong> <span id="vendidos">0</span> |
-     <strong>Disponíveis:</strong> <span id="disponiveis">120</span></p>
+  <p>
+    <strong>Vendidos:</strong> <span id="vendidos">0</span> |
+    <strong>Disponíveis:</strong> <span id="disponiveis">120</span>
+  </p>
 
   <div id="bilhetes" class="grid"></div>
 
+  <!-- FORMULÁRIO -->
   <section id="formulario" class="form hidden">
     <h3 id="bilheteSelecionado"></h3>
 
@@ -32,11 +35,10 @@
     <input id="data_nascimento" type="date">
     <input id="cidade" placeholder="Cidade">
     <input id="pais" placeholder="País">
-
     <input id="comprovativo" type="file">
 
-    <button onclick="confirmarCompra()">Confirmar Compra</button>
-    <button onclick="cancelar()">Cancelar</button>
+    <button id="confirmar">Confirmar Compra</button>
+    <button id="cancelar">Cancelar</button>
   </section>
 
   <div class="valor-box">
@@ -46,9 +48,8 @@
 
 </main>
 
-<!-- ORDEM IMPORTA -->
-<script src="js/supabase.js"></script>
-<script src="js/index.js"></script>
+<!-- MODULES -->
+<script type="module" src="js/index.js"></script>
 
 </body>
 </html>
