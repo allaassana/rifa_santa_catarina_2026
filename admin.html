@@ -5,7 +5,6 @@
   <title>Painel do Admin</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
 <header class="topo">
@@ -15,18 +14,19 @@
 
 <main class="container">
 
-  <button id="limparCompras" class="btn-danger">
+  <button onclick="limparCompras()" class="btn-danger">
     Limpar Todas as Compras
   </button>
 
   <p><strong>Vendidos:</strong> <span id="vendidos">0</span></p>
 
-  <div id="bilhetes" class="grid-bilhetes"></div>
+  <div id="bilhetes" class="grid"></div>
 
-  <button id="sortearVencedor">Sortear Vencedor</button>
+  <button onclick="sortear()">Sortear Vencedor</button>
 
 </main>
 
-<script type="module" src="js/admin.js"></script>
+<script src="js/supabase.js"></script>
+<script src="js/admin.js"></script>
 </body>
 </html>
