@@ -3,16 +3,16 @@ document.addEventListener("DOMContentLoaded", carregarAdmin);
 async function carregarAdmin() {
   const { data } = await supabase.from("compras").select("*");
 
-  document.getElementById("vendidos").textContent = data.length;
+  document.getElementById("vendidos").innerText = data.length;
 
   const grid = document.getElementById("bilhetes");
   grid.innerHTML = "";
 
   data.forEach(c => {
-    const b = document.createElement("div");
-    b.textContent = c.bilhete;
-    b.className = "numero vendido";
-    grid.appendChild(b);
+    const el = document.createElement("div");
+    el.className = "numero vendido";
+    el.innerText = c.bilhete;
+    grid.appendChild(el);
   });
 }
 
@@ -22,19 +22,6 @@ async function limparCompras() {
   location.reload();
 }
 
-async function sortear() {
-  const { data } = await supabase.from("compras").select("*");
-
-  if (data.length === 0) {
-    alert("Nenhuma compra registada.");
-    return;
-  }
-
-  const vencedor = data[Math.floor(Math.random() * data.length)];
-
-  alert(
-    `🎉 Vencedor sorteado!\n\n` +
-    `Nome: ${vencedor.nome}\n` +
-    `Bilhete Nº: ${vencedor.bilhete}`
-  );
+function sortearVencedor() {
+  alert("Sorteio será feito aqui (fase seguinte)");
 }
