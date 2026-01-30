@@ -1,50 +1,69 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
-/* 🔐 SUPABASE – UMA ÚNICA VEZ */
-const supabaseUrl = "https://SEU_PROJETO.supabase.co";
-const supabaseKey = "SUA_PUBLIC_ANON_KEY";
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 const TOTAL = 120;
+let bilheteAtual = null;
 
-const grid = document.getElementById("bilhetes");
-const vendidosEl = document.getElementById("vendidos");
-const disponiveisEl = document.getElementById("disponiveis");
+document.addEventListener("DOMContentLoaded", carregarBilhetes);
 
 async function carregarBilhetes() {
-  const { data } = await supabase
+  const grid = document.getElementById("bilhetes");
+  grid.innerHTML = "";
+
+  const { data: vendidos } = await supabase
     .from("compras")
     .select("bilhete");
 
-  const vendidos = data ? data.map(b => b.bilhete) : [];
-
-  grid.innerHTML = "";
+  const ocupados = vendidos.map(v => v.bilhete);
 
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
+    btn.className = "numero";
 
-    if (vendidos.includes(i)) {
+    if (ocupados.includes(i)) {
       btn.classList.add("vendido");
       btn.disabled = true;
     } else {
-      btn.onclick = () => iniciarCompra(i);
+      btn.onclick = () => selecionarBilhete(i);
     }
 
     grid.appendChild(btn);
   }
 
-  vendidosEl.textContent = vendidos.length;
-  disponiveisEl.textContent = TOTAL - vendidos.length;
+  document.getElementById("vendidos").textContent = ocupados.length;
+  document.getElementById("disponiveis").textContent = TOTAL - ocupados.length;
 }
 
-function iniciarCompra(numero) {
-  alert(
-    `Bilhete Nº ${numero}\n\n` +
-    `Preenche o formulário e envia o comprovativo.\n` +
-    `Este número ficará reservado após submissão.`
-  );
-  // aqui entra o formulário (próximo passo)
+function selecionarBilhete(n) {
+  bilheteAtual = n;
+  document.getElementById("bilheteSelecionado").textContent =
+    `Bilhete Nº ${n}`;
+  document.getElementById("formulario").classList.remove("hidden");
 }
 
-carregarBilhetes();
+function cancelar() {
+  document.getElementById("formulario").classList.add("hidden");
+}
+
+async function confirmarCompra() {
+  const nome = document.getElementById("nome").value;
+  const telefone = document.getElementById("telefone").value;
+  const email = document.getElementById("email").value;
+
+  if (!nome || !telefone || !email) {
+    alert("Preenche os campos obrigatórios");
+    return;
+  }
+
+  await supabase.from("compras").insert([{
+    bilhete: bilheteAtual,
+    nome,
+    telefone,
+    email,
+    data_nascimento: document.getElementById("data_nascimento").value,
+    cidade: document.getElementById("cidade").value,
+    pais: document.getElementById("pais").value,
+    status: "pendente"
+  }]);
+
+  alert("Compra registada. Envie o comprovativo.");
+  location.reload();
+}
