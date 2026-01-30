@@ -1,176 +1,79 @@
-const db = window.db;
 const TOTAL = 120;
+let bilheteAtual = null;
 
-const grid = document.getElementById("ticketGrid");
-const soldCount = document.getElementById("soldCount");
-const availCount = document.getElementById("availCount");
-const formArea = document.getElementById("formArea");
+document.addEventListener("DOMContentLoaded", () => {
+  carregarBilhetes();
 
-let selectedTicket = null;
+  document.getElementById("confirmar").onclick = confirmarCompra;
+  document.getElementById("cancelar").onclick = cancelar;
+});
 
-// =====================
-// CARREGAR BILHETES
-// =====================
 async function carregarBilhetes() {
-  const { data = [] } = await db.from("compras").select("bilhete");
-
-  const vendidos = data.map(x => x.bilhete);
-
+  const grid = document.getElementById("bilhetes");
   grid.innerHTML = "";
 
-  for (let i = 1; i <= TOTAL; i++) {
-    const d = document.createElement("div");
-    d.className = "ticket";
-    d.textContent = i;
+  const { data, error } = await supabase
+    .from("compras")
+    .select("bilhete");
 
-    if (vendidos.includes(i)) {
-      d.classList.add("sold");
+  const ocupados = data ? data.map(b => b.bilhete) : [];
+
+  for (let i = 1; i <= TOTAL; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    btn.className = "numero";
+
+    if (ocupados.includes(i)) {
+      btn.classList.add("vendido");
+      btn.disabled = true;
     } else {
-      d.onclick = () => abrirFormulario(i);
+      btn.onclick = () => selecionarBilhete(i);
     }
 
-    grid.appendChild(d);
+    grid.appendChild(btn);
   }
 
-  soldCount.textContent = vendidos.length;
-  availCount.textContent = TOTAL - vendidos.length;
+  document.getElementById("vendidos").textContent = ocupados.length;
+  document.getElementById("disponiveis").textContent = TOTAL - ocupados.length;
 }
 
-function abrirFormulario(n) {
-  selectedTicket = n;
-  document.getElementById("ticketNumber").textContent = n;
-  formArea.style.display = "block";
+function selecionarBilhete(n) {
+  bilheteAtual = n;
+  document.getElementById("bilheteSelecionado").textContent =
+    `Bilhete Nº ${n}`;
+  document.getElementById("formulario").classList.remove("hidden");
 }
 
-document.getElementById("cancelBtn").onclick = () => {
-  formArea.style.display = "none";
-};
+function cancelar() {
+  document.getElementById("formulario").classList.add("hidden");
+}
 
-// =====================
-// CONFIRMAR COMPRA
-// =====================
-document.getElementById("confirmBtn").onclick = async () => {
-  const nome = document.getElementById("nome").value.trim();
-  const tel = document.getElementById("tel").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const nasc = document.getElementById("nasc").value;
-  const cidade = document.getElementById("cidade").value.trim();
-  const pais = document.getElementById("pais").value.trim();
-  const file = document.getElementById("comprovativo").files[0];
+async function confirmarCompra() {
+  const nome = document.getElementById("nome").value;
+  const telefone = document.getElementById("telefone").value;
+  const email = document.getElementById("email").value;
 
-  if (!nome || !tel || !email || !file) {
-    alert("Preencha todos os campos obrigatórios e anexe o comprovativo.");
+  if (!nome || !telefone || !email) {
+    alert("Preenche os campos obrigatórios");
     return;
   }
 
-  // =====================
-  // UPLOAD DO COMPROVATIVO
-  // =====================
-  const fileName = `${selectedTicket}_${Date.now()}_${file.name}`;
-
-  const { error: upErr } = await db.storage
-    .from("comprovativos")
-    .upload(fileName, file);
-
-  if (upErr) {
-    alert("Erro no upload do comprovativo.");
-    return;
-  }
-
-  const { data: urlData } = db.storage
-    .from("comprovativos")
-    .getPublicUrl(fileName);
-
-  // =====================
-  // INSERIR COMPRA
-  // =====================
-  const { error } = await db.from("compras").insert({
-    bilhete: selectedTicket,
+  const { error } = await supabase.from("compras").insert([{
+    bilhete: bilheteAtual,
     nome,
-    telefone: tel,
+    telefone,
     email,
-    data_nascimento: nasc || null,
-    cidade: cidade || null,
-    pais: pais || null,
-    comprovativo_url: urlData.publicUrl,
-    status: "pendente"
-  });
+    data_nascimento: document.getElementById("data_nascimento").value,
+    cidade: document.getElementById("cidade").value,
+    pais: document.getElementById("pais").value,
+    status: "confirmado"
+  }]);
 
   if (error) {
-    alert("Este bilhete já foi vendido. Escolha outro.");
+    alert("Erro ao registar compra");
     return;
   }
 
-  // =====================
-  // MODAL
-  // =====================
-  document.getElementById("mBilhete").textContent = selectedTicket;
-  document.getElementById("mNome").textContent = nome;
-
-  document.getElementById("whatsBtn").onclick = () => {
-    window.open(
-      `https://wa.me/238${tel}?text=Olá ${nome}, a sua compra do bilhete nº ${selectedTicket} foi registada com sucesso.`,
-      "_blank"
-    );
-  };
-
-  document.getElementById("reciboBtn").onclick = () => {
-    gerarRecibo({
-      bilhete: selectedTicket,
-      nome,
-      telefone: tel,
-      email,
-      nascimento: nasc,
-      cidade,
-      pais
-    });
-  };
-
-  document.getElementById("modal").style.display = "block";
-  formArea.style.display = "none";
-
-  carregarBilhetes();
-};
-
-// =====================
-// RECIBO (DOWNLOAD)
-// =====================
-function gerarRecibo(d) {
-  const conteudo = `
-RIFA SANTA CATARINA 2025
-Centro Pastoral Santa Ana & São Joaquim
--------------------------------------
-
-RECIBO DE COMPRA
-
-Bilhete Nº: ${d.bilhete}
-Nome: ${d.nome}
-Telefone: ${d.telefone}
-Email: ${d.email}
-Data de Nascimento: ${d.nascimento || "-"}
-Cidade: ${d.cidade || "-"}
-País: ${d.pais || "-"}
-
-Data da Compra: ${new Date().toLocaleDateString("pt-PT")}
-
-Pagamento sujeito à validação do comprovativo.
-
-Obrigado pela sua participação!
-`;
-
-  const blob = new Blob([conteudo], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `recibo_bilhete_${d.bilhete}.txt`;
-  a.click();
-
-  URL.revokeObjectURL(url);
+  alert("Compra registada com sucesso!");
+  location.reload();
 }
-
-function fecharModal() {
-  document.getElementById("modal").style.display = "none";
-}
-
-carregarBilhetes();
