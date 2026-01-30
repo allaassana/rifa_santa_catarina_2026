@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+
   const grid = document.getElementById("bilhetes");
   const vendidosEl = document.getElementById("vendidos");
   const disponiveisEl = document.getElementById("disponiveis");
@@ -13,7 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.textContent = i;
 
     btn.addEventListener("click", () => {
-      alert(`Bilhete Nº ${i}\n\nApós o pagamento, envie o comprovativo.`);
+      alert(
+        `Bilhete Nº ${i}\n\n` +
+        `Após o pagamento, envie o comprovativo.`
+      );
     });
 
     grid.appendChild(btn);
