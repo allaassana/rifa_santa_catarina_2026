@@ -1,9 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const grid = document.getElementById("numeros");
-  if (!grid) return;
+  const grid = document.getElementById("bilhetes");
+  const vendidosEl = document.getElementById("vendidos");
+  const disponiveisEl = document.getElementById("disponiveis");
+
+  if (!grid || !vendidosEl || !disponiveisEl) {
+    console.error("Elementos principais não encontrados no HTML.");
+    return;
+  }
 
   const TOTAL = 120;
+  let vendidos = 0;
+
+  grid.innerHTML = "";
 
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.createElement("button");
@@ -11,19 +20,12 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.className = "numero";
 
     btn.addEventListener("click", () => {
-      selecionarBilhete(i);
+      alert(`Bilhete Nº ${i}\n\nApós o pagamento, envie o comprovativo.`);
     });
 
     grid.appendChild(btn);
   }
+
+  vendidosEl.textContent = vendidos;
+  disponiveisEl.textContent = TOTAL - vendidos;
 });
-
-function selecionarBilhete(numero) {
-  const form = document.getElementById("formCompra");
-  if (!form) return;
-
-  document.getElementById("bilheteSelecionado").textContent =
-    `Bilhete Nº ${numero}`;
-
-  form.style.display = "block";
-}
