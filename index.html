@@ -5,6 +5,7 @@
   <title>Rifa Santa Catarina 2025</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
 <header class="topo">
@@ -18,27 +19,12 @@
 
 <main class="container">
 
-  <p><strong>Vendidos:</strong> <span id="vendidos">0</span> |
-     <strong>Disponíveis:</strong> <span id="disponiveis">120</span></p>
+  <p>
+    <strong>Vendidos:</strong> <span id="vendidos">0</span> |
+    <strong>Disponíveis:</strong> <span id="disponiveis">120</span>
+  </p>
 
   <div id="bilhetes" class="grid-bilhetes"></div>
-
-  <!-- FORMULÁRIO -->
-  <div id="formCompra" class="form-box hidden">
-    <h3 id="bilheteSelecionado"></h3>
-
-    <input id="nome" placeholder="Nome *">
-    <input id="telefone" placeholder="Telefone (WhatsApp) *">
-    <input id="email" placeholder="Email *">
-    <input id="data_nascimento" type="date">
-    <input id="cidade" placeholder="Cidade">
-    <input id="pais" placeholder="País">
-
-    <input id="comprovativo" type="file">
-
-    <button id="confirmar">Confirmar Compra</button>
-    <button onclick="fecharFormulario()">Cancelar</button>
-  </div>
 
   <div class="valor-bilhete-box">
     <div class="valor">20 € / 2.200 CVE</div>
@@ -47,7 +33,7 @@
 
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/index.js"></script>
+<!-- SCRIPT COMO MODULE -->
+<script type="module" src="js/index.js"></script>
 </body>
 </html>
