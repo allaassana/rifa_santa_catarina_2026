@@ -3,23 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Painel do Admin</title>
-
-  <!-- CSS -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header class="topo">
-  <div class="logos">
-    <img src="assets/logo_diocese.png" class="logo">
-    <img src="assets/logo_paroquia.png" class="logo">
+  <div class="logos-topo">
+    <img src="assets/logo_diocese.png" class="logo-topo">
+    <img src="assets/logo_paroquia.png" class="logo-topo">
   </div>
 
   <h1>Painel do Admin</h1>
   <p>Gestão da Rifa</p>
 </header>
 
-<main>
+<main class="container">
 
   <button id="limparCompras" class="btn-danger">
     🧹 Limpar Todas as Compras
@@ -27,7 +25,7 @@
 
   <p><strong>Vendidos:</strong> <span id="vendidos">0</span></p>
 
-  <div id="bilhetes" class="grid"></div>
+  <div id="bilhetes" class="grid-bilhetes"></div>
 
   <section class="vencedores">
     <h3>🎉 Vencedores</h3>
