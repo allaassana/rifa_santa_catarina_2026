@@ -1,13 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-
   const grid = document.getElementById("bilhetes");
   const vendidosEl = document.getElementById("vendidos");
   const disponiveisEl = document.getElementById("disponiveis");
-
-  if (!grid || !vendidosEl || !disponiveisEl) {
-    console.error("Elementos principais não encontrados no HTML.");
-    return;
-  }
 
   const TOTAL = 120;
   let vendidos = 0;
@@ -17,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
-    btn.className = "numero";
 
     btn.addEventListener("click", () => {
       alert(`Bilhete Nº ${i}\n\nApós o pagamento, envie o comprovativo.`);
