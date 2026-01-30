@@ -1,38 +1,43 @@
-const SUPABASE_URL = "https://SEU_PROJETO.supabase.co";
-const SUPABASE_KEY = "SUA_ANON_KEY";
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-document.addEventListener("DOMContentLoaded", carregar);
+/* 🔐 SUPABASE – UMA ÚNICA VEZ */
+const supabaseUrl = "https://SEU_PROJETO.supabase.co";
+const supabaseKey = "SUA_PUBLIC_ANON_KEY";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-async function carregar() {
-  const { data } = await supabase.from("compras").select("*");
-  document.getElementById("vendidos").textContent = data.length;
+const TOTAL = 120;
+const grid = document.getElementById("bilhetes");
+const vendidosEl = document.getElementById("vendidos");
 
-  const lista = document.getElementById("listaCompras");
-  lista.innerHTML = data.map(c =>
-    `<p>Bilhete ${c.bilhete} – ${c.nome} (${c.status})</p>`
-  ).join("");
+async function carregarAdmin() {
+  const { data } = await supabase
+    .from("compras")
+    .select("bilhete");
+
+  const vendidos = data ? data.map(b => b.bilhete) : [];
+
+  grid.innerHTML = "";
+
+  for (let i = 1; i <= TOTAL; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    if (vendidos.includes(i)) {
+      btn.classList.add("vendido");
+    }
+    grid.appendChild(btn);
+  }
+
+  vendidosEl.textContent = vendidos.length;
 }
 
 document.getElementById("limparCompras").onclick = async () => {
   if (!confirm("Apagar todas as compras?")) return;
-  await supabase.from("compras").delete().neq("bilhete", 0);
-  carregar();
+  await supabase.from("compras").delete().neq("id", 0);
+  carregarAdmin();
 };
 
 document.getElementById("sortearVencedor").onclick = async () => {
-  const { data } = await supabase.from("compras").select("*");
-  if (!data.length) return alert("Sem compras");
-
-  const vencedor = data[Math.floor(Math.random() * data.length)];
-
-  await supabase.from("vencedores").insert({
-    bilhete: vencedor.bilhete,
-    nome: vencedor.nome,
-    telefone: vencedor.telefone,
-    email: vencedor.email,
-    data_sorteio: new Date()
-  });
-
-  alert(`🎉 Vencedor: Bilhete ${vencedor.bilhete}`);
+  alert("Lógica de sorteio entra aqui");
 };
+
+carregarAdmin();
