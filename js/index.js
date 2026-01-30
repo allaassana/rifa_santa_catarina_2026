@@ -7,8 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const TOTAL = 120;
   let vendidos = 0;
 
-  grid.innerHTML = "";
-
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
