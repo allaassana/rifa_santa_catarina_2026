@@ -1,20 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <title>Rifa Santa Catarina 2025</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="css/style.css">
-
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
 
-<header class="topo">
-  <div class="logos">
-    <img src="assets/logo_diocese.png" class="logo">
-    <img src="assets/logo_paroquia.png" class="logo">
-  </div>
+<header class="site-header">
   <h1>Rifa Santa Catarina 2025</h1>
   <p>Centro Pastoral Santa Ana & São Joaquim</p>
 </header>
@@ -22,36 +17,71 @@
 <main class="container">
 
   <p>
-    <strong>Vendidos:</strong> <span id="vendidos">0</span> |
-    <strong>Disponíveis:</strong> <span id="disponiveis">120</span>
+    <strong>Vendidos:</strong> <span id="soldCount">0</span> |
+    <strong>Disponíveis:</strong> <span id="availCount">120</span>
   </p>
 
-  <div id="bilhetes" class="grid"></div>
+  <div id="ticketGrid" class="grid"></div>
 
-  <!-- FORMULÁRIO -->
-  <section id="formulario" class="form hidden">
-    <h3 id="bilheteSelecionado"></h3>
+  <!-- FORM -->
+  <section id="formArea" style="display:none">
+    <h3>Bilhete Nº <span id="ticketNumber"></span></h3>
 
     <input id="nome" placeholder="Nome *">
-    <input id="telefone" placeholder="Telefone / WhatsApp *">
-    <input id="email" placeholder="Email *">
-    <input id="data_nascimento" type="date">
+    <input id="tel" placeholder="Telefone *">
+    <input id="email" type="email" placeholder="Email *">
+    <input id="nasc" type="date">
     <input id="cidade" placeholder="Cidade">
     <input id="pais" placeholder="País">
-    <input id="comprovativo" type="file">
 
-    <button onclick="confirmarCompra()">Confirmar Compra</button>
-    <button onclick="cancelar()">Cancelar</button>
+    <input id="comprovativo" type="file" accept="image/*,application/pdf">
+
+    <button id="confirmBtn">Confirmar Compra</button>
+    <button id="cancelBtn">Cancelar</button>
   </section>
 
-  <div class="valor-box">
-    <strong>20 € / 2.200 CVE</strong><br>
-    Pagamento via transferência bancária
-  </div>
+  <hr>
+
+  <section>
+    <h3>💳 Dados Bancários</h3>
+    <p><strong>BCA</strong><br>IBAN: CV64 0003 0000 02544214 101 76</p>
+    <p><strong>CECV</strong><br>IBAN: CV64 0002 0000 03844137 102 02</p>
+
+    <button onclick="window.open('https://drive.google.com/file/d/1TeVBGckN8YbeV2g_-cvc-qTAL_SoVhso/view')">
+      Ver Regulamento
+    </button>
+  </section>
+
+  <section>
+    <h3>📩 Contactos</h3>
+    <p>Esmeraldo Borges – miraborges10@hotmail.com</p>
+    <p>Ana Maria Carvalho – dinaleia@hotmail.com</p>
+  </section>
 
 </main>
 
-<script src="js/supabase.js"></script>
+<!-- MODAL -->
+<div id="modal" style="display:none">
+  <div class="box">
+    <h3>✅ Compra Confirmada</h3>
+    <p>Bilhete: <span id="mBilhete"></span></p>
+    <p>Nome: <span id="mNome"></span></p>
+
+    <button id="whatsBtn">Enviar por WhatsApp</button>
+    <button id="reciboBtn">📄 Download Recibo</button>
+    <button onclick="fecharModal()">Fechar</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  window.db = supabase.createClient(
+    "https://ydyuxumwqnuhomahaxet.supabase.co",
+    "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
+  );
+</script>
+
 <script src="js/index.js"></script>
+
 </body>
 </html>
