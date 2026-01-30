@@ -3,40 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <title>Rifa Santa Catarina 2025</title>
-
-  <!-- CSS (CORRIGIDO) -->
   <link rel="stylesheet" href="css/style.css">
-
 </head>
 <body>
 
 <header class="topo">
-  <div class="logos">
-    <img src="assets/logo_diocese.png" alt="Diocese" class="logo">
-    <img src="assets/logo_paroquia.png" alt="Paróquia" class="logo">
+  <div class="logos-topo">
+    <img src="assets/logo_diocese.png" alt="Diocese" class="logo-topo">
+    <img src="assets/logo_paroquia.png" alt="Paróquia" class="logo-topo">
   </div>
 
   <h1>Rifa Santa Catarina 2025</h1>
   <p>Centro Pastoral Santa Ana & São Joaquim</p>
 </header>
 
-<main>
+<main class="container">
 
-  <p><strong>Vendidos:</strong> <span id="vendidos">0</span> | 
-     <strong>Disponíveis:</strong> <span id="disponiveis">120</span></p>
+  <p>
+    <strong>Vendidos:</strong> <span id="vendidos">0</span> |
+    <strong>Disponíveis:</strong> <span id="disponiveis">120</span>
+  </p>
 
-  <!-- GRELHA DOS BILHETES -->
-  <div id="bilhetes" class="grid"></div>
+  <!-- GRELHA -->
+  <div id="bilhetes" class="grid-bilhetes"></div>
 
-  <!-- CAIXA DE VALOR -->
-  <div class="valor-bilhete">
-    <strong>💶 Valor do Bilhete</strong>
-    <div class="preco">20 € / 2.200 CVE</div>
+  <!-- VALOR -->
+  <div class="valor-bilhete-box">
+    <strong>💶 Valor do Bilhete</strong><br>
+    <span class="valor">20 € / 2.200 CVE</span><br>
     <small>Pagamento via transferência bancária</small>
   </div>
 
-  <!-- DADOS BANCÁRIOS -->
-  <section class="bancos">
+  <!-- BANCOS -->
+  <section class="dados-bancarios">
     <h3>🏦 Dados Bancários</h3>
 
     <p><strong>BCA</strong><br>
@@ -60,8 +59,6 @@
 
 </main>
 
-<!-- JS (NO FIM, CORRETO) -->
 <script src="js/index.js"></script>
-
 </body>
 </html>
