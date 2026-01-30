@@ -1,5 +1,3 @@
-import { supabase } from "./supabase.js";
-
 const TOTAL = 120;
 let bilheteAtual = null;
 
@@ -9,11 +7,11 @@ async function carregarBilhetes() {
   const grid = document.getElementById("bilhetes");
   grid.innerHTML = "";
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("compras")
     .select("bilhete");
 
-  const ocupados = data.map(d => d.bilhete);
+  const ocupados = data ? data.map(b => b.bilhete) : [];
 
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.createElement("button");
@@ -24,7 +22,7 @@ async function carregarBilhetes() {
       btn.classList.add("vendido");
       btn.disabled = true;
     } else {
-      btn.onclick = () => abrirFormulario(i);
+      btn.onclick = () => selecionarBilhete(i);
     }
 
     grid.appendChild(btn);
@@ -34,52 +32,35 @@ async function carregarBilhetes() {
   document.getElementById("disponiveis").textContent = TOTAL - ocupados.length;
 }
 
-function abrirFormulario(n) {
+function selecionarBilhete(n) {
   bilheteAtual = n;
   document.getElementById("bilheteSelecionado").textContent =
     `Bilhete Nº ${n}`;
   document.getElementById("formulario").classList.remove("hidden");
 }
 
-document.getElementById("cancelar").onclick = () => {
+function cancelar() {
   document.getElementById("formulario").classList.add("hidden");
-};
+}
 
-document.getElementById("confirmar").onclick = async () => {
-  const nome = nome.value;
-  const telefone = telefone.value;
-  const email = email.value;
-  const file = comprovativo.files[0];
+async function confirmarCompra() {
+  const nome = document.getElementById("nome").value;
+  const telefone = document.getElementById("telefone").value;
+  const email = document.getElementById("email").value;
 
-  if (!nome || !telefone || !email || !file) {
-    alert("Preenche todos os campos obrigatórios");
+  if (!nome || !telefone || !email) {
+    alert("Preenche os campos obrigatórios.");
     return;
   }
 
-  // Upload comprovativo
-  const filePath = `comprovativos/${Date.now()}-${file.name}`;
-  await supabase.storage
-    .from("comprovativos")
-    .upload(filePath, file);
-
-  const { data: url } = supabase
-    .storage
-    .from("comprovativos")
-    .getPublicUrl(filePath);
-
-  // Inserir compra
-  await supabase.from("compras").insert({
+  await supabase.from("compras").insert([{
     bilhete: bilheteAtual,
     nome,
     telefone,
     email,
-    data_nascimento: data_nascimento.value,
-    cidade: cidade.value,
-    pais: pais.value,
-    comprovativo_url: url.publicUrl,
-    status: "pendente"
-  });
+    status: "confirmado"
+  }]);
 
-  alert("Compra registada! Receberás confirmação via WhatsApp.");
+  alert("Compra registada com sucesso.");
   location.reload();
-};
+}
