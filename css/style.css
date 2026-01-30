@@ -1,76 +1,35 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f4f6f8;
+body { font-family: Arial; background:#f4f6f8; margin:0 }
+.topo { background:#2f4054; color:#fff; padding:20px; text-align:center }
+.logo { height:50px; margin:0 10px }
+.container { max-width:900px; margin:auto; padding:20px }
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(45px,1fr));
+  gap:8px;
 }
 
-.topo {
-  background: #2f4054;
-  color: white;
-  text-align: center;
-  padding: 15px;
+.numero {
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  background:#6bcf7a;
+  color:white;
+  cursor:pointer;
 }
 
-.logos {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
+.vendido { background:#aaa; cursor:not-allowed }
 
-.logo {
-  height: 60px;
-}
+.form { background:white; padding:15px; margin:15px 0 }
+.hidden { display:none }
 
-.container {
-  max-width: 1000px;
-  margin: auto;
-  padding: 20px;
-}
+input { width:100%; padding:8px; margin:5px 0 }
 
-.grid-bilhetes {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
-  gap: 8px;
-}
+button { padding:8px 12px; border:none; border-radius:6px; cursor:pointer }
+.btn-danger { background:#c0392b; color:white }
 
-.grid-bilhetes button {
-  padding: 8px;
-  background: #6bcf7a;
-  border: none;
-  border-radius: 6px;
-  color: white;
-}
-
-.grid-bilhetes button.vendido {
-  background: #999;
-  cursor: not-allowed;
-}
-
-.form-box {
-  background: white;
-  padding: 15px;
-  margin: 15px 0;
-  border-radius: 8px;
-}
-
-.hidden {
-  display: none;
-}
-
-input {
-  width: 100%;
-  margin-bottom: 8px;
-  padding: 8px;
-}
-
-.valor-bilhete-box {
-  margin-top: 20px;
-  border: 2px solid #2f4054;
-  padding: 10px;
-}
-
-.btn-danger {
-  background: #c0392b;
-  color: white;
-  padding: 8px;
+.valor-box {
+  border:2px solid #2f4054;
+  padding:10px;
+  margin-top:20px;
 }
