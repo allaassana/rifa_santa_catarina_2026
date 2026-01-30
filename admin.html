@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Painel do Admin</title>
   <link rel="stylesheet" href="css/style.css">
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -16,7 +15,7 @@
 
 <main class="container">
 
-  <button class="btn-danger" onclick="limparCompras()">
+  <button onclick="limparCompras()" class="btn-danger">
     Limpar Todas as Compras
   </button>
 
@@ -24,7 +23,7 @@
 
   <div id="bilhetes" class="grid"></div>
 
-  <button onclick="sortearVencedor()">Sortear Vencedor</button>
+  <button onclick="sortear()">Sortear Vencedor</button>
 
 </main>
 
