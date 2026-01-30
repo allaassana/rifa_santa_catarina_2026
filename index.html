@@ -9,57 +9,45 @@
 
 <header class="topo">
   <div class="logos">
-    <img src="assets/logo_diocese.png" alt="Diocese" class="logo">
-    <img src="assets/logo_paroquia.png" alt="Paróquia" class="logo">
+    <img src="assets/logo_diocese.png" class="logo">
+    <img src="assets/logo_paroquia.png" class="logo">
   </div>
-
   <h1>Rifa Santa Catarina 2025</h1>
   <p>Centro Pastoral Santa Ana & São Joaquim</p>
 </header>
 
 <main class="container">
 
-  <p class="status">
-    <strong>Vendidos:</strong> <span id="vendidos">0</span> |
-    <strong>Disponíveis:</strong> <span id="disponiveis">120</span>
-  </p>
+  <p><strong>Vendidos:</strong> <span id="vendidos">0</span> |
+     <strong>Disponíveis:</strong> <span id="disponiveis">120</span></p>
 
-  <!-- GRELHA -->
   <div id="bilhetes" class="grid-bilhetes"></div>
 
-  <!-- VALOR -->
+  <!-- FORMULÁRIO -->
+  <div id="formCompra" class="form-box hidden">
+    <h3 id="bilheteSelecionado"></h3>
+
+    <input id="nome" placeholder="Nome *">
+    <input id="telefone" placeholder="Telefone (WhatsApp) *">
+    <input id="email" placeholder="Email *">
+    <input id="data_nascimento" type="date">
+    <input id="cidade" placeholder="Cidade">
+    <input id="pais" placeholder="País">
+
+    <input id="comprovativo" type="file">
+
+    <button id="confirmar">Confirmar Compra</button>
+    <button onclick="fecharFormulario()">Cancelar</button>
+  </div>
+
   <div class="valor-bilhete-box">
-    <div>💶 Valor do Bilhete</div>
     <div class="valor">20 € / 2.200 CVE</div>
     <small>Pagamento via transferência bancária</small>
   </div>
 
-  <!-- BANCOS -->
-  <section class="dados-bancarios">
-    <h3>🏦 Dados Bancários</h3>
-
-    <p><strong>BCA</strong><br>
-      IBAN: CV64 0003 0000 02544214 101 76
-    </p>
-
-    <p><strong>CECV</strong><br>
-      IBAN: CV64 0002 0000 03844137 102 02
-    </p>
-
-    <button onclick="window.open('regulamento.pdf','_blank')">
-      Ver Regulamento
-    </button>
-  </section>
-
-  <!-- CONTACTOS -->
-  <section class="contactos">
-    <h3>📞 Contactos</h3>
-    <p>Esmeraldo Borges – miraborges10@hotmail.com</p>
-    <p>Ana Maria Carvalho – dinaleia@hotmail.com</p>
-  </section>
-
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/index.js"></script>
 </body>
 </html>
