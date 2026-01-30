@@ -11,7 +11,7 @@ async function carregarBilhetes() {
     .from("compras")
     .select("bilhete");
 
-  const ocupados = data ? data.map(b => b.bilhete) : [];
+  const ocupados = data ? data.map(d => d.bilhete) : [];
 
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.createElement("button");
@@ -34,8 +34,7 @@ async function carregarBilhetes() {
 
 function selecionarBilhete(n) {
   bilheteAtual = n;
-  document.getElementById("bilheteSelecionado").textContent =
-    `Bilhete Nº ${n}`;
+  document.getElementById("bilheteSelecionado").innerText = `Bilhete Nº ${n}`;
   document.getElementById("formulario").classList.remove("hidden");
 }
 
@@ -44,12 +43,12 @@ function cancelar() {
 }
 
 async function confirmarCompra() {
-  const nome = document.getElementById("nome").value;
-  const telefone = document.getElementById("telefone").value;
-  const email = document.getElementById("email").value;
+  const nome = nomeInput();
+  const telefone = telefoneInput();
+  const email = emailInput();
 
   if (!nome || !telefone || !email) {
-    alert("Preenche os campos obrigatórios.");
+    alert("Preenche os campos obrigatórios");
     return;
   }
 
@@ -58,9 +57,19 @@ async function confirmarCompra() {
     nome,
     telefone,
     email,
-    status: "confirmado"
+    data_nascimento: value("data_nascimento"),
+    cidade: value("cidade"),
+    pais: value("pais"),
+    status: "pendente"
   }]);
 
-  alert("Compra registada com sucesso.");
+  alert("Compra registada. Guarda este comprovativo.");
   location.reload();
 }
+
+function value(id) {
+  return document.getElementById(id).value;
+}
+function nomeInput(){return value("nome")}
+function telefoneInput(){return value("telefone")}
+function emailInput(){return value("email")}
