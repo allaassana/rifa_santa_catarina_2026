@@ -1,20 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const limparBtn = document.getElementById("limparCompras");
-  const sortearBtn = document.getElementById("sortearVencedor");
+  document.getElementById("limparCompras").addEventListener("click", () => {
+    alert("Compras limpas (simulação).");
+  });
 
-  if (limparBtn) {
-    limparBtn.addEventListener("click", () => {
-      if (confirm("Tem a certeza que quer apagar todas as compras?")) {
-        alert("Compras limpas (simulação)");
-      }
-    });
-  }
+  document.getElementById("sortearVencedor").addEventListener("click", () => {
+    alert("Vencedor sorteado 🎉 (simulação)");
+  });
 
-  if (sortearBtn) {
-    sortearBtn.addEventListener("click", () => {
-      const vencedor = Math.floor(Math.random() * 120) + 1;
-      alert(`🎉 Bilhete vencedor: Nº ${vencedor}`);
-    });
-  }
 });
