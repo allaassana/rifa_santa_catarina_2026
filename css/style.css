@@ -1,35 +1,73 @@
-body { font-family: Arial; background:#f4f6f8; margin:0 }
-.topo { background:#2f4054; color:#fff; padding:20px; text-align:center }
-.logo { height:50px; margin:0 10px }
-.container { max-width:900px; margin:auto; padding:20px }
+body {
+  font-family: Arial;
+  background: #f4f6f8;
+  margin: 0;
+}
+
+.topo {
+  background: #2f4054;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
 
 .grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(45px,1fr));
-  gap:8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+  gap: 8px;
+  margin: 15px 0;
 }
 
 .numero {
-  padding:10px;
-  border:none;
-  border-radius:6px;
-  background:#6bcf7a;
-  color:white;
-  cursor:pointer;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #6bcf7a;
+  color: white;
+  cursor: pointer;
 }
 
-.vendido { background:#aaa; cursor:not-allowed }
+.vendido {
+  background: #aaa;
+  cursor: not-allowed;
+}
 
-.form { background:white; padding:15px; margin:15px 0 }
-.hidden { display:none }
+.form {
+  background: white;
+  padding: 15px;
+  margin: 15px 0;
+}
 
-input { width:100%; padding:8px; margin:5px 0 }
+.hidden {
+  display: none;
+}
 
-button { padding:8px 12px; border:none; border-radius:6px; cursor:pointer }
-.btn-danger { background:#c0392b; color:white }
+input {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0;
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-danger {
+  background: #c0392b;
+  color: white;
+}
 
 .valor-box {
-  border:2px solid #2f4054;
-  padding:10px;
-  margin-top:20px;
+  border: 2px solid #2f4054;
+  padding: 12px;
+  margin-top: 20px;
 }
