@@ -1,5 +1,3 @@
-import { supabase } from "./supabase.js";
-
 document.addEventListener("DOMContentLoaded", carregarAdmin);
 
 async function carregarAdmin() {
@@ -18,8 +16,25 @@ async function carregarAdmin() {
   });
 }
 
-document.getElementById("limpar").onclick = async () => {
+async function limparCompras() {
   if (!confirm("Tens a certeza?")) return;
   await supabase.from("compras").delete().neq("id", 0);
   location.reload();
-};
+}
+
+async function sortear() {
+  const { data } = await supabase.from("compras").select("*");
+
+  if (data.length === 0) {
+    alert("Nenhuma compra registada.");
+    return;
+  }
+
+  const vencedor = data[Math.floor(Math.random() * data.length)];
+
+  alert(
+    `🎉 Vencedor sorteado!\n\n` +
+    `Nome: ${vencedor.nome}\n` +
+    `Bilhete Nº: ${vencedor.bilhete}`
+  );
+}
