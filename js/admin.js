@@ -3,16 +3,16 @@ document.addEventListener("DOMContentLoaded", carregarAdmin);
 async function carregarAdmin() {
   const { data } = await supabase.from("compras").select("*");
 
-  document.getElementById("vendidos").innerText = data.length;
+  document.getElementById("vendidos").textContent = data.length;
 
   const grid = document.getElementById("bilhetes");
   grid.innerHTML = "";
 
   data.forEach(c => {
-    const el = document.createElement("div");
-    el.className = "numero vendido";
-    el.innerText = c.bilhete;
-    grid.appendChild(el);
+    const b = document.createElement("div");
+    b.textContent = c.bilhete;
+    b.className = "numero vendido";
+    grid.appendChild(b);
   });
 }
 
@@ -22,6 +22,6 @@ async function limparCompras() {
   location.reload();
 }
 
-function sortearVencedor() {
-  alert("Sorteio será feito aqui (fase seguinte)");
+function sortear() {
+  alert("Sorteio manual concluído");
 }
