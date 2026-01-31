@@ -1,11 +1,13 @@
+// --- SUPABASE (DECLARADO UMA ÚNICA VEZ) ---
 const SUPABASE_URL = "https://ydyuxumwquhomahaxet.supabase.co";
-const SUPABASE_KEY = "COLOCA_AQUI_A_PUBLISHABLE_KEY";
+const SUPABASE_KEY = "SUA_PUBLISHABLE_KEY_AQUI";
 
 const supabase = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
+// --- APP ---
 const TOTAL = 120;
 let bilheteAtual = null;
 
@@ -21,6 +23,7 @@ async function carregarBilhetes() {
 
   if (error) {
     alert("Erro ao carregar bilhetes");
+    console.error(error);
     return;
   }
 
@@ -57,9 +60,9 @@ function cancelar() {
 }
 
 async function confirmarCompra() {
-  const nome = nomeInput.value;
-  const telefone = telefoneInput.value;
-  const email = emailInput.value;
+  const nome = document.getElementById("nome").value;
+  const telefone = document.getElementById("telefone").value;
+  const email = document.getElementById("email").value;
 
   if (!nome || !telefone || !email) {
     alert("Preenche os campos obrigatórios");
@@ -71,14 +74,15 @@ async function confirmarCompra() {
     nome,
     telefone,
     email,
-    data_nascimento: data_nascimento.value,
-    cidade: cidade.value,
-    pais: pais.value,
+    data_nascimento: document.getElementById("data_nascimento").value,
+    cidade: document.getElementById("cidade").value,
+    pais: document.getElementById("pais").value,
     status: "confirmado"
   }]);
 
   if (error) {
     alert("Erro ao registar compra");
+    console.error(error);
     return;
   }
 
