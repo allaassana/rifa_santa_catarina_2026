@@ -1,3 +1,11 @@
+const SUPABASE_URL = "https://ydyuxumwquhomahaxet.supabase.co";
+const SUPABASE_KEY = "COLOCA_AQUI_A_PUBLISHABLE_KEY";
+
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
 document.addEventListener("DOMContentLoaded", carregarAdmin);
 
 async function carregarAdmin() {
@@ -28,5 +36,5 @@ async function limparCompras() {
 }
 
 function sortear() {
-  alert("Sorteio será feito aqui pelo admin.");
+  alert("Sorteio feito manualmente pelo admin");
 }
