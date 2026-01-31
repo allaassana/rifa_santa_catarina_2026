@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <title>Rifa Santa Catarina 2025</title>
   <link rel="stylesheet" href="css/style.css">
-
-  <!-- Supabase CDN (TEM DE ESTAR NO HTML) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <header class="topo">
+  <div class="logos">
+    <img src="assets/logo_diocese.png" class="logo">
+    <img src="assets/logo_paroquia.png" class="logo">
+  </div>
   <h1>Rifa Santa Catarina 2025</h1>
   <p>Centro Pastoral Santa Ana & São Joaquim</p>
 </header>
@@ -24,7 +25,6 @@
 
   <div id="bilhetes" class="grid"></div>
 
-  <!-- FORMULÁRIO -->
   <section id="formulario" class="form hidden">
     <h3 id="bilheteSelecionado"></h3>
 
@@ -35,8 +35,8 @@
     <input id="cidade" placeholder="Cidade">
     <input id="pais" placeholder="País">
 
-    <button id="confirmar">Confirmar Compra</button>
-    <button id="cancelar">Cancelar</button>
+    <button onclick="confirmarCompra()">Confirmar Compra</button>
+    <button onclick="cancelar()">Cancelar</button>
   </section>
 
   <div class="valor-box">
@@ -46,6 +46,10 @@
 
 </main>
 
+<!-- SUPABASE CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- JS -->
 <script src="js/supabase.js"></script>
 <script src="js/index.js"></script>
 
