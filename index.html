@@ -21,8 +21,11 @@
 
   <div id="bilhetes" class="grid"></div>
 
+  <!-- FORMULÁRIO -->
   <section id="formulario" class="form hidden">
     <h3 id="bilheteSelecionado"></h3>
+
+    <p><strong>Valor da Rifa:</strong> 20 € / 2.200 CVE</p>
 
     <input id="nome" placeholder="Nome *">
     <input id="telefone" placeholder="Telefone / WhatsApp *">
@@ -42,12 +45,15 @@
 
 </main>
 
-<!-- SDK SUPABASE (SÓ AQUI) -->
+<!-- SUPABASE DIRETO NO HTML (MODELO CORRETO) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabase = window.supabase.createClient(
+    "https://ydyuxumwquhomahaxet.supabase.co",
+    "COLA_AQUI_TUA_ANON_PUBLIC_KEY"
+  );
+</script>
 
-<!-- NOSSO CÓDIGO -->
-<script src="js/supabase.js"></script>
 <script src="js/index.js"></script>
-
 </body>
 </html>
