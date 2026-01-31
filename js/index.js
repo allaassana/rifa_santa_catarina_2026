@@ -7,7 +7,7 @@ async function carregarBilhetes() {
   const grid = document.getElementById("bilhetes");
   grid.innerHTML = "";
 
-  const { data, error } = await supabaseClient
+  const { data, error } = await supabase
     .from("compras")
     .select("bilhete");
 
@@ -49,36 +49,36 @@ function cancelar() {
 }
 
 async function confirmarCompra() {
-  const nome = nomeInput();
-  const telefone = telefoneInput();
-  const email = emailInput();
+  const nome = nome.value;
+  const telefone = telefone.value;
+  const email = email.value;
 
   if (!nome || !telefone || !email) {
     alert("Preenche os campos obrigatórios");
     return;
   }
 
-  const { error } = await supabaseClient.from("compras").insert({
+  const { error } = await supabase.from("compras").insert([{
     bilhete: bilheteAtual,
     nome,
     telefone,
     email,
-    data_nascimento: value("data_nascimento"),
-    cidade: value("cidade"),
-    pais: value("pais"),
+    data_nascimento: data_nascimento.value,
+    cidade: cidade.value,
+    pais: pais.value,
     status: "confirmado"
-  });
+  }]);
 
   if (error) {
     alert("Erro ao registar compra");
     return;
   }
 
-  alert("Compra registada com sucesso!");
+  alert(
+    `Compra registada com sucesso!\n\n` +
+    `Bilhete Nº ${bilheteAtual}\n` +
+    `Valor: 20 € / 2.200 CVE`
+  );
+
   location.reload();
 }
-
-const value = id => document.getElementById(id).value;
-const nomeInput = () => value("nome");
-const telefoneInput = () => value("telefone");
-const emailInput = () => value("email");
