@@ -1,14 +1,19 @@
 document.addEventListener("DOMContentLoaded", carregarAdmin);
 
 async function carregarAdmin() {
-  const { data } = await supabase.from("compras").select("*");
+  const { data, error } = await supabaseClient
+    .from("compras")
+    .select("bilhete");
 
-  document.getElementById("vendidos").textContent = data ? data.length : 0;
+  if (error) {
+    alert("Erro ao carregar admin");
+    return;
+  }
+
+  document.getElementById("vendidos").textContent = data.length;
 
   const grid = document.getElementById("bilhetes");
   grid.innerHTML = "";
-
-  if (!data) return;
 
   data.forEach(c => {
     const b = document.createElement("div");
@@ -20,10 +25,11 @@ async function carregarAdmin() {
 
 async function limparCompras() {
   if (!confirm("Tens a certeza?")) return;
-  await supabase.from("compras").delete().neq("id", 0);
+
+  await supabaseClient.from("compras").delete().neq("id", 0);
   location.reload();
 }
 
 function sortear() {
-  alert("Sorteio pronto para próxima fase");
+  alert("Sorteio será feito aqui (próximo passo)");
 }
