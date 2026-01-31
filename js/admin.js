@@ -3,10 +3,12 @@ document.addEventListener("DOMContentLoaded", carregarAdmin);
 async function carregarAdmin() {
   const { data } = await supabase.from("compras").select("*");
 
-  document.getElementById("vendidos").textContent = data.length;
+  document.getElementById("vendidos").textContent = data ? data.length : 0;
 
   const grid = document.getElementById("bilhetes");
   grid.innerHTML = "";
+
+  if (!data) return;
 
   data.forEach(c => {
     const b = document.createElement("div");
@@ -23,5 +25,5 @@ async function limparCompras() {
 }
 
 function sortear() {
-  alert("Sorteio manual concluído");
+  alert("Sorteio pronto para próxima fase");
 }
