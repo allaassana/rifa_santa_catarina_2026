@@ -1,3 +1,11 @@
+const SUPABASE_URL = "https://ydyuxumwquhomahaxet.supabase.co";
+const SUPABASE_KEY = "COLOCA_AQUI_A_PUBLISHABLE_KEY";
+
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
 const TOTAL = 120;
 let bilheteAtual = null;
 
@@ -49,9 +57,9 @@ function cancelar() {
 }
 
 async function confirmarCompra() {
-  const nome = nome.value;
-  const telefone = telefone.value;
-  const email = email.value;
+  const nome = nomeInput.value;
+  const telefone = telefoneInput.value;
+  const email = emailInput.value;
 
   if (!nome || !telefone || !email) {
     alert("Preenche os campos obrigatórios");
@@ -74,11 +82,6 @@ async function confirmarCompra() {
     return;
   }
 
-  alert(
-    `Compra registada com sucesso!\n\n` +
-    `Bilhete Nº ${bilheteAtual}\n` +
-    `Valor: 20 € / 2.200 CVE`
-  );
-
+  alert("Compra registada com sucesso!");
   location.reload();
 }
