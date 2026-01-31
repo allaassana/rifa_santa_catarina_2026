@@ -1,12 +1,7 @@
 const TOTAL = 120;
 let bilheteAtual = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-  carregarBilhetes();
-
-  document.getElementById("confirmar").onclick = confirmarCompra;
-  document.getElementById("cancelar").onclick = cancelar;
-});
+document.addEventListener("DOMContentLoaded", carregarBilhetes);
 
 async function carregarBilhetes() {
   const grid = document.getElementById("bilhetes");
@@ -39,8 +34,7 @@ async function carregarBilhetes() {
 
 function selecionarBilhete(n) {
   bilheteAtual = n;
-  document.getElementById("bilheteSelecionado").textContent =
-    `Bilhete Nº ${n}`;
+  document.getElementById("bilheteSelecionado").textContent = `Bilhete Nº ${n}`;
   document.getElementById("formulario").classList.remove("hidden");
 }
 
@@ -71,6 +65,7 @@ async function confirmarCompra() {
 
   if (error) {
     alert("Erro ao registar compra");
+    console.error(error);
     return;
   }
 
