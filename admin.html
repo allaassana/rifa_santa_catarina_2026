@@ -14,7 +14,9 @@
 
 <main class="container">
 
-  <button class="btn-danger" onclick="limparCompras()">Limpar Todas as Compras</button>
+  <button onclick="limparCompras()" class="btn-danger">
+    Limpar Todas as Compras
+  </button>
 
   <p><strong>Vendidos:</strong> <span id="vendidos">0</span></p>
 
@@ -24,12 +26,14 @@
 
 </main>
 
-<!-- SDK SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabase = window.supabase.createClient(
+    "https://ydyuxumwquhomahaxet.supabase.co",
+    "COLA_AQUI_TUA_ANON_PUBLIC_KEY"
+  );
+</script>
 
-<!-- NOSSO CÓDIGO -->
-<script src="js/supabase.js"></script>
 <script src="js/admin.js"></script>
-
 </body>
 </html>
