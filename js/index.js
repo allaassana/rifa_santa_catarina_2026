@@ -7,11 +7,16 @@ async function carregarBilhetes() {
   const grid = document.getElementById("bilhetes");
   grid.innerHTML = "";
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("compras")
     .select("bilhete");
 
-  const ocupados = data ? data.map(b => b.bilhete) : [];
+  if (error) {
+    alert("Erro ao carregar bilhetes");
+    return;
+  }
+
+  const ocupados = data.map(b => b.bilhete);
 
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.createElement("button");
@@ -34,7 +39,8 @@ async function carregarBilhetes() {
 
 function selecionarBilhete(n) {
   bilheteAtual = n;
-  document.getElementById("bilheteSelecionado").textContent = `Bilhete Nº ${n}`;
+  document.getElementById("bilheteSelecionado").textContent =
+    `Bilhete Nº ${n}`;
   document.getElementById("formulario").classList.remove("hidden");
 }
 
@@ -43,32 +49,36 @@ function cancelar() {
 }
 
 async function confirmarCompra() {
-  const nome = document.getElementById("nome").value;
-  const telefone = document.getElementById("telefone").value;
-  const email = document.getElementById("email").value;
+  const nome = nomeInput();
+  const telefone = telefoneInput();
+  const email = emailInput();
 
   if (!nome || !telefone || !email) {
     alert("Preenche os campos obrigatórios");
     return;
   }
 
-  const { error } = await supabase.from("compras").insert([{
+  const { error } = await supabaseClient.from("compras").insert({
     bilhete: bilheteAtual,
     nome,
     telefone,
     email,
-    data_nascimento: document.getElementById("data_nascimento").value,
-    cidade: document.getElementById("cidade").value,
-    pais: document.getElementById("pais").value,
+    data_nascimento: value("data_nascimento"),
+    cidade: value("cidade"),
+    pais: value("pais"),
     status: "confirmado"
-  }]);
+  });
 
   if (error) {
     alert("Erro ao registar compra");
-    console.error(error);
     return;
   }
 
   alert("Compra registada com sucesso!");
   location.reload();
 }
+
+const value = id => document.getElementById(id).value;
+const nomeInput = () => value("nome");
+const telefoneInput = () => value("telefone");
+const emailInput = () => value("email");
