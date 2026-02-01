@@ -1,10 +1,8 @@
-/* ===== CONFIGURAÇÃO SUPABASE ===== */
 const SUPABASE_URL = "https://ydyuxumwquhomahaxet.supabase.co";
 const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* ===== CONFIGURAÇÃO RIFA ===== */
 const TOTAL = 120;
 let bilheteAtual = null;
 
@@ -24,7 +22,7 @@ async function carregarBilhetes() {
     return;
   }
 
-  const ocupados = data.map(d => d.bilhete);
+  const ocupados = data.map(b => b.bilhete);
 
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.createElement("button");
@@ -84,7 +82,7 @@ async function confirmarCompra() {
   }
 
   alert(
-    `Compra confirmada!\n\nBilhete Nº ${bilheteAtual}\nValor: 20 € / 2.200 CVE`
+    `Compra confirmada!\nBilhete Nº ${bilheteAtual}\nValor: 20 € / 2.200 CVE`
   );
 
   location.reload();
