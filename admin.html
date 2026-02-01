@@ -2,50 +2,31 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Rifa Santa Catarina 2025</title>
+  <title>Painel do Admin</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header class="topo">
-  <h1>Rifa Santa Catarina 2025</h1>
-  <p>Centro Pastoral Santa Ana & São Joaquim</p>
+  <h1>Painel do Admin</h1>
+  <p>Gestão da Rifa</p>
 </header>
 
 <main class="container">
 
-  <p>
-    <strong>Vendidos:</strong> <span id="vendidos">0</span> |
-    <strong>Disponíveis:</strong> <span id="disponiveis">120</span>
-  </p>
+  <button onclick="limparCompras()" class="btn-danger">
+    Limpar Todas as Compras
+  </button>
+
+  <p><strong>Vendidos:</strong> <span id="vendidos">0</span></p>
 
   <div id="bilhetes" class="grid"></div>
 
-  <section id="formulario" class="form hidden">
-    <h3 id="bilheteSelecionado"></h3>
-
-    <input id="nome" placeholder="Nome *">
-    <input id="telefone" placeholder="Telefone / WhatsApp *">
-    <input id="email" placeholder="Email *">
-    <input id="data_nascimento" type="date">
-    <input id="cidade" placeholder="Cidade">
-    <input id="pais" placeholder="País">
-
-    <p><strong>Valor:</strong> 20 € / 2.200 CVE</p>
-
-    <button onclick="confirmarCompra()">Confirmar Compra</button>
-    <button onclick="cancelar()">Cancelar</button>
-  </section>
-
-  <div class="valor-box">
-    <strong>20 € / 2.200 CVE</strong><br>
-    Pagamento via transferência bancária
-  </div>
+  <button onclick="sortear()">Sortear Vencedor</button>
 
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/index.js"></script>
-
+<script src="js/admin.js"></script>
 </body>
 </html>
