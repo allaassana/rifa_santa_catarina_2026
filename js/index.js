@@ -1,7 +1,10 @@
 const SUPABASE_URL = "https://ydyuxumwquhomahaxet.supabase.co";
 const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
 
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 const TOTAL = 120;
 let bilheteAtual = null;
@@ -12,7 +15,7 @@ async function carregarBilhetes() {
   const grid = document.getElementById("bilhetes");
   grid.innerHTML = "";
 
-  const { data, error } = await client
+  const { data, error } = await supabaseClient
     .from("compras")
     .select("bilhete");
 
@@ -26,8 +29,8 @@ async function carregarBilhetes() {
 
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.createElement("button");
-    btn.className = "numero";
     btn.textContent = i;
+    btn.className = "numero";
 
     if (ocupados.includes(i)) {
       btn.classList.add("vendido");
@@ -64,7 +67,7 @@ async function confirmarCompra() {
     return;
   }
 
-  const { error } = await client.from("compras").insert([{
+  const { error } = await supabaseClient.from("compras").insert([{
     bilhete: bilheteAtual,
     nome,
     telefone,
