@@ -1,8 +1,10 @@
+/* ===== CONFIGURAÇÃO SUPABASE ===== */
 const SUPABASE_URL = "https://ydyuxumwquhomahaxet.supabase.co";
-const SUPABASE_KEY = "COLOCA_AQUI_A_PUBLISHABLE_KEY";
+const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+/* ===== CONFIGURAÇÃO RIFA ===== */
 const TOTAL = 120;
 let bilheteAtual = null;
 
@@ -22,12 +24,12 @@ async function carregarBilhetes() {
     return;
   }
 
-  const ocupados = data.map(b => b.bilhete);
+  const ocupados = data.map(d => d.bilhete);
 
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.createElement("button");
-    btn.textContent = i;
     btn.className = "numero";
+    btn.textContent = i;
 
     if (ocupados.includes(i)) {
       btn.classList.add("vendido");
@@ -45,7 +47,8 @@ async function carregarBilhetes() {
 
 function selecionarBilhete(n) {
   bilheteAtual = n;
-  document.getElementById("bilheteSelecionado").textContent = `Bilhete Nº ${n}`;
+  document.getElementById("bilheteSelecionado").textContent =
+    `Bilhete Nº ${n}`;
   document.getElementById("formulario").classList.remove("hidden");
 }
 
@@ -54,9 +57,9 @@ function cancelar() {
 }
 
 async function confirmarCompra() {
-  const nome = document.getElementById("nome").value;
-  const telefone = document.getElementById("telefone").value;
-  const email = document.getElementById("email").value;
+  const nome = document.getElementById("nome").value.trim();
+  const telefone = document.getElementById("telefone").value.trim();
+  const email = document.getElementById("email").value.trim();
 
   if (!nome || !telefone || !email) {
     alert("Preenche os campos obrigatórios");
@@ -80,6 +83,9 @@ async function confirmarCompra() {
     return;
   }
 
-  alert("Compra registada com sucesso!");
+  alert(
+    `Compra confirmada!\n\nBilhete Nº ${bilheteAtual}\nValor: 20 € / 2.200 CVE`
+  );
+
   location.reload();
 }
