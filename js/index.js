@@ -1,21 +1,29 @@
+// ================================
+// CONFIGURAÇÃO SUPABASE (CORRETA)
+// ================================
 const SUPABASE_URL = "https://ydyuxumwquhomahaxet.supabase.co";
 const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
 
-const supabaseClient = supabase.createClient(
+// usar o client do CDN (SEM duplicar)
+const supabase = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
-const TOTAL = 120;
+// ================================
+// ESTADO
+// ================================
+const TOTAL_BILHETES = 120;
 let bilheteAtual = null;
 
-document.addEventListener("DOMContentLoaded", carregarBilhetes);
-
+// ================================
+// CARREGAR BILHETES
+// ================================
 async function carregarBilhetes() {
   const grid = document.getElementById("bilhetes");
   grid.innerHTML = "";
 
-  const { data, error } = await supabaseClient
+  const { data, error } = await supabase
     .from("compras")
     .select("bilhete");
 
@@ -25,14 +33,18 @@ async function carregarBilhetes() {
     return;
   }
 
-  const ocupados = data.map(b => b.bilhete);
+  const vendidos = data.map(b => b.bilhete);
 
-  for (let i = 1; i <= TOTAL; i++) {
+  document.getElementById("vendidos").innerText = vendidos.length;
+  document.getElementById("disponiveis").innerText =
+    TOTAL_BILHETES - vendidos.length;
+
+  for (let i = 1; i <= TOTAL_BILHETES; i++) {
     const btn = document.createElement("button");
-    btn.textContent = i;
-    btn.className = "numero";
+    btn.innerText = i;
+    btn.className = "bilhete";
 
-    if (ocupados.includes(i)) {
+    if (vendidos.includes(i)) {
       btn.classList.add("vendido");
       btn.disabled = true;
     } else {
@@ -41,41 +53,53 @@ async function carregarBilhetes() {
 
     grid.appendChild(btn);
   }
-
-  document.getElementById("vendidos").textContent = ocupados.length;
-  document.getElementById("disponiveis").textContent = TOTAL - ocupados.length;
 }
 
-function selecionarBilhete(n) {
-  bilheteAtual = n;
-  document.getElementById("bilheteSelecionado").textContent =
-    `Bilhete Nº ${n}`;
+// ================================
+// SELECIONAR BILHETE
+// ================================
+function selecionarBilhete(numero) {
+  bilheteAtual = numero;
+  document.getElementById("bilheteSelecionado").innerText =
+    `Bilhete Nº ${numero}`;
   document.getElementById("formulario").classList.remove("hidden");
 }
 
+// ================================
+// CANCELAR
+// ================================
 function cancelar() {
   document.getElementById("formulario").classList.add("hidden");
+  bilheteAtual = null;
 }
 
+// ================================
+// CONFIRMAR COMPRA
+// ================================
 async function confirmarCompra() {
-  const nome = document.getElementById("nome").value.trim();
-  const telefone = document.getElementById("telefone").value.trim();
-  const email = document.getElementById("email").value.trim();
+  if (!bilheteAtual) return;
+
+  const nome = document.getElementById("nome").value;
+  const telefone = document.getElementById("telefone").value;
+  const email = document.getElementById("email").value;
+  const data_nascimento = document.getElementById("data_nascimento").value;
+  const cidade = document.getElementById("cidade").value;
+  const pais = document.getElementById("pais").value;
 
   if (!nome || !telefone || !email) {
-    alert("Preenche os campos obrigatórios");
+    alert("Preencha os campos obrigatórios");
     return;
   }
 
-  const { error } = await supabaseClient.from("compras").insert([{
+  const { error } = await supabase.from("compras").insert([{
     bilhete: bilheteAtual,
     nome,
     telefone,
     email,
-    data_nascimento: document.getElementById("data_nascimento").value,
-    cidade: document.getElementById("cidade").value,
-    pais: document.getElementById("pais").value,
-    status: "confirmado"
+    data_nascimento,
+    cidade,
+    pais,
+    valor: "20 € / 2.200 CVE"
   }]);
 
   if (error) {
@@ -84,9 +108,12 @@ async function confirmarCompra() {
     return;
   }
 
-  alert(
-    `Compra confirmada!\nBilhete Nº ${bilheteAtual}\nValor: 20 € / 2.200 CVE`
-  );
-
-  location.reload();
+  alert("Compra registada com sucesso!");
+  cancelar();
+  carregarBilhetes();
 }
+
+// ================================
+// INIT
+// ================================
+document.addEventListener("DOMContentLoaded", carregarBilhetes);
