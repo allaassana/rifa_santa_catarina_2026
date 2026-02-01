@@ -1,12 +1,14 @@
 const SUPABASE_URL = "https://ydyuxumwquhomahaxet.supabase.co";
-const SUPABASE_KEY = "COLOCA_AQUI_A_PUBLISHABLE_KEY";
+const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 document.addEventListener("DOMContentLoaded", carregarAdmin);
 
 async function carregarAdmin() {
-  const { data, error } = await client.from("compras").select("*");
+  const { data, error } = await client
+    .from("compras")
+    .select("*");
 
   if (error) {
     alert("Erro ao carregar admin");
