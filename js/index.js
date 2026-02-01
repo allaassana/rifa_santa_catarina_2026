@@ -1,51 +1,51 @@
-// --- SUPABASE (DECLARADO UMA ÚNICA VEZ) ---
 const SUPABASE_URL = "https://ydyuxumwquhomahaxet.supabase.co";
-const SUPABASE_KEY = "SUA_PUBLISHABLE_KEY_AQUI";
+const SUPABASE_KEY = "COLOCA_AQUI_A_TUA_PUBLISHABLE_KEY";
 
 const supabase = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
-// --- APP ---
 const TOTAL = 120;
 let bilheteAtual = null;
 
 document.addEventListener("DOMContentLoaded", carregarBilhetes);
 
 async function carregarBilhetes() {
-  const grid = document.getElementById("bilhetes");
-  grid.innerHTML = "";
+  try {
+    const grid = document.getElementById("bilhetes");
+    grid.innerHTML = "";
 
-  const { data, error } = await supabase
-    .from("compras")
-    .select("bilhete");
+    const { data, error } = await supabase
+      .from("compras")
+      .select("bilhete");
 
-  if (error) {
-    alert("Erro ao carregar bilhetes");
-    console.error(error);
-    return;
-  }
+    if (error) throw error;
 
-  const ocupados = data.map(b => b.bilhete);
+    const ocupados = data.map(b => b.bilhete);
 
-  for (let i = 1; i <= TOTAL; i++) {
-    const btn = document.createElement("button");
-    btn.textContent = i;
-    btn.className = "numero";
+    for (let i = 1; i <= TOTAL; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = i;
+      btn.className = "numero";
 
-    if (ocupados.includes(i)) {
-      btn.classList.add("vendido");
-      btn.disabled = true;
-    } else {
-      btn.onclick = () => selecionarBilhete(i);
+      if (ocupados.includes(i)) {
+        btn.classList.add("vendido");
+        btn.disabled = true;
+      } else {
+        btn.onclick = () => selecionarBilhete(i);
+      }
+
+      grid.appendChild(btn);
     }
 
-    grid.appendChild(btn);
-  }
+    document.getElementById("vendidos").textContent = ocupados.length;
+    document.getElementById("disponiveis").textContent = TOTAL - ocupados.length;
 
-  document.getElementById("vendidos").textContent = ocupados.length;
-  document.getElementById("disponiveis").textContent = TOTAL - ocupados.length;
+  } catch (e) {
+    alert("Erro ao carregar bilhetes");
+    console.error(e);
+  }
 }
 
 function selecionarBilhete(n) {
@@ -60,32 +60,40 @@ function cancelar() {
 }
 
 async function confirmarCompra() {
-  const nome = document.getElementById("nome").value;
-  const telefone = document.getElementById("telefone").value;
-  const email = document.getElementById("email").value;
+  try {
+    const nome = nomeInput();
+    const telefone = telefoneInput();
+    const email = emailInput();
 
-  if (!nome || !telefone || !email) {
-    alert("Preenche os campos obrigatórios");
-    return;
-  }
+    if (!nome || !telefone || !email) {
+      alert("Preenche os campos obrigatórios");
+      return;
+    }
 
-  const { error } = await supabase.from("compras").insert([{
-    bilhete: bilheteAtual,
-    nome,
-    telefone,
-    email,
-    data_nascimento: document.getElementById("data_nascimento").value,
-    cidade: document.getElementById("cidade").value,
-    pais: document.getElementById("pais").value,
-    status: "confirmado"
-  }]);
+    const { error } = await supabase.from("compras").insert([{
+      bilhete: bilheteAtual,
+      nome,
+      telefone,
+      email,
+      data_nascimento: value("data_nascimento"),
+      cidade: value("cidade"),
+      pais: value("pais")
+    }]);
 
-  if (error) {
+    if (error) throw error;
+
+    alert("Compra registada com sucesso!");
+    location.reload();
+
+  } catch (e) {
     alert("Erro ao registar compra");
-    console.error(error);
-    return;
+    console.error(e);
   }
-
-  alert("Compra registada com sucesso!");
-  location.reload();
 }
+
+function value(id) {
+  return document.getElementById(id).value;
+}
+function nomeInput() { return value("nome"); }
+function telefoneInput() { return value("telefone"); }
+function emailInput() { return value("email"); }
