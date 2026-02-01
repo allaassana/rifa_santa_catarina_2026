@@ -1,10 +1,7 @@
 const SUPABASE_URL = "https://ydyuxumwquhomahaxet.supabase.co";
-const SUPABASE_KEY = "COLOCA_AQUI_A_TUA_PUBLISHABLE_KEY";
+const SUPABASE_KEY = "COLOCA_AQUI_A_PUBLISHABLE_KEY";
 
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const TOTAL = 120;
 let bilheteAtual = null;
@@ -12,46 +9,43 @@ let bilheteAtual = null;
 document.addEventListener("DOMContentLoaded", carregarBilhetes);
 
 async function carregarBilhetes() {
-  try {
-    const grid = document.getElementById("bilhetes");
-    grid.innerHTML = "";
+  const grid = document.getElementById("bilhetes");
+  grid.innerHTML = "";
 
-    const { data, error } = await supabase
-      .from("compras")
-      .select("bilhete");
+  const { data, error } = await client
+    .from("compras")
+    .select("bilhete");
 
-    if (error) throw error;
+  if (error) {
+    alert("Erro ao carregar bilhetes");
+    console.error(error);
+    return;
+  }
 
-    const ocupados = data.map(b => b.bilhete);
+  const ocupados = data.map(b => b.bilhete);
 
-    for (let i = 1; i <= TOTAL; i++) {
-      const btn = document.createElement("button");
-      btn.textContent = i;
-      btn.className = "numero";
+  for (let i = 1; i <= TOTAL; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    btn.className = "numero";
 
-      if (ocupados.includes(i)) {
-        btn.classList.add("vendido");
-        btn.disabled = true;
-      } else {
-        btn.onclick = () => selecionarBilhete(i);
-      }
-
-      grid.appendChild(btn);
+    if (ocupados.includes(i)) {
+      btn.classList.add("vendido");
+      btn.disabled = true;
+    } else {
+      btn.onclick = () => selecionarBilhete(i);
     }
 
-    document.getElementById("vendidos").textContent = ocupados.length;
-    document.getElementById("disponiveis").textContent = TOTAL - ocupados.length;
-
-  } catch (e) {
-    alert("Erro ao carregar bilhetes");
-    console.error(e);
+    grid.appendChild(btn);
   }
+
+  document.getElementById("vendidos").textContent = ocupados.length;
+  document.getElementById("disponiveis").textContent = TOTAL - ocupados.length;
 }
 
 function selecionarBilhete(n) {
   bilheteAtual = n;
-  document.getElementById("bilheteSelecionado").textContent =
-    `Bilhete Nº ${n}`;
+  document.getElementById("bilheteSelecionado").textContent = `Bilhete Nº ${n}`;
   document.getElementById("formulario").classList.remove("hidden");
 }
 
@@ -60,40 +54,32 @@ function cancelar() {
 }
 
 async function confirmarCompra() {
-  try {
-    const nome = nomeInput();
-    const telefone = telefoneInput();
-    const email = emailInput();
+  const nome = document.getElementById("nome").value;
+  const telefone = document.getElementById("telefone").value;
+  const email = document.getElementById("email").value;
 
-    if (!nome || !telefone || !email) {
-      alert("Preenche os campos obrigatórios");
-      return;
-    }
-
-    const { error } = await supabase.from("compras").insert([{
-      bilhete: bilheteAtual,
-      nome,
-      telefone,
-      email,
-      data_nascimento: value("data_nascimento"),
-      cidade: value("cidade"),
-      pais: value("pais")
-    }]);
-
-    if (error) throw error;
-
-    alert("Compra registada com sucesso!");
-    location.reload();
-
-  } catch (e) {
-    alert("Erro ao registar compra");
-    console.error(e);
+  if (!nome || !telefone || !email) {
+    alert("Preenche os campos obrigatórios");
+    return;
   }
-}
 
-function value(id) {
-  return document.getElementById(id).value;
+  const { error } = await client.from("compras").insert([{
+    bilhete: bilheteAtual,
+    nome,
+    telefone,
+    email,
+    data_nascimento: document.getElementById("data_nascimento").value,
+    cidade: document.getElementById("cidade").value,
+    pais: document.getElementById("pais").value,
+    status: "confirmado"
+  }]);
+
+  if (error) {
+    alert("Erro ao registar compra");
+    console.error(error);
+    return;
+  }
+
+  alert("Compra registada com sucesso!");
+  location.reload();
 }
-function nomeInput() { return value("nome"); }
-function telefoneInput() { return value("telefone"); }
-function emailInput() { return value("email"); }
