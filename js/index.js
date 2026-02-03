@@ -22,9 +22,8 @@ async function carregarBilhetes() {
     if (vendidos.includes(i)) {
       div.classList.add("sold");
     } else {
-      div.onclick = () => selecionarBilhete(i);
+      div.onclick = () => abrirFormulario(i);
     }
-
     grid.appendChild(div);
   }
 
@@ -32,7 +31,7 @@ async function carregarBilhetes() {
   availCount.textContent = TOTAL - vendidos.length;
 }
 
-function selecionarBilhete(n) {
+function abrirFormulario(n) {
   selectedTicket = n;
   document.getElementById("ticketNumber").textContent = n;
   formArea.classList.remove("hidden");
@@ -44,18 +43,18 @@ document.getElementById("cancelBtn").onclick = () => {
 };
 
 document.getElementById("confirmBtn").onclick = async () => {
-  if (!selectedTicket) {
-    alert("Selecione um bilhete primeiro.");
+  if (selectedTicket === null) {
+    alert("Selecione um bilhete.");
     return;
   }
 
-  const nome = nome.value.trim();
-  const tel = tel.value.trim();
-  const email = email.value.trim();
+  const nome = nomeInput.value.trim();
+  const tel = telInput.value.trim();
+  const email = emailInput.value.trim();
   const file = comprovativo.files[0];
 
   if (!nome || !tel || !email || !file) {
-    alert("Preencha todos os campos.");
+    alert("Campos obrigatórios.");
     return;
   }
 
@@ -64,32 +63,40 @@ document.getElementById("confirmBtn").onclick = async () => {
     .from("comprovativos")
     .upload(fileName, file);
 
-  if (uploadError) return alert("Erro no upload.");
+  if (uploadError) {
+    alert("Erro no upload.");
+    return;
+  }
 
-  const { data: url } = db.storage
+  const { data: urlData } = db.storage
     .from("comprovativos")
     .getPublicUrl(fileName);
 
-  await db.from("compras").insert({
+  const { error } = await db.from("compras").insert({
     bilhete: selectedTicket,
     nome,
     telefone: tel,
     email,
-    comprovativo_url: url.publicUrl
+    comprovativo_url: urlData.publicUrl
   });
 
-  document.getElementById("mBilhete").textContent = selectedTicket;
-  document.getElementById("mNome").textContent = nome;
+  if (error) {
+    alert("Erro ao guardar.");
+    return;
+  }
 
-  document.getElementById("modal").classList.remove("hidden");
+  // MODAL SÓ AQUI
+  mBilhete.textContent = selectedTicket;
+  mNome.textContent = nome;
+  modal.classList.remove("hidden");
+
+  selectedTicket = null;
   formArea.classList.add("hidden");
-
   carregarBilhetes();
 };
 
 function fecharModal() {
-  document.getElementById("modal").classList.add("hidden");
-  selectedTicket = null;
+  modal.classList.add("hidden");
 }
 
 carregarBilhetes();
