@@ -17,24 +17,27 @@
 
 <main class="container">
 
-  <p>
-    <strong>Vendidos:</strong> <span id="soldCount">0</span> |
-    <strong>Disponíveis:</strong> <span id="availCount">120</span>
+  <p class="counter">
+    Vendidos: <b id="soldCount">0</b> |
+    Disponíveis: <b id="availCount">120</b>
   </p>
 
   <div id="ticketGrid" class="grid"></div>
 
-  <!-- FORM -->
+  <!-- FORMULÁRIO -->
   <section id="formArea" class="form hidden">
     <h3>Bilhete Nº <span id="ticketNumber"></span></h3>
 
     <input id="nome" placeholder="Nome *">
     <input id="tel" placeholder="Telefone *">
     <input id="email" type="email" placeholder="Email *">
+    <input id="nasc" type="date">
+    <input id="cidade" placeholder="Cidade">
+    <input id="pais" placeholder="País">
     <input id="comprovativo" type="file" accept="image/*,application/pdf">
 
     <button id="confirmBtn">Confirmar Compra</button>
-    <button id="cancelBtn">Cancelar</button>
+    <button id="cancelBtn" class="secondary">Cancelar</button>
   </section>
 
 </main>
@@ -45,9 +48,8 @@
     <h3>✅ Compra Confirmada</h3>
     <p><b>Bilhete:</b> <span id="mBilhete"></span></p>
     <p><b>Nome:</b> <span id="mNome"></span></p>
-
     <button id="pdfBtn">📄 Baixar Recibo (PDF)</button>
-    <button onclick="fecharModal()">Fechar</button>
+    <button onclick="fecharModal()" class="secondary">Fechar</button>
   </div>
 </div>
 
@@ -59,6 +61,5 @@
   );
 </script>
 <script src="js/index.js"></script>
-
 </body>
 </html>
