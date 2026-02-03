@@ -16,16 +16,15 @@
 </header>
 
 <main class="container">
-
-  <p class="status">
+  <p>
     <strong>Vendidos:</strong> <span id="soldCount">0</span> |
     <strong>Disponíveis:</strong> <span id="availCount">120</span>
   </p>
 
   <div id="ticketGrid" class="grid"></div>
 
-  <!-- FORMULÁRIO -->
-  <section id="formArea" class="form hidden">
+  <!-- FORM -->
+  <section id="formArea" class="hidden">
     <h3>Bilhete Nº <span id="ticketNumber"></span></h3>
 
     <input id="nome" placeholder="Nome *">
@@ -34,23 +33,21 @@
     <input id="nasc" type="date">
     <input id="cidade" placeholder="Cidade">
     <input id="pais" placeholder="País">
-
     <input id="comprovativo" type="file" accept="image/*,application/pdf">
 
     <button id="confirmBtn">Confirmar Compra</button>
     <button id="cancelBtn">Cancelar</button>
   </section>
-
 </main>
 
 <!-- MODAL (NUNCA ABRE SOZINHO) -->
-<div id="modal" class="modal hidden">
+<div id="modal" class="modal">
   <div class="modal-box">
     <h3>✅ Compra Confirmada</h3>
-    <p><strong>Bilhete:</strong> <span id="mBilhete"></span></p>
-    <p><strong>Nome:</strong> <span id="mNome"></span></p>
+    <p>Bilhete: <strong><span id="mBilhete"></span></strong></p>
+    <p>Nome: <strong><span id="mNome"></span></strong></p>
 
-    <button id="downloadPdf">📄 Baixar Recibo (PDF)</button>
+    <button id="pdfBtn">📄 Baixar Recibo (PDF)</button>
     <button onclick="fecharModal()">Fechar</button>
   </div>
 </div>
@@ -62,7 +59,6 @@
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
 </script>
-
 <script src="js/index.js"></script>
 </body>
 </html>
