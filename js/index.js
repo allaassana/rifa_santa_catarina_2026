@@ -1,102 +1,107 @@
-// ===============================
-// SUPABASE (UMA ÚNICA VEZ)
-// ===============================
-const SUPABASE_URL = "https://yduxumwquhomahaxet.supabase.co";
-const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
-
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-// ===============================
+const db = window.db;
 const TOTAL = 120;
-let bilheteSelecionado = null;
 
-// ===============================
-document.addEventListener("DOMContentLoaded", () => {
-  gerarBilhetes();
-});
+const grid = document.getElementById("ticketGrid");
+const soldCount = document.getElementById("soldCount");
+const availCount = document.getElementById("availCount");
+const formArea = document.getElementById("formArea");
 
-// ===============================
-async function gerarBilhetes() {
-  const grid = document.getElementById("bilhetes");
+let selectedTicket = null;
+let buyerName = "";
+let buyerTel = "";
+
+async function carregarBilhetes() {
+  const { data, error } = await db.from("compras").select("bilhete");
+  if (error) return alert("Erro ao carregar bilhetes");
+
+  const vendidos = data.map(d => d.bilhete);
   grid.innerHTML = "";
 
-  const { data, error } = await supabase
-    .from("compras")
-    .select("bilhete");
-
-  if (error) {
-    console.error(error);
-    alert("Erro ao carregar bilhetes");
-    return;
-  }
-
-  const vendidos = data.map(b => b.bilhete);
-
   for (let i = 1; i <= TOTAL; i++) {
-    const btn = document.createElement("button");
-    btn.textContent = i;
+    const d = document.createElement("div");
+    d.className = "ticket";
+    d.textContent = i;
 
     if (vendidos.includes(i)) {
-      btn.className = "vendido";
+      d.classList.add("sold");
     } else {
-      btn.className = "disponivel";
-      btn.onclick = () => selecionarBilhete(i);
+      d.onclick = () => abrirFormulario(i);
     }
-
-    grid.appendChild(btn);
+    grid.appendChild(d);
   }
 
-  document.getElementById("vendidos").textContent = vendidos.length;
-  document.getElementById("disponiveis").textContent =
-    TOTAL - vendidos.length;
+  soldCount.textContent = vendidos.length;
+  availCount.textContent = TOTAL - vendidos.length;
 }
 
-// ===============================
-function selecionarBilhete(numero) {
-  bilheteSelecionado = numero;
-  document.getElementById("formulario").classList.remove("hidden");
-  document.getElementById("bilheteSelecionado").textContent =
-    "Bilhete Nº " + numero;
+function abrirFormulario(n) {
+  selectedTicket = n;
+  document.getElementById("ticketNumber").textContent = n;
+  formArea.style.display = "block";
 }
 
-// ===============================
-function cancelar() {
-  bilheteSelecionado = null;
-  document.getElementById("formulario").classList.add("hidden");
-}
+document.getElementById("cancelBtn").onclick = () => {
+  formArea.style.display = "none";
+};
 
-// ===============================
-async function confirmarCompra() {
-  if (!bilheteSelecionado) return;
+document.getElementById("confirmBtn").onclick = async () => {
+  const nome = nomeEl.value.trim();
+  const tel = telEl.value.trim();
+  const email = emailEl.value.trim();
+  const file = comprovativo.files[0];
 
-  const nome = document.getElementById("nome").value;
-  const telefone = document.getElementById("telefone").value;
-  const email = document.getElementById("email").value;
-
-  if (!nome || !telefone || !email) {
-    alert("Preencha os campos obrigatórios");
-    return;
+  if (!nome || !tel || !email || !file) {
+    return alert("Preencha todos os campos obrigatórios");
   }
 
-  const { error } = await supabase.from("compras").insert([{
-    bilhete: bilheteSelecionado,
+  buyerName = nome;
+  buyerTel = tel;
+
+  const fileName = `${Date.now()}_${file.name}`;
+  const up = await db.storage.from("comprovativos").upload(fileName, file);
+  if (up.error) return alert("Erro no upload");
+
+  const { data: url } = db.storage
+    .from("comprovativos")
+    .getPublicUrl(fileName);
+
+  const { error } = await db.from("compras").insert({
+    bilhete: selectedTicket,
     nome,
-    telefone,
+    telefone: tel,
     email,
-    cidade: document.getElementById("cidade").value,
-    pais: document.getElementById("pais").value
-  }]);
+    comprovativo_url: url.publicUrl,
+    status: "pendente"
+  });
 
-  if (error) {
-    console.error(error);
-    alert("Erro ao registrar compra");
-    return;
-  }
+  if (error) return alert("Erro ao registar");
 
-  alert("Compra registada com sucesso\nValor: 20 € / 2.200 CVE");
-  cancelar();
-  gerarBilhetes();
+  document.getElementById("mBilhete").textContent = selectedTicket;
+  document.getElementById("mNome").textContent = nome;
+
+  document.getElementById("modal").style.display = "block";
+  formArea.style.display = "none";
+  carregarBilhetes();
+};
+
+document.getElementById("whatsBtn").onclick = () => {
+  window.open(
+    `https://wa.me/238${buyerTel}?text=Bilhete ${selectedTicket} confirmado. Valor: 20€ / 2.200 CVE`
+  );
+};
+
+document.getElementById("pdfBtn").onclick = () => {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+  pdf.text(`Recibo - Rifa Santa Catarina`, 20, 20);
+  pdf.text(`Nome: ${buyerName}`, 20, 40);
+  pdf.text(`Bilhete: ${selectedTicket}`, 20, 50);
+  pdf.text(`Valor: 20 € / 2.200 CVE`, 20, 60);
+  pdf.save("recibo.pdf");
+};
+
+function fecharModal() {
+  document.getElementById("modal").style.display = "none";
 }
+
+carregarBilhetes();
