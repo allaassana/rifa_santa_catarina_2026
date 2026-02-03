@@ -7,15 +7,23 @@
 </head>
 
 <body>
+
 <header class="site-header">
   <h1>Painel Admin</h1>
 </header>
 
 <main class="container">
-  <button onclick="exportCSV()">⬇️ Exportar CSV</button>
-  <button onclick="sortear()">🎉 Sortear</button>
 
-  <div id="lista"></div>
+  <div class="admin-actions">
+    <button onclick="exportCSV()">⬇ Exportar CSV</button>
+    <button onclick="sortear()">🎉 Sortear</button>
+  </div>
+
+  <div id="adminGrid" class="grid"></div>
+
+  <h3>Vencedores</h3>
+  <ul id="winners"></ul>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -25,7 +33,6 @@
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
 </script>
-
 <script src="js/admin.js"></script>
 </body>
 </html>
