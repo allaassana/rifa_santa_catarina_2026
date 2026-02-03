@@ -9,12 +9,13 @@
 <body>
 
 <header class="site-header">
+  <img src="assets/logo_diocese.png" class="logo">
   <h1>Painel Admin</h1>
 </header>
 
 <main class="container">
-  <button onclick="exportarCSV()">⬇ Exportar CSV</button>
-  <button onclick="sortear()">🎉 Sortear</button>
+  <button id="exportCsv">⬇ Exportar CSV</button>
+  <button id="drawWinner">🎉 Sortear</button>
 
   <div id="ticketGrid" class="grid"></div>
 </main>
@@ -27,6 +28,5 @@
   );
 </script>
 <script src="js/admin.js"></script>
-
 </body>
 </html>
