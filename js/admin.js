@@ -1,9 +1,9 @@
 const db = window.db;
+const grid = document.getElementById("grid");
 const TOTAL = 120;
-const grid = document.getElementById("adminGrid");
 
-async function carregar() {
-  const { data = [] } = await db.from("compras").select("*");
+async function carregarAdmin() {
+  const { data = [] } = await db.from("compras").select("bilhete,nome");
 
   grid.innerHTML = "";
 
@@ -12,14 +12,12 @@ async function carregar() {
     div.className = "ticket";
     div.textContent = i;
 
-    const compra = data.find(c => c.bilhete === i);
-    if (compra) {
+    if (data.find(d => d.bilhete === i)) {
       div.classList.add("sold");
-      div.title = compra.nome;
     }
 
     grid.appendChild(div);
   }
 }
 
-carregar();
+carregarAdmin();
