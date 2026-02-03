@@ -1,16 +1,25 @@
 const db = window.db;
-const lista = document.getElementById("lista");
+const grid = document.getElementById("adminGrid");
+const winners = document.getElementById("winners");
 
 async function carregar() {
   const { data = [] } = await db.from("compras").select("*");
-  lista.innerHTML = data.map(d =>
-    `#${d.bilhete} - ${d.nome}`
-  ).join("<br>");
+  grid.innerHTML = "";
+
+  data.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "ticket sold";
+    div.innerHTML = `<b>${c.bilhete}</b><br>${c.nome}`;
+    grid.appendChild(div);
+  });
 }
 
 async function exportCSV() {
   const { data } = await db.from("compras").select("*");
-  const csv = data.map(d => `${d.bilhete},${d.nome},${d.email}`).join("\n");
+  let csv = "Bilhete,Nome,Telefone,Email\n";
+  data.forEach(d => {
+    csv += `${d.bilhete},${d.nome},${d.telefone},${d.email}\n`;
+  });
   const blob = new Blob([csv], { type: "text/csv" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
@@ -20,8 +29,9 @@ async function exportCSV() {
 
 async function sortear() {
   const { data } = await db.from("compras").select("*");
+  if (!data.length) return;
   const v = data[Math.floor(Math.random() * data.length)];
-  alert(`🎉 Vencedor: ${v.nome} (Bilhete ${v.bilhete})`);
+  winners.innerHTML += `<li>🎉 ${v.nome} - Bilhete ${v.bilhete}</li>`;
 }
 
 carregar();
