@@ -1,8 +1,8 @@
 const db = window.db;
-const grid = document.getElementById("ticketGrid");
 const TOTAL = 120;
+const grid = document.getElementById("adminGrid");
 
-async function carregarAdmin() {
+async function carregar() {
   const { data = [] } = await db.from("compras").select("*");
 
   grid.innerHTML = "";
@@ -22,4 +22,4 @@ async function carregarAdmin() {
   }
 }
 
-carregarAdmin();
+carregar();
