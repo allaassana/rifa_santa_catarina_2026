@@ -3,23 +3,23 @@
 <head>
   <meta charset="utf-8">
   <title>Rifa Santa Catarina 2025</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
 <header class="site-header">
-  <img src="assets/logo_diocese.png" class="logo">
+  <img src="assets/logo_diocese.png" alt="Diocese" class="logo">
   <h1>Rifa Santa Catarina 2025</h1>
   <p>Centro Pastoral Santa Ana & São Joaquim</p>
 </header>
 
 <main class="container">
 
-  <p class="counter">
-    Vendidos: <b id="soldCount">0</b> |
-    Disponíveis: <b id="availCount">120</b>
+  <p class="status">
+    <strong>Vendidos:</strong> <span id="soldCount">0</span> |
+    <strong>Disponíveis:</strong> <span id="availCount">120</span>
   </p>
 
   <div id="ticketGrid" class="grid"></div>
@@ -34,22 +34,24 @@
     <input id="nasc" type="date">
     <input id="cidade" placeholder="Cidade">
     <input id="pais" placeholder="País">
+
     <input id="comprovativo" type="file" accept="image/*,application/pdf">
 
     <button id="confirmBtn">Confirmar Compra</button>
-    <button id="cancelBtn" class="secondary">Cancelar</button>
+    <button id="cancelBtn">Cancelar</button>
   </section>
 
 </main>
 
-<!-- MODAL -->
+<!-- MODAL (NUNCA ABRE SOZINHO) -->
 <div id="modal" class="modal hidden">
   <div class="modal-box">
     <h3>✅ Compra Confirmada</h3>
-    <p><b>Bilhete:</b> <span id="mBilhete"></span></p>
-    <p><b>Nome:</b> <span id="mNome"></span></p>
-    <button id="pdfBtn">📄 Baixar Recibo (PDF)</button>
-    <button onclick="fecharModal()" class="secondary">Fechar</button>
+    <p><strong>Bilhete:</strong> <span id="mBilhete"></span></p>
+    <p><strong>Nome:</strong> <span id="mNome"></span></p>
+
+    <button id="downloadPdf">📄 Baixar Recibo (PDF)</button>
+    <button onclick="fecharModal()">Fechar</button>
   </div>
 </div>
 
@@ -60,6 +62,7 @@
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
 </script>
+
 <script src="js/index.js"></script>
 </body>
 </html>
