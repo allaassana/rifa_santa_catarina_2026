@@ -3,23 +3,22 @@
 <head>
   <meta charset="utf-8">
   <title>Rifa Santa Catarina 2025</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
 <header class="site-header">
-  <img src="assets/logo_diocese.png" alt="Diocese" class="logo">
+  <img src="assets/logo_diocese.png" class="logo">
   <h1>Rifa Santa Catarina 2025</h1>
   <p>Centro Pastoral Santa Ana & São Joaquim</p>
 </header>
 
 <main class="container">
-  <p>
-    <strong>Vendidos:</strong> <span id="soldCount">0</span> |
-    <strong>Disponíveis:</strong> <span id="availCount">120</span>
-  </p>
+
+  <p><strong>Vendidos:</strong> <span id="soldCount">0</span> |
+     <strong>Disponíveis:</strong> <span id="availCount">120</span></p>
 
   <div id="ticketGrid" class="grid"></div>
 
@@ -28,27 +27,37 @@
     <h3>Bilhete Nº <span id="ticketNumber"></span></h3>
 
     <input id="nome" placeholder="Nome *">
-    <input id="tel" placeholder="Telefone *">
-    <input id="email" type="email" placeholder="Email *">
-    <input id="nasc" type="date">
+    <input id="telefone" placeholder="Telefone *">
+    <input id="email" placeholder="Email *">
     <input id="cidade" placeholder="Cidade">
     <input id="pais" placeholder="País">
     <input id="comprovativo" type="file" accept="image/*,application/pdf">
 
-    <button id="confirmBtn">Confirmar Compra</button>
-    <button id="cancelBtn">Cancelar</button>
+    <button id="confirmar">Confirmar Compra</button>
+    <button id="cancelar">Cancelar</button>
   </section>
+
+  <section class="info">
+    <h3>💳 Dados Bancários</h3>
+    <p><b>BCA</b> – IBAN: CV64 0003 0000 02544214 101 76</p>
+    <p><b>CECV</b> – IBAN: CV64 0002 0000 03844137 102 02</p>
+
+    <h3>📞 Contactos</h3>
+    <p>Esmeraldo Borges – miraborges10@hotmail.com</p>
+    <p>Ana Maria Carvalho – dinaleia@hotmail.com</p>
+  </section>
+
 </main>
 
-<!-- MODAL (NUNCA ABRE SOZINHO) -->
-<div id="modal" class="modal">
-  <div class="modal-box">
+<!-- MODAL (COMEÇA ESCONDIDO) -->
+<div id="modal" class="modal hidden">
+  <div class="box">
     <h3>✅ Compra Confirmada</h3>
-    <p>Bilhete: <strong><span id="mBilhete"></span></strong></p>
-    <p>Nome: <strong><span id="mNome"></span></strong></p>
+    <p>Bilhete: <span id="mBilhete"></span></p>
+    <p>Nome: <span id="mNome"></span></p>
 
     <button id="pdfBtn">📄 Baixar Recibo (PDF)</button>
-    <button onclick="fecharModal()">Fechar</button>
+    <button id="fecharModal">Fechar</button>
   </div>
 </div>
 
@@ -59,6 +68,7 @@
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
 </script>
+
 <script src="js/index.js"></script>
 </body>
 </html>
