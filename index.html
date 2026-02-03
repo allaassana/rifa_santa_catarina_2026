@@ -17,7 +17,7 @@
 
 <main class="container">
 
-  <p class="stats">
+  <p>
     <strong>Vendidos:</strong> <span id="soldCount">0</span> |
     <strong>Disponíveis:</strong> <span id="availCount">120</span>
   </p>
@@ -31,13 +31,10 @@
     <input id="nome" placeholder="Nome *">
     <input id="tel" placeholder="Telefone *">
     <input id="email" type="email" placeholder="Email *">
-    <input id="nasc" type="date">
-    <input id="cidade" placeholder="Cidade">
-    <input id="pais" placeholder="País">
     <input id="comprovativo" type="file" accept="image/*,application/pdf">
 
     <button id="confirmBtn">Confirmar Compra</button>
-    <button id="cancelBtn" class="secondary">Cancelar</button>
+    <button id="cancelBtn">Cancelar</button>
   </section>
 
 </main>
@@ -50,7 +47,7 @@
     <p><b>Nome:</b> <span id="mNome"></span></p>
 
     <button id="pdfBtn">📄 Baixar Recibo (PDF)</button>
-    <button onclick="fecharModal()" class="secondary">Fechar</button>
+    <button onclick="fecharModal()">Fechar</button>
   </div>
 </div>
 
@@ -61,8 +58,6 @@
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="js/index.js"></script>
 
 </body>
