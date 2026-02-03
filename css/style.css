@@ -1,18 +1,18 @@
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
+  font-family: Arial, sans-serif;
   background: #f4f6f8;
 }
 
 .site-header {
-  background: #2f4858;
-  color: white;
-  text-align: center;
+  background: #2c3e50;
+  color: #fff;
   padding: 20px;
+  text-align: center;
 }
 
 .logo {
-  max-width: 120px;
+  max-height: 70px;
   margin-bottom: 10px;
 }
 
@@ -22,44 +22,57 @@ body {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
   gap: 8px;
-  margin-top: 20px;
 }
 
 .ticket {
   padding: 10px;
-  background: #7cc576;
-  color: white;
+  background: #4caf50;
+  color: #fff;
   text-align: center;
   border-radius: 6px;
   cursor: pointer;
-  font-weight: bold;
 }
 
 .ticket.sold {
-  background: #aaa;
+  background: #7f8c8d;
   cursor: not-allowed;
 }
 
-#formArea input,
-#formArea button {
+.form input, button {
   display: block;
   width: 100%;
   margin: 8px 0;
-  padding: 8px;
+  padding: 10px;
 }
 
-#modal {
+button {
+  background: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+}
+
+button.secondary {
+  background: #7f8c8d;
+}
+
+.hidden {
+  display: none;
+}
+
+.modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-#modal .box {
-  background: white;
+.modal-box {
+  background: #fff;
   padding: 20px;
-  max-width: 400px;
-  margin: 100px auto;
-  border-radius: 8px;
+  border-radius: 10px;
 }
