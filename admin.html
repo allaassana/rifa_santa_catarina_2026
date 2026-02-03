@@ -9,15 +9,16 @@
 <body>
 
 <header class="site-header">
-  <img src="assets/logo_diocese.png" class="logo">
   <h1>Painel Admin</h1>
 </header>
 
 <main class="container">
-  <button id="exportCsv">⬇ Exportar CSV</button>
-  <button id="drawWinner">🎉 Sortear</button>
 
-  <div id="ticketGrid" class="grid"></div>
+  <button id="exportCsv">⬇ Exportar CSV</button>
+  <button id="sortear">🎉 Sortear</button>
+
+  <div id="adminGrid" class="grid"></div>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -27,6 +28,7 @@
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
 </script>
+
 <script src="js/admin.js"></script>
 </body>
 </html>
