@@ -1,37 +1,38 @@
 const db = window.db;
-const grid = document.getElementById("adminGrid");
-const winners = document.getElementById("winners");
+const TOTAL = 120;
+const grid = document.getElementById("ticketGrid");
 
 async function carregar() {
   const { data = [] } = await db.from("compras").select("*");
+  const vendidos = data.map(d => d.bilhete);
+
   grid.innerHTML = "";
 
-  data.forEach(c => {
+  for (let i = 1; i <= TOTAL; i++) {
     const div = document.createElement("div");
-    div.className = "ticket sold";
-    div.innerHTML = `<b>${c.bilhete}</b><br>${c.nome}`;
+    div.className = "ticket";
+    div.textContent = i;
+
+    if (vendidos.includes(i)) {
+      div.classList.add("sold");
+    }
+
     grid.appendChild(div);
-  });
+  }
 }
 
-async function exportCSV() {
+async function exportarCSV() {
   const { data } = await db.from("compras").select("*");
-  let csv = "Bilhete,Nome,Telefone,Email\n";
-  data.forEach(d => {
-    csv += `${d.bilhete},${d.nome},${d.telefone},${d.email}\n`;
-  });
+  const csv = data.map(d => `${d.bilhete},${d.nome},${d.telefone}`).join("\n");
   const blob = new Blob([csv], { type: "text/csv" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "rifa.csv";
-  a.click();
+  window.open(URL.createObjectURL(blob));
 }
 
 async function sortear() {
   const { data } = await db.from("compras").select("*");
-  if (!data.length) return;
+  if (!data.length) return alert("Sem compras.");
   const v = data[Math.floor(Math.random() * data.length)];
-  winners.innerHTML += `<li>🎉 ${v.nome} - Bilhete ${v.bilhete}</li>`;
+  alert(`Vencedor: ${v.nome} (Bilhete ${v.bilhete})`);
 }
 
 carregar();
