@@ -1,4 +1,3 @@
-const { jsPDF } = window.jspdf;
 const db = window.db;
 const TOTAL = 120;
 
@@ -8,7 +7,6 @@ const availCount = document.getElementById("availCount");
 const formArea = document.getElementById("formArea");
 
 let selectedTicket = null;
-let lastBuyer = {};
 
 async function carregarBilhetes() {
   const { data = [] } = await db.from("compras").select("bilhete");
@@ -24,8 +22,9 @@ async function carregarBilhetes() {
     if (vendidos.includes(i)) {
       div.classList.add("sold");
     } else {
-      div.onclick = () => abrirFormulario(i);
+      div.onclick = () => selecionarBilhete(i);
     }
+
     grid.appendChild(div);
   }
 
@@ -33,7 +32,7 @@ async function carregarBilhetes() {
   availCount.textContent = TOTAL - vendidos.length;
 }
 
-function abrirFormulario(n) {
+function selecionarBilhete(n) {
   selectedTicket = n;
   document.getElementById("ticketNumber").textContent = n;
   formArea.classList.remove("hidden");
@@ -41,24 +40,35 @@ function abrirFormulario(n) {
 
 document.getElementById("cancelBtn").onclick = () => {
   formArea.classList.add("hidden");
+  selectedTicket = null;
 };
 
 document.getElementById("confirmBtn").onclick = async () => {
-  const nome = nomeEl.value.trim();
-  const tel = telEl.value.trim();
-  const email = emailEl.value.trim();
+  if (!selectedTicket) {
+    alert("Selecione um bilhete primeiro.");
+    return;
+  }
+
+  const nome = nome.value.trim();
+  const tel = tel.value.trim();
+  const email = email.value.trim();
   const file = comprovativo.files[0];
 
   if (!nome || !tel || !email || !file) {
-    alert("Preencha todos os campos obrigatórios.");
+    alert("Preencha todos os campos.");
     return;
   }
 
   const fileName = `${Date.now()}_${file.name}`;
-  const upload = await db.storage.from("comprovativos").upload(fileName, file);
-  if (upload.error) return alert("Erro no upload.");
+  const { error: uploadError } = await db.storage
+    .from("comprovativos")
+    .upload(fileName, file);
 
-  const { data: url } = db.storage.from("comprovativos").getPublicUrl(fileName);
+  if (uploadError) return alert("Erro no upload.");
+
+  const { data: url } = db.storage
+    .from("comprovativos")
+    .getPublicUrl(fileName);
 
   await db.from("compras").insert({
     bilhete: selectedTicket,
@@ -67,8 +77,6 @@ document.getElementById("confirmBtn").onclick = async () => {
     email,
     comprovativo_url: url.publicUrl
   });
-
-  lastBuyer = { nome, bilhete: selectedTicket };
 
   document.getElementById("mBilhete").textContent = selectedTicket;
   document.getElementById("mNome").textContent = nome;
@@ -79,17 +87,9 @@ document.getElementById("confirmBtn").onclick = async () => {
   carregarBilhetes();
 };
 
-document.getElementById("pdfBtn").onclick = () => {
-  const pdf = new jsPDF();
-  pdf.text("RECIBO - RIFA SANTA CATARINA 2025", 20, 20);
-  pdf.text(`Nome: ${lastBuyer.nome}`, 20, 40);
-  pdf.text(`Bilhete Nº: ${lastBuyer.bilhete}`, 20, 55);
-  pdf.text("Pagamento via transferência bancária", 20, 75);
-  pdf.save(`recibo_bilhete_${lastBuyer.bilhete}.pdf`);
-};
-
 function fecharModal() {
   document.getElementById("modal").classList.add("hidden");
+  selectedTicket = null;
 }
 
 carregarBilhetes();
