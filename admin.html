@@ -2,20 +2,21 @@
 <html lang="pt">
 <head>
   <meta charset="utf-8">
-  <title>Admin - Rifa</title>
+  <title>Painel Admin</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
+<header class="site-header">
+  <h1>Painel Admin</h1>
+</header>
 
-<script>
-  if (prompt("Senha admin") !== "admin2025") location.href = "index.html";
-</script>
+<main class="container">
+  <button onclick="exportCSV()">⬇️ Exportar CSV</button>
+  <button onclick="sortear()">🎉 Sortear</button>
 
-<h1>Painel Admin</h1>
-<button onclick="exportCSV()">⬇️ Exportar CSV</button>
-<button onclick="sortear()">🎉 Sortear</button>
-
-<div id="grid" class="grid"></div>
+  <div id="lista"></div>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
