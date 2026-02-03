@@ -1,10 +1,9 @@
 const db = window.db;
-const TOTAL = 120;
 const grid = document.getElementById("ticketGrid");
+const TOTAL = 120;
 
-async function carregar() {
+async function carregarAdmin() {
   const { data = [] } = await db.from("compras").select("*");
-  const vendidos = data.map(d => d.bilhete);
 
   grid.innerHTML = "";
 
@@ -13,26 +12,14 @@ async function carregar() {
     div.className = "ticket";
     div.textContent = i;
 
-    if (vendidos.includes(i)) {
+    const compra = data.find(c => c.bilhete === i);
+    if (compra) {
       div.classList.add("sold");
+      div.title = compra.nome;
     }
 
     grid.appendChild(div);
   }
 }
 
-async function exportarCSV() {
-  const { data } = await db.from("compras").select("*");
-  const csv = data.map(d => `${d.bilhete},${d.nome},${d.telefone}`).join("\n");
-  const blob = new Blob([csv], { type: "text/csv" });
-  window.open(URL.createObjectURL(blob));
-}
-
-async function sortear() {
-  const { data } = await db.from("compras").select("*");
-  if (!data.length) return alert("Sem compras.");
-  const v = data[Math.floor(Math.random() * data.length)];
-  alert(`Vencedor: ${v.nome} (Bilhete ${v.bilhete})`);
-}
-
-carregar();
+carregarAdmin();
