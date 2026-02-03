@@ -1,35 +1,27 @@
 const db = window.db;
-const grid = document.getElementById("grid");
+const lista = document.getElementById("lista");
 
 async function carregar() {
-  const { data } = await db.from("compras").select("*");
-  grid.innerHTML = "";
-  data.forEach(c => {
-    const d = document.createElement("div");
-    d.textContent = `#${c.bilhete} - ${c.nome}`;
-    d.className = "ticket sold";
-    grid.appendChild(d);
-  });
-}
-
-async function sortear() {
-  const { data } = await db.from("compras").select("*");
-  if (!data.length) return alert("Sem compras");
-  const v = data[Math.floor(Math.random() * data.length)];
-  alert(`🎉 Vencedor: ${v.nome} (Bilhete ${v.bilhete})`);
+  const { data = [] } = await db.from("compras").select("*");
+  lista.innerHTML = data.map(d =>
+    `#${d.bilhete} - ${d.nome}`
+  ).join("<br>");
 }
 
 async function exportCSV() {
   const { data } = await db.from("compras").select("*");
-  let csv = "bilhete,nome,telefone,email\n";
-  data.forEach(r => {
-    csv += `${r.bilhete},${r.nome},${r.telefone},${r.email}\n`;
-  });
+  const csv = data.map(d => `${d.bilhete},${d.nome},${d.email}`).join("\n");
   const blob = new Blob([csv], { type: "text/csv" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "compras.csv";
+  a.download = "rifa.csv";
   a.click();
+}
+
+async function sortear() {
+  const { data } = await db.from("compras").select("*");
+  const v = data[Math.floor(Math.random() * data.length)];
+  alert(`🎉 Vencedor: ${v.nome} (Bilhete ${v.bilhete})`);
 }
 
 carregar();
