@@ -13,17 +13,10 @@
 </header>
 
 <main class="container">
+  <button onclick="exportarCSV()">⬇ Exportar CSV</button>
+  <button onclick="sortear()">🎉 Sortear</button>
 
-  <div class="admin-actions">
-    <button onclick="exportCSV()">⬇ Exportar CSV</button>
-    <button onclick="sortear()">🎉 Sortear</button>
-  </div>
-
-  <div id="adminGrid" class="grid"></div>
-
-  <h3>Vencedores</h3>
-  <ul id="winners"></ul>
-
+  <div id="ticketGrid" class="grid"></div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -34,5 +27,6 @@
   );
 </script>
 <script src="js/admin.js"></script>
+
 </body>
 </html>
