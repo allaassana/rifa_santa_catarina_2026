@@ -1,33 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <title>Painel do Admin</title>
+  <meta charset="utf-8">
+  <title>Admin - Rifa</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header class="topo">
-  <h1>Painel do Admin</h1>
-  <p>Gestão da Rifa</p>
-</header>
+<script>
+  if (prompt("Senha admin") !== "admin2025") location.href = "index.html";
+</script>
 
-<main class="container">
+<h1>Painel Admin</h1>
+<button onclick="exportCSV()">⬇️ Exportar CSV</button>
+<button onclick="sortear()">🎉 Sortear</button>
 
-  <button onclick="limparCompras()" class="btn-danger">
-    Limpar Todas as Compras
-  </button>
-
-  <p><strong>Vendidos:</strong> <span id="vendidos">0</span></p>
-
-  <div id="bilhetes" class="grid"></div>
-
-  <button onclick="sortear()">Sortear Vencedor</button>
-
-</main>
+<div id="grid" class="grid"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/admin.js"></script>
+<script>
+  window.db = supabase.createClient(
+    "https://ydyuxumwqnuhomahaxet.supabase.co",
+    "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
+  );
+</script>
 
+<script src="js/admin.js"></script>
 </body>
 </html>
