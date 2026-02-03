@@ -17,18 +17,21 @@
 
 <main class="container">
 
-  <p><strong>Vendidos:</strong> <span id="soldCount">0</span> |
-     <strong>Disponíveis:</strong> <span id="availCount">120</span></p>
+  <p>
+    <strong>Vendidos:</strong> <span id="soldCount">0</span> |
+    <strong>Disponíveis:</strong> <span id="availCount">120</span>
+  </p>
 
   <div id="ticketGrid" class="grid"></div>
 
-  <!-- FORM -->
+  <!-- FORMULÁRIO -->
   <section id="formArea" class="hidden">
     <h3>Bilhete Nº <span id="ticketNumber"></span></h3>
 
     <input id="nome" placeholder="Nome *">
-    <input id="telefone" placeholder="Telefone *">
-    <input id="email" placeholder="Email *">
+    <input id="telefone" placeholder="Telefone / WhatsApp *">
+    <input id="email" type="email" placeholder="Email *">
+    <input id="nascimento" type="date">
     <input id="cidade" placeholder="Cidade">
     <input id="pais" placeholder="País">
     <input id="comprovativo" type="file" accept="image/*,application/pdf">
@@ -49,7 +52,7 @@
 
 </main>
 
-<!-- MODAL (COMEÇA ESCONDIDO) -->
+<!-- MODAL (COMEÇA SEMPRE ESCONDIDO) -->
 <div id="modal" class="modal hidden">
   <div class="box">
     <h3>✅ Compra Confirmada</h3>
