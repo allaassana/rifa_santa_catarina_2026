@@ -1,35 +1,31 @@
 // ================================
-// CONFIGURAÇÃO SUPABASE (CORRETA)
+// SUPABASE (SEM DUPLICAR VARIÁVEL)
 // ================================
 const SUPABASE_URL = "https://ydyuxumwquhomahaxet.supabase.co";
 const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
 
-// usar o client do CDN (SEM duplicar)
-const supabase = window.supabase.createClient(
+// ⚠️ NÃO usar "const supabase"
+const db = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
 // ================================
-// ESTADO
-// ================================
 const TOTAL_BILHETES = 120;
 let bilheteAtual = null;
 
-// ================================
-// CARREGAR BILHETES
 // ================================
 async function carregarBilhetes() {
   const grid = document.getElementById("bilhetes");
   grid.innerHTML = "";
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from("compras")
     .select("bilhete");
 
   if (error) {
-    alert("Erro ao carregar bilhetes");
     console.error(error);
+    alert("Erro ao carregar bilhetes");
     return;
   }
 
@@ -56,8 +52,6 @@ async function carregarBilhetes() {
 }
 
 // ================================
-// SELECIONAR BILHETE
-// ================================
 function selecionarBilhete(numero) {
   bilheteAtual = numero;
   document.getElementById("bilheteSelecionado").innerText =
@@ -65,16 +59,11 @@ function selecionarBilhete(numero) {
   document.getElementById("formulario").classList.remove("hidden");
 }
 
-// ================================
-// CANCELAR
-// ================================
 function cancelar() {
   document.getElementById("formulario").classList.add("hidden");
   bilheteAtual = null;
 }
 
-// ================================
-// CONFIRMAR COMPRA
 // ================================
 async function confirmarCompra() {
   if (!bilheteAtual) return;
@@ -91,7 +80,7 @@ async function confirmarCompra() {
     return;
   }
 
-  const { error } = await supabase.from("compras").insert([{
+  const { error } = await db.from("compras").insert([{
     bilhete: bilheteAtual,
     nome,
     telefone,
@@ -103,8 +92,8 @@ async function confirmarCompra() {
   }]);
 
   if (error) {
-    alert("Erro ao registar compra");
     console.error(error);
+    alert("Erro ao registar compra");
     return;
   }
 
@@ -113,7 +102,5 @@ async function confirmarCompra() {
   carregarBilhetes();
 }
 
-// ================================
-// INIT
 // ================================
 document.addEventListener("DOMContentLoaded", carregarBilhetes);
