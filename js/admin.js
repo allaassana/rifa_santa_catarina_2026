@@ -1,40 +1,35 @@
-const SUPABASE_URL = "https://ydyuxumwquhomahaxet.supabase.co";
-const SUPABASE_KEY = "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u";
+const db = window.db;
+const grid = document.getElementById("grid");
 
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-document.addEventListener("DOMContentLoaded", carregarAdmin);
-
-async function carregarAdmin() {
-  const { data, error } = await client
-    .from("compras")
-    .select("*");
-
-  if (error) {
-    alert("Erro ao carregar admin");
-    console.error(error);
-    return;
-  }
-
-  document.getElementById("vendidos").textContent = data.length;
-
-  const grid = document.getElementById("bilhetes");
+async function carregar() {
+  const { data } = await db.from("compras").select("*");
   grid.innerHTML = "";
-
   data.forEach(c => {
-    const b = document.createElement("div");
-    b.textContent = c.bilhete;
-    b.className = "numero vendido";
-    grid.appendChild(b);
+    const d = document.createElement("div");
+    d.textContent = `#${c.bilhete} - ${c.nome}`;
+    d.className = "ticket sold";
+    grid.appendChild(d);
   });
 }
 
-async function limparCompras() {
-  if (!confirm("Tens a certeza?")) return;
-  await client.from("compras").delete().neq("id", 0);
-  location.reload();
+async function sortear() {
+  const { data } = await db.from("compras").select("*");
+  if (!data.length) return alert("Sem compras");
+  const v = data[Math.floor(Math.random() * data.length)];
+  alert(`🎉 Vencedor: ${v.nome} (Bilhete ${v.bilhete})`);
 }
 
-function sortear() {
-  alert("Sorteio manual pelo admin");
+async function exportCSV() {
+  const { data } = await db.from("compras").select("*");
+  let csv = "bilhete,nome,telefone,email\n";
+  data.forEach(r => {
+    csv += `${r.bilhete},${r.nome},${r.telefone},${r.email}\n`;
+  });
+  const blob = new Blob([csv], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "compras.csv";
+  a.click();
 }
+
+carregar();
