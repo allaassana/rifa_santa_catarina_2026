@@ -5,12 +5,13 @@
   <title>Rifa Santa Catarina 2025</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:,">
 </head>
 
 <body>
 
 <header class="site-header">
-  <img src="logo_diocese.png" height="90">
+  <img src="logo_diocese.png" alt="Diocese" style="max-height:90px">
   <h1>Rifa Santa Catarina 2025</h1>
   <p>Centro Pastoral Santa Ana & São Joaquim</p>
 </header>
@@ -33,10 +34,9 @@
     <input id="nasc" type="date">
     <input id="cidade" placeholder="Cidade">
     <input id="pais" placeholder="País">
-
-    <p><b>Valor:</b> 20 € / 2.200 CVE</p>
-
     <input id="comprovativo" type="file" accept="image/*,application/pdf">
+
+    <p><strong>Valor:</strong> 20 € / 2.200 CVE</p>
 
     <button id="confirmBtn">Confirmar Compra</button>
     <button id="cancelBtn">Cancelar</button>
@@ -44,22 +44,17 @@
 
 </main>
 
-<!-- MODAL -->
 <div id="modal" style="display:none">
   <div class="box">
     <h3>✅ Compra Confirmada</h3>
     <p>Bilhete: <span id="mBilhete"></span></p>
     <p>Nome: <span id="mNome"></span></p>
-
     <button id="pdfBtn">📄 Baixar Recibo (PDF)</button>
-    <button id="whatsBtn">📲 WhatsApp</button>
     <button onclick="fecharModal()">Fechar</button>
   </div>
 </div>
 
-<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
   window.db = supabase.createClient(
     "https://ydyuxumwqnuhomahaxet.supabase.co",
@@ -67,9 +62,7 @@
   );
 </script>
 
-<!-- PDF -->
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-
 <script src="js/index.js"></script>
 </body>
 </html>
