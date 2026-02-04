@@ -3,25 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Painel Admin</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
+
 <header class="site-header">
   <h1>Painel Admin</h1>
 </header>
 
 <main class="container">
-  <div id="bilhetes" class="grid"></div>
+  <div id="grelhaAdmin" class="grid"></div>
 
-  <h3>Detalhes do Comprador</h3>
-  <div id="detalhes"></div>
+  <section>
+    <h3>Detalhes do Comprador</h3>
+    <pre id="detalhes"></pre>
+  </section>
 
-  <h3>🏆 Vencedores</h3>
-  <ul id="vencedores"></ul>
+  <section>
+    <h3>Vencedores</h3>
+    <ul id="vencedores"></ul>
+  </section>
 </main>
 
-<script src="js/admin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="admin.js"></script>
 </body>
 </html>
