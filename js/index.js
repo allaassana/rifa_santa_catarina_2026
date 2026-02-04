@@ -1,76 +1,83 @@
-document.addEventListener("DOMContentLoaded", async () => {
+const supabaseUrl = "https://ydyuxmwqunhomahaxet.supabase.co";
+const supabaseKey = "COLOCA_AQUI_A_ANON_KEY";
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-  const supabase = window.supabase.createClient(
-    "https://ydyxumwquhnohomahaxet.supabase.co",
-    "SB_PUBLISHABLE_KEY_AQUI"
-  );
+const grelha = document.getElementById("grelha");
+const form = document.getElementById("formCompra");
+const titulo = document.getElementById("bilheteTitulo");
+const contador = document.getElementById("contador");
 
-  const bilhetesDiv = document.getElementById("bilhetes");
-  const form = document.getElementById("formulario");
-  const numSpan = document.getElementById("numSelecionado");
-  let numeroAtual = null;
+let bilheteSelecionado = null;
 
-  const { data: bilhetes } = await supabase
+// ---------- GRELHA ----------
+async function carregarBilhetes() {
+  grelha.innerHTML = "";
+
+  const { data } = await supabase
     .from("bilhetes")
     .select("*")
     .order("numero");
 
-  bilhetes.forEach(b => {
+  let vendidos = data.filter(b => b.vendido).length;
+  contador.textContent = `Vendidos: ${vendidos} | Disponíveis: ${120 - vendidos}`;
+
+  data.forEach(b => {
     const btn = document.createElement("button");
     btn.textContent = b.numero;
-    btn.className = b.vendido ? "vendido" : "livre";
-
-    if (!b.vendido) {
-      btn.onclick = () => {
-        numeroAtual = b.numero;
-        numSpan.textContent = b.numero;
-        form.classList.remove("hidden");
-      };
-    }
-
-    bilhetesDiv.appendChild(btn);
+    btn.className = b.vendido ? "ocupado" : "livre";
+    btn.disabled = b.vendido;
+    btn.onclick = () => abrirFormulario(b.numero);
+    grelha.appendChild(btn);
   });
+}
 
-  document.getElementById("cancelar").onclick = () => {
-    form.classList.add("hidden");
-    numeroAtual = null;
-  };
+// ---------- FORM ----------
+function abrirFormulario(numero) {
+  bilheteSelecionado = numero;
+  titulo.textContent = `Bilhete Nº ${numero}`;
+  form.classList.remove("hidden");
+}
 
-  document.getElementById("confirmar").onclick = async () => {
-    if (!numeroAtual) return;
+function fecharFormulario() {
+  form.reset();
+  form.classList.add("hidden");
+}
 
-    const file = document.getElementById("comprovativo").files[0];
-    const fileName = `${Date.now()}_${file.name}`;
+// ---------- SUBMIT ----------
+form.addEventListener("submit", async e => {
+  e.preventDefault();
 
-    const { data: upload, error: uploadError } =
-      await supabase.storage.from("comprovativos").upload(fileName, file);
+  const file = document.getElementById("comprovativo").files[0];
+  const filePath = `bilhete_${bilheteSelecionado}_${Date.now()}`;
 
-    if (uploadError) {
-      alert("Erro no upload do comprovativo");
-      return;
-    }
+  const { error: uploadError } = await supabase
+    .storage
+    .from("comprovativos")
+    .upload(filePath, file);
 
-    const { data: comprador } = await supabase
-      .from("compradores")
-      .insert({
-        nome: nome.value,
-        telefone: telefone.value,
-        email: email.value,
-        data_nascimento: data_nascimento.value,
-        cidade: cidade.value,
-        pais: pais.value,
-        comprovativo_url: upload.path
-      })
-      .select()
-      .single();
+  if (uploadError) {
+    alert("Erro no upload do comprovativo");
+    return;
+  }
 
-    await supabase
-      .from("bilhetes")
-      .update({ vendido: true, comprador_id: comprador.id })
-      .eq("numero", numeroAtual);
+  const { error } = await supabase.from("bilhetes").update({
+    vendido: true,
+    nome: nome.value,
+    telefone: telefone.value,
+    email: email.value,
+    data_nascimento: dataNascimento.value,
+    localidade: localidade.value,
+    comprovativo: filePath
+  }).eq("numero", bilheteSelecionado);
 
-    alert("Compra registada com sucesso!");
-    location.reload();
-  };
+  if (error) {
+    alert("Erro ao gravar compra");
+    return;
+  }
 
+  alert("Compra registada com sucesso!");
+  fecharFormulario();
+  carregarBilhetes();
 });
+
+carregarBilhetes();
