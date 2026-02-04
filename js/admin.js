@@ -1,52 +1,24 @@
-const grid = document.getElementById("grid");
-const detalhes = document.getElementById("detalhes");
-const vencedores = document.getElementById("vencedores");
-const TOTAL = 120;
+const supabaseUrl = "https://ydyxumwqunhomahaxet.supabase.co";
+const supabaseKey = "SUA_PUBLIC_ANON_KEY_AQUI";
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-async function carregarAdmin() {
-  const { data = [] } = await db.from("compras").select("*");
-  grid.innerHTML = "";
+document.addEventListener("DOMContentLoaded", carregar);
 
-  for (let i = 1; i <= TOTAL; i++) {
-    const div = document.createElement("div");
-    div.className = "ticket";
-    div.textContent = i;
+async function carregar() {
+  const { data } = await supabase.from("compras").select("*").order("bilhete");
 
-    const compra = data.find(c => c.bilhete === i);
-    if (compra) {
-      div.classList.add("sold");
-      div.onclick = () => mostrarDetalhes(compra);
-    }
-    grid.appendChild(div);
-  }
-}
+  const tbody = document.getElementById("lista");
+  tbody.innerHTML = "";
 
-function mostrarDetalhes(c) {
-  detalhes.innerHTML = `
-    <p><b>Bilhete:</b> ${c.bilhete}</p>
-    <p><b>Nome:</b> ${c.nome}</p>
-    <p><b>Telefone:</b> ${c.telefone}</p>
-    <p><b>Email:</b> ${c.email}</p>
-    <a href="${c.comprovativo}" target="_blank">📎 Comprovativo</a>
-  `;
-}
-
-document.getElementById("sortear").onclick = async () => {
-  const { data } = await db.from("compras").select("*");
-  const v = data[Math.floor(Math.random() * data.length)];
-  await db.from("vencedores").insert(v);
-  carregarVencedores();
-};
-
-async function carregarVencedores() {
-  const { data = [] } = await db.from("vencedores").select("*");
-  vencedores.innerHTML = "";
-  data.forEach(v => {
-    const li = document.createElement("li");
-    li.textContent = `Bilhete ${v.bilhete} — ${v.nome}`;
-    vencedores.appendChild(li);
+  data.forEach(c => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${c.bilhete}</td>
+        <td>${c.nome}</td>
+        <td>${c.telefone}</td>
+        <td>${c.email}</td>
+        <td>${c.localidade}</td>
+      </tr>
+    `;
   });
 }
-
-carregarAdmin();
-carregarVencedores();
