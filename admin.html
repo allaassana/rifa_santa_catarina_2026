@@ -1,31 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Painel Admin</title>
-  <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-
-<header class="site-header">
   <h1>Painel Admin</h1>
-</header>
 
-<main class="container">
-  <div id="grelhaAdmin" class="grid"></div>
+  <h2>Bilhetes Vendidos</h2>
+  <div id="grelhaAdmin"></div>
 
-  <section>
-    <h3>Detalhes do Comprador</h3>
-    <pre id="detalhes"></pre>
-  </section>
+  <h2>Detalhes do Comprador</h2>
+  <pre id="detalhes"></pre>
 
-  <section>
-    <h3>Vencedores</h3>
-    <ul id="vencedores"></ul>
-  </section>
-</main>
+  <h2>🏆 Vencedores</h2>
+  <ul id="vencedores"></ul>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="admin.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="admin.js"></script>
 </body>
 </html>
