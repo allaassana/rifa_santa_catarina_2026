@@ -1,46 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Rifa Santa Catarina 2025</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
-  <header class="site-header">
-    <h1>Rifa Santa Catarina 2025</h1>
-    <p>Centro Pastoral Santa Ana & São Joaquim</p>
-  </header>
+<header class="site-header">
+  <h1>Rifa Santa Catarina 2025</h1>
+  <p>Centro Pastoral Santa Ana & São Joaquim</p>
+</header>
 
-  <main class="container">
-    <p><strong>Vendidos:</strong> <span id="vendidos">0</span> |
-       <strong>Disponíveis:</strong> <span id="disponiveis">120</span></p>
+<main class="container">
+  <p>
+    <strong>Vendidos:</strong> <span id="vendidos">0</span> |
+    <strong>Disponíveis:</strong> <span id="disponiveis">120</span>
+  </p>
 
-    <div id="bilhetes"></div>
+  <div id="bilhetes" class="grid"></div>
 
-    <h3>Bilhete Nº <span id="bilheteSelecionado">—</span></h3>
+  <section id="formulario" class="hidden">
+    <h3>Bilhete Nº <span id="numSelecionado"></span></h3>
 
-    <form id="formCompra">
-      <input id="nome" placeholder="Nome completo" required />
-      <input id="telefone" placeholder="Telefone" required />
-      <input id="email" type="email" placeholder="Email" required />
-      <input id="data_nascimento" type="date" required />
-      <input id="cidade" placeholder="Cidade" required />
-      <input id="pais" placeholder="País" required />
-      <input id="comprovativo" type="file" required />
-      <button type="submit">Confirmar Compra</button>
-    </form>
+    <input id="nome" placeholder="Nome" required>
+    <input id="telefone" placeholder="Telefone" required>
+    <input id="email" type="email" placeholder="Email" required>
+    <input id="data_nascimento" type="date" required>
+    <input id="cidade" placeholder="Cidade" required>
+    <input id="pais" placeholder="País" required>
+    <input id="comprovativo" type="file" required>
 
-    <h3>Dados Bancários</h3>
-    <p>BCA – IBAN: CV64 0003 0000 02544214 101 76</p>
-    <p>CECV – IBAN: CV64 0002 0000 03844137 102 02</p>
+    <button id="confirmar">Confirmar Compra</button>
+    <button id="cancelar">Cancelar</button>
+  </section>
 
-    <h3>Contactos</h3>
-    <p>Esmeraldo Borges – miraborges10@hotmail.com</p>
-    <p>Ana Maria Carvalho – dinaleia@hotmail.com</p>
-  </main>
+  <h3>Dados Bancários</h3>
+  <p>BCA – IBAN: CV64 0003 0000 02544214 101 76</p>
+  <p>CECV – IBAN: CV64 0002 0000 03844137 102 02</p>
 
-  <script src="js/index.js"></script>
+  <h3>Contactos</h3>
+  <p>Esmeraldo Borges – miraborges10@hotmail.com</p>
+  <p>Ana Maria Carvalho – dinaleia@hotmail.com</p>
+</main>
+
+<script src="js/index.js"></script>
 </body>
 </html>
