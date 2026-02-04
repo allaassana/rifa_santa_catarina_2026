@@ -1,20 +1,37 @@
-document.addEventListener("DOMContentLoaded", async () => {
+async function carregarAdmin() {
+  const { data, error } = await supabase.from("bilhetes").select("*");
 
-  const supabase = window.supabase.createClient(
-    "https://SEU_PROJECT_ID.supabase.co",
-    "SUA_PUBLIC_ANON_KEY"
-  );
+  if (error) {
+    console.error(error);
+    return;
+  }
 
-  const grelha = document.getElementById("grelhaAdmin");
-  const detalhes = document.getElementById("detalhes");
+  const grelha = document.getElementById("grelha-admin");
+  grelha.innerHTML = "";
 
-  const { data } = await supabase.from("bilhetes").select("*");
-
-  data.forEach(b => {
+  for (let i = 1; i <= 120; i++) {
+    const vendido = data.find(b => b.numero === i);
     const btn = document.createElement("button");
-    btn.textContent = b.numero;
-    btn.onclick = () => detalhes.textContent = JSON.stringify(b, null, 2);
-    grelha.appendChild(btn);
-  });
 
-});
+    btn.textContent = i;
+    btn.className = vendido ? "vendido" : "livre";
+
+    if (vendido) {
+      btn.onclick = () => mostrarDetalhes(vendido);
+    }
+
+    grelha.appendChild(btn);
+  }
+}
+
+function mostrarDetalhes(b) {
+  document.getElementById("detalhes-bilhete").innerHTML = `
+    <h3>Bilhete ${b.numero}</h3>
+    <p><b>Nome:</b> ${b.nome}</p>
+    <p><b>Telefone:</b> ${b.telefone}</p>
+    <p><b>Email:</b> ${b.email}</p>
+    <p><b>Cidade:</b> ${b.cidade}</p>
+  `;
+}
+
+document.addEventListener("DOMContentLoaded", carregarAdmin);
