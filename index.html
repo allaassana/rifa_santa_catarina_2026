@@ -1,9 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>Rifa Santa Catarina 2025</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -24,12 +24,11 @@
 
   <div id="ticketGrid" class="grid"></div>
 
-  <!-- FORMULÁRIO -->
-  <section id="formArea" class="hidden">
+  <section id="formArea" class="form hidden">
     <h3>Bilhete Nº <span id="ticketNumber"></span></h3>
 
     <input id="nome" placeholder="Nome *">
-    <input id="telefone" placeholder="Telefone / WhatsApp *">
+    <input id="telefone" placeholder="Telefone *">
     <input id="email" type="email" placeholder="Email *">
     <input id="nascimento" type="date">
     <input id="cidade" placeholder="Cidade">
@@ -42,8 +41,8 @@
 
   <section class="info">
     <h3>💳 Dados Bancários</h3>
-    <p><b>BCA</b> – IBAN: CV64 0003 0000 02544214 101 76</p>
-    <p><b>CECV</b> – IBAN: CV64 0002 0000 03844137 102 02</p>
+    <p>BCA – IBAN: CV64 0003 0000 02544214 101 76</p>
+    <p>CECV – IBAN: CV64 0002 0000 03844137 102 02</p>
 
     <h3>📞 Contactos</h3>
     <p>Esmeraldo Borges – miraborges10@hotmail.com</p>
@@ -52,15 +51,14 @@
 
 </main>
 
-<!-- MODAL (COMEÇA SEMPRE ESCONDIDO) -->
+<!-- MODAL -->
 <div id="modal" class="modal hidden">
-  <div class="box">
+  <div class="modal-box">
     <h3>✅ Compra Confirmada</h3>
     <p>Bilhete: <span id="mBilhete"></span></p>
     <p>Nome: <span id="mNome"></span></p>
-
-    <button id="pdfBtn">📄 Baixar Recibo (PDF)</button>
-    <button id="fecharModal">Fechar</button>
+    <button id="baixarPDF">📄 Baixar Recibo (PDF)</button>
+    <button onclick="fecharModal()">Fechar</button>
   </div>
 </div>
 
@@ -71,7 +69,6 @@
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
 </script>
-
 <script src="js/index.js"></script>
 </body>
 </html>
