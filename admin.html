@@ -1,11 +1,10 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>Painel Admin</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
 <header class="site-header">
@@ -13,12 +12,16 @@
 </header>
 
 <main class="container">
-
-  <button id="exportar">⬇ Exportar CSV</button>
+  <button id="exportCSV">⬇ Exportar CSV</button>
   <button id="sortear">🎉 Sortear</button>
 
   <div id="grid" class="grid"></div>
 
+  <h3>Detalhes do Comprador</h3>
+  <div id="detalhes"></div>
+
+  <h3>🏆 Vencedores</h3>
+  <ul id="vencedores"></ul>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -28,7 +31,6 @@
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
 </script>
-
 <script src="js/admin.js"></script>
 </body>
 </html>
