@@ -5,43 +5,38 @@
   <title>Rifa Santa Catarina 2025</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
 
-<header class="site-header">
+<body>
   <h1>Rifa Santa Catarina 2025</h1>
   <p>Centro Pastoral Santa Ana & São Joaquim</p>
-</header>
 
-<main class="container">
-  <p id="contador">Vendidos: 0 | Disponíveis: 120</p>
-  <div id="grelha" class="grid"></div>
+  <p id="status">Vendidos: 0 | Disponíveis: 120</p>
 
-  <form id="formCompra" class="hidden">
-    <h3 id="bilheteTitulo"></h3>
+  <div id="grelha"></div>
+
+  <form id="formCompra" hidden>
+    <h3>Bilhete Nº <span id="bilheteSelecionado"></span></h3>
+
     <input id="nome" placeholder="Nome completo" required />
     <input id="telefone" placeholder="Telefone" required />
     <input id="email" type="email" placeholder="Email" required />
     <input id="dataNascimento" type="date" required />
     <input id="localidade" placeholder="Localidade" required />
-    <input id="comprovativo" type="file" accept="image/*,application/pdf" required />
+    <input id="comprovativo" type="file" required />
+
     <button type="submit">Confirmar Compra</button>
-    <button type="button" onclick="fecharFormulario()">Cancelar</button>
+    <button type="button" id="cancelar">Cancelar</button>
   </form>
 
-  <section>
-    <h3>Dados Bancários</h3>
-    <p>BCA – IBAN: CV64 0003 0000 02544214 101 76</p>
-    <p>CECV – IBAN: CV64 0002 0000 03844137 102 02</p>
-  </section>
+  <div id="modal" hidden>
+    <h2>✅ Compra Confirmada</h2>
+    <p>Bilhete: <span id="modalBilhete"></span></p>
+    <p>Nome: <span id="modalNome"></span></p>
+    <button onclick="fecharModal()">Fechar</button>
+  </div>
 
-  <section>
-    <h3>Contactos</h3>
-    <p>Esmeraldo Borges – miraborges10@hotmail.com</p>
-    <p>Ana Maria Carvalho – dinaleia@hotmail.com</p>
-  </section>
-</main>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="index.js"></script>
+  <!-- SUPABASE (APENAS UMA VEZ) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="index.js"></script>
 </body>
 </html>
