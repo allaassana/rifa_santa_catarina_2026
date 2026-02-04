@@ -1,37 +1,52 @@
+const grid = document.getElementById("grid");
+const detalhes = document.getElementById("detalhes");
+const vencedores = document.getElementById("vencedores");
+const TOTAL = 120;
+
 async function carregarAdmin() {
-  const { data, error } = await supabase.from("bilhetes").select("*");
+  const { data = [] } = await db.from("compras").select("*");
+  grid.innerHTML = "";
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+  for (let i = 1; i <= TOTAL; i++) {
+    const div = document.createElement("div");
+    div.className = "ticket";
+    div.textContent = i;
 
-  const grelha = document.getElementById("grelha-admin");
-  grelha.innerHTML = "";
-
-  for (let i = 1; i <= 120; i++) {
-    const vendido = data.find(b => b.numero === i);
-    const btn = document.createElement("button");
-
-    btn.textContent = i;
-    btn.className = vendido ? "vendido" : "livre";
-
-    if (vendido) {
-      btn.onclick = () => mostrarDetalhes(vendido);
+    const compra = data.find(c => c.bilhete === i);
+    if (compra) {
+      div.classList.add("sold");
+      div.onclick = () => mostrarDetalhes(compra);
     }
-
-    grelha.appendChild(btn);
+    grid.appendChild(div);
   }
 }
 
-function mostrarDetalhes(b) {
-  document.getElementById("detalhes-bilhete").innerHTML = `
-    <h3>Bilhete ${b.numero}</h3>
-    <p><b>Nome:</b> ${b.nome}</p>
-    <p><b>Telefone:</b> ${b.telefone}</p>
-    <p><b>Email:</b> ${b.email}</p>
-    <p><b>Cidade:</b> ${b.cidade}</p>
+function mostrarDetalhes(c) {
+  detalhes.innerHTML = `
+    <p><b>Bilhete:</b> ${c.bilhete}</p>
+    <p><b>Nome:</b> ${c.nome}</p>
+    <p><b>Telefone:</b> ${c.telefone}</p>
+    <p><b>Email:</b> ${c.email}</p>
+    <a href="${c.comprovativo}" target="_blank">📎 Comprovativo</a>
   `;
 }
 
-document.addEventListener("DOMContentLoaded", carregarAdmin);
+document.getElementById("sortear").onclick = async () => {
+  const { data } = await db.from("compras").select("*");
+  const v = data[Math.floor(Math.random() * data.length)];
+  await db.from("vencedores").insert(v);
+  carregarVencedores();
+};
+
+async function carregarVencedores() {
+  const { data = [] } = await db.from("vencedores").select("*");
+  vencedores.innerHTML = "";
+  data.forEach(v => {
+    const li = document.createElement("li");
+    li.textContent = `Bilhete ${v.bilhete} — ${v.nome}`;
+    vencedores.appendChild(li);
+  });
+}
+
+carregarAdmin();
+carregarVencedores();
