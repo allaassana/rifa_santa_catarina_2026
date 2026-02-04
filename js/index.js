@@ -1,83 +1,71 @@
-const supabaseUrl = "https://ydyuxmwqunhomahaxet.supabase.co";
-const supabaseKey = "COLOCA_AQUI_A_ANON_KEY";
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+document.addEventListener("DOMContentLoaded", () => {
 
-const grelha = document.getElementById("grelha");
-const form = document.getElementById("formCompra");
-const titulo = document.getElementById("bilheteTitulo");
-const contador = document.getElementById("contador");
+  const supabase = window.supabase.createClient(
+    "https://SEU_PROJECT_ID.supabase.co",
+    "SUA_PUBLIC_ANON_KEY"
+  );
 
-let bilheteSelecionado = null;
+  const grelha = document.getElementById("grelha");
+  const form = document.getElementById("formCompra");
+  const bilheteSpan = document.getElementById("bilheteSelecionado");
 
-// ---------- GRELHA ----------
-async function carregarBilhetes() {
-  grelha.innerHTML = "";
+  let bilheteAtual = null;
 
-  const { data } = await supabase
-    .from("bilhetes")
-    .select("*")
-    .order("numero");
-
-  let vendidos = data.filter(b => b.vendido).length;
-  contador.textContent = `Vendidos: ${vendidos} | Disponíveis: ${120 - vendidos}`;
-
-  data.forEach(b => {
+  // GERAR GRELHA
+  for (let i = 1; i <= 120; i++) {
     const btn = document.createElement("button");
-    btn.textContent = b.numero;
-    btn.className = b.vendido ? "ocupado" : "livre";
-    btn.disabled = b.vendido;
-    btn.onclick = () => abrirFormulario(b.numero);
+    btn.textContent = i;
+    btn.onclick = () => selecionarBilhete(i);
     grelha.appendChild(btn);
-  });
-}
-
-// ---------- FORM ----------
-function abrirFormulario(numero) {
-  bilheteSelecionado = numero;
-  titulo.textContent = `Bilhete Nº ${numero}`;
-  form.classList.remove("hidden");
-}
-
-function fecharFormulario() {
-  form.reset();
-  form.classList.add("hidden");
-}
-
-// ---------- SUBMIT ----------
-form.addEventListener("submit", async e => {
-  e.preventDefault();
-
-  const file = document.getElementById("comprovativo").files[0];
-  const filePath = `bilhete_${bilheteSelecionado}_${Date.now()}`;
-
-  const { error: uploadError } = await supabase
-    .storage
-    .from("comprovativos")
-    .upload(filePath, file);
-
-  if (uploadError) {
-    alert("Erro no upload do comprovativo");
-    return;
   }
 
-  const { error } = await supabase.from("bilhetes").update({
-    vendido: true,
-    nome: nome.value,
-    telefone: telefone.value,
-    email: email.value,
-    data_nascimento: dataNascimento.value,
-    localidade: localidade.value,
-    comprovativo: filePath
-  }).eq("numero", bilheteSelecionado);
-
-  if (error) {
-    alert("Erro ao gravar compra");
-    return;
+  function selecionarBilhete(numero) {
+    bilheteAtual = numero;
+    bilheteSpan.textContent = numero;
+    form.hidden = false;
   }
 
-  alert("Compra registada com sucesso!");
-  fecharFormulario();
-  carregarBilhetes();
+  document.getElementById("cancelar").onclick = () => {
+    form.hidden = true;
+    bilheteAtual = null;
+  };
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+
+    const nome = nomeInput.value;
+    const file = comprovativo.files[0];
+
+    if (!file) {
+      alert("Anexe o comprovativo");
+      return;
+    }
+
+    const filePath = `bilhete_${bilheteAtual}_${Date.now()}.png`;
+
+    const { error: uploadError } = await supabase
+      .storage
+      .from("comprovativos")
+      .upload(filePath, file);
+
+    if (uploadError) {
+      alert("Erro no upload");
+      return;
+    }
+
+    await supabase.from("bilhetes").insert({
+      numero: bilheteAtual,
+      nome
+    });
+
+    document.getElementById("modalBilhete").textContent = bilheteAtual;
+    document.getElementById("modalNome").textContent = nome;
+    document.getElementById("modal").hidden = false;
+    form.hidden = true;
+  };
+
 });
 
-carregarBilhetes();
+function fecharModal() {
+  document.getElementById("modal").hidden = true;
+}
