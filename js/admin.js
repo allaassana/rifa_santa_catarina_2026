@@ -1,24 +1,20 @@
-const supabaseUrl = "https://ydyxumwqunhomahaxet.supabase.co";
-const supabaseKey = "SUA_PUBLIC_ANON_KEY_AQUI";
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+document.addEventListener("DOMContentLoaded", async () => {
 
-document.addEventListener("DOMContentLoaded", carregar);
+  const supabase = window.supabase.createClient(
+    "https://SEU_PROJECT_ID.supabase.co",
+    "SUA_PUBLIC_ANON_KEY"
+  );
 
-async function carregar() {
-  const { data } = await supabase.from("compras").select("*").order("bilhete");
+  const grelha = document.getElementById("grelhaAdmin");
+  const detalhes = document.getElementById("detalhes");
 
-  const tbody = document.getElementById("lista");
-  tbody.innerHTML = "";
+  const { data } = await supabase.from("bilhetes").select("*");
 
-  data.forEach(c => {
-    tbody.innerHTML += `
-      <tr>
-        <td>${c.bilhete}</td>
-        <td>${c.nome}</td>
-        <td>${c.telefone}</td>
-        <td>${c.email}</td>
-        <td>${c.localidade}</td>
-      </tr>
-    `;
+  data.forEach(b => {
+    const btn = document.createElement("button");
+    btn.textContent = b.numero;
+    btn.onclick = () => detalhes.textContent = JSON.stringify(b, null, 2);
+    grelha.appendChild(btn);
   });
-}
+
+});
