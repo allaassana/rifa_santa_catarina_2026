@@ -1,29 +1,20 @@
-const supabaseUrl = "https://ydyuxmwqunhomahaxet.supabase.co";
-const supabaseKey = "COLOCA_AQUI_A_ANON_KEY";
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+document.addEventListener("DOMContentLoaded", async () => {
 
-const grelha = document.getElementById("grelhaAdmin");
-const detalhes = document.getElementById("detalhes");
+  const supabase = window.supabase.createClient(
+    "https://SEU_PROJECT_ID.supabase.co",
+    "SUA_PUBLIC_ANON_KEY"
+  );
 
-async function carregarAdmin() {
-  grelha.innerHTML = "";
+  const grelha = document.getElementById("grelhaAdmin");
+  const detalhes = document.getElementById("detalhes");
 
-  const { data } = await supabase
-    .from("bilhetes")
-    .select("*")
-    .order("numero");
+  const { data } = await supabase.from("bilhetes").select("*");
 
   data.forEach(b => {
     const btn = document.createElement("button");
     btn.textContent = b.numero;
-    btn.className = b.vendido ? "ocupado" : "livre";
-    btn.onclick = () => mostrarDetalhes(b);
+    btn.onclick = () => detalhes.textContent = JSON.stringify(b, null, 2);
     grelha.appendChild(btn);
   });
-}
 
-function mostrarDetalhes(b) {
-  detalhes.textContent = JSON.stringify(b, null, 2);
-}
-
-carregarAdmin();
+});
