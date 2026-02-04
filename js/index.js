@@ -1,102 +1,130 @@
-const TOTAL = 120;
-const grid = document.getElementById("ticketGrid");
-const soldCount = document.getElementById("soldCount");
-const availCount = document.getElementById("availCount");
-const formArea = document.getElementById("formArea");
+// ========================
+// SUPABASE CONFIG
+// ========================
+const SUPABASE_URL = "https://ydyxumwqunuhomahaxet.supabase.co";
+const SUPABASE_ANON_KEY = "COLOCA_AQUI_A_TUA_ANON_KEY";
 
-let selectedTicket = null;
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
-async function carregarBilhetes() {
-  const { data = [] } = await db.from("compras").select("bilhete");
-  const vendidos = data.map(v => v.bilhete);
+// ========================
+// ESTADO
+// ========================
+let bilheteSelecionado = null;
 
-  grid.innerHTML = "";
+// ========================
+// ELEMENTOS
+// ========================
+const modal = document.getElementById("modal");
+const fecharModalBtn = document.getElementById("fecharModal");
+const confirmarBtn = document.getElementById("confirmarCompra");
 
-  for (let i = 1; i <= TOTAL; i++) {
-    const div = document.createElement("div");
-    div.className = "ticket";
-    div.textContent = i;
+// ========================
+// GARANTIA: MODAL FECHADO AO CARREGAR
+// ========================
+document.addEventListener("DOMContentLoaded", () => {
+  modal.classList.add("hidden");
+});
 
-    if (vendidos.includes(i)) {
-      div.classList.add("sold");
-    } else {
-      div.onclick = () => abrirFormulario(i);
-    }
-    grid.appendChild(div);
-  }
+// ========================
+// SELECIONAR BILHETE
+// ========================
+document.querySelectorAll(".numero").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    if (btn.classList.contains("vendido")) return;
 
-  soldCount.textContent = vendidos.length;
-  availCount.textContent = TOTAL - vendidos.length;
-}
+    bilheteSelecionado = btn.dataset.numero;
+    document.getElementById("bilheteNumero").innerText = bilheteSelecionado;
+  });
+});
 
-function abrirFormulario(n) {
-  selectedTicket = n;
-  document.getElementById("ticketNumber").textContent = n;
-  formArea.classList.remove("hidden");
-}
-
-document.getElementById("cancelar").onclick = () => {
-  formArea.classList.add("hidden");
-};
-
-document.getElementById("confirmar").onclick = async () => {
-  const nome = nomeInput.value.trim();
-  const telefone = telefoneInput.value.trim();
-  const email = emailInput.value.trim();
-  const nascimento = nascimentoInput.value || null;
-  const cidade = cidadeInput.value || null;
-  const pais = paisInput.value || null;
-  const file = comprovativoInput.files[0];
-
-  if (!nome || !telefone || !email || !file) {
-    alert("Preencha todos os campos obrigatórios.");
+// ========================
+// CONFIRMAR COMPRA
+// ========================
+confirmarBtn.addEventListener("click", async () => {
+  if (!bilheteSelecionado) {
+    alert("Seleciona um bilhete.");
     return;
   }
 
-  const fileName = `${Date.now()}_${file.name}`;
-  const upload = await db.storage.from("comprovativos").upload(fileName, file);
+  const nome = document.getElementById("nome").value.trim();
+  const telefone = document.getElementById("telefone").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const nascimento = document.getElementById("nascimento").value;
+  const localidade = document.getElementById("localidade").value.trim();
+  const fileInput = document.getElementById("comprovativo");
+  const file = fileInput.files[0];
 
-  if (upload.error) {
+  if (!nome || !telefone || !email || !nascimento || !localidade) {
+    alert("Preenche todos os campos.");
+    return;
+  }
+
+  if (!file) {
+    alert("Seleciona o comprovativo de pagamento.");
+    return;
+  }
+
+  // ========================
+  // UPLOAD COMPROVATIVO (CORRIGIDO)
+  // ========================
+  const ext = file.name.split(".").pop();
+  const fileName = `${Date.now()}.${ext}`;
+  const filePath = `bilhete_${bilheteSelecionado}/${fileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("comprovativos")
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type,
+    });
+
+  if (uploadError) {
+    console.error(uploadError);
     alert("Erro no upload do comprovativo.");
     return;
   }
 
-  const { data: url } = db.storage.from("comprovativos").getPublicUrl(fileName);
+  const { data: publicUrlData } = supabase.storage
+    .from("comprovativos")
+    .getPublicUrl(filePath);
 
-  const { error } = await db.from("compras").insert({
-    bilhete: selectedTicket,
-    nome,
-    telefone,
-    email,
-    nascimento,
-    cidade,
-    pais,
-    comprovativo: url.publicUrl
-  });
+  const comprovativo_url = publicUrlData.publicUrl;
 
-  if (error) {
-    alert("Erro ao gravar compra.");
+  // ========================
+  // GRAVAR COMPRA
+  // ========================
+  const { error: insertError } = await supabase.from("compras").insert([
+    {
+      bilhete: bilheteSelecionado,
+      nome,
+      telefone,
+      email,
+      nascimento,
+      localidade,
+      comprovativo_url,
+    },
+  ]);
+
+  if (insertError) {
+    console.error(insertError);
+    alert("Erro ao gravar a compra.");
     return;
   }
 
-  document.getElementById("mBilhete").textContent = selectedTicket;
-  document.getElementById("mNome").textContent = nome;
-  document.getElementById("modal").classList.remove("hidden");
+  // ========================
+  // SUCESSO
+  // ========================
+  modal.classList.remove("hidden");
+});
 
-  formArea.classList.add("hidden");
-  carregarBilhetes();
-};
-
-function fecharModal() {
-  document.getElementById("modal").classList.add("hidden");
-}
-
-const nomeInput = document.getElementById("nome");
-const telefoneInput = document.getElementById("telefone");
-const emailInput = document.getElementById("email");
-const nascimentoInput = document.getElementById("nascimento");
-const cidadeInput = document.getElementById("cidade");
-const paisInput = document.getElementById("pais");
-const comprovativoInput = document.getElementById("comprovativo");
-
-carregarBilhetes();
+// ========================
+// FECHAR MODAL
+// ========================
+fecharModalBtn.addEventListener("click", () => {
+  modal.classList.add("hidden");
+  location.reload();
+});
