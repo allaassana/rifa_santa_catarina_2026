@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Painel Admin</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
-  <header class="site-header">
-    <h1>Painel Admin</h1>
-  </header>
+<header class="site-header">
+  <h1>Painel Admin</h1>
+</header>
 
-  <main class="container">
-    <button id="exportar">Exportar CSV</button>
-    <button id="sortear">Sortear</button>
+<main class="container">
+  <div id="bilhetes" class="grid"></div>
 
-    <h3>Detalhes do Comprador</h3>
-    <div id="detalhes"></div>
+  <h3>Detalhes do Comprador</h3>
+  <div id="detalhes"></div>
 
-    <h3>🏆 Vencedores</h3>
-    <ul id="vencedores"></ul>
-  </main>
+  <h3>🏆 Vencedores</h3>
+  <ul id="vencedores"></ul>
+</main>
 
-  <script src="js/admin.js"></script>
+<script src="js/admin.js"></script>
 </body>
 </html>
