@@ -1,96 +1,102 @@
 const TOTAL = 120;
-
 const grid = document.getElementById("ticketGrid");
 const soldCount = document.getElementById("soldCount");
 const availCount = document.getElementById("availCount");
 const formArea = document.getElementById("formArea");
-const modal = document.getElementById("modal");
 
 let selectedTicket = null;
 
-// 🔹 CARREGAR BILHETES
-async function carregar() {
+async function carregarBilhetes() {
   const { data = [] } = await db.from("compras").select("bilhete");
   const vendidos = data.map(v => v.bilhete);
 
   grid.innerHTML = "";
 
   for (let i = 1; i <= TOTAL; i++) {
-    const d = document.createElement("div");
-    d.className = "ticket";
-    d.textContent = i;
+    const div = document.createElement("div");
+    div.className = "ticket";
+    div.textContent = i;
 
     if (vendidos.includes(i)) {
-      d.classList.add("sold");
+      div.classList.add("sold");
     } else {
-      d.onclick = () => abrirFormulario(i);
+      div.onclick = () => abrirFormulario(i);
     }
-
-    grid.appendChild(d);
+    grid.appendChild(div);
   }
 
   soldCount.textContent = vendidos.length;
   availCount.textContent = TOTAL - vendidos.length;
 }
 
-// 🔹 ABRIR FORM
 function abrirFormulario(n) {
   selectedTicket = n;
   document.getElementById("ticketNumber").textContent = n;
   formArea.classList.remove("hidden");
 }
 
-// 🔹 CANCELAR
 document.getElementById("cancelar").onclick = () => {
   formArea.classList.add("hidden");
 };
 
-// 🔹 CONFIRMAR COMPRA
 document.getElementById("confirmar").onclick = async () => {
-  const nome = document.getElementById("nome").value.trim();
-  const telefone = document.getElementById("telefone").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const nascimento = document.getElementById("nascimento").value || null;
-  const cidade = document.getElementById("cidade").value || null;
-  const pais = document.getElementById("pais").value || null;
-  const file = document.getElementById("comprovativo").files[0];
+  const nome = nomeInput.value.trim();
+  const telefone = telefoneInput.value.trim();
+  const email = emailInput.value.trim();
+  const nascimento = nascimentoInput.value || null;
+  const cidade = cidadeInput.value || null;
+  const pais = paisInput.value || null;
+  const file = comprovativoInput.files[0];
 
   if (!nome || !telefone || !email || !file) {
-    alert("Preencha os campos obrigatórios.");
+    alert("Preencha todos os campos obrigatórios.");
     return;
   }
 
-  // UPLOAD
-  const fileName = Date.now() + "_" + file.name;
-  await db.storage.from("comprovativos").upload(fileName, file);
-  const { data: urlData } =
-    db.storage.from("comprovativos").getPublicUrl(fileName);
+  const fileName = `${Date.now()}_${file.name}`;
+  const upload = await db.storage.from("comprovativos").upload(fileName, file);
 
-  // INSERT
-  await db.from("compras").insert({
+  if (upload.error) {
+    alert("Erro no upload do comprovativo.");
+    return;
+  }
+
+  const { data: url } = db.storage.from("comprovativos").getPublicUrl(fileName);
+
+  const { error } = await db.from("compras").insert({
     bilhete: selectedTicket,
     nome,
     telefone,
     email,
-    data_nascimento: nascimento,
+    nascimento,
     cidade,
     pais,
-    comprovativo_url: urlData.publicUrl
+    comprovativo: url.publicUrl
   });
 
-  // MODAL
+  if (error) {
+    alert("Erro ao gravar compra.");
+    return;
+  }
+
   document.getElementById("mBilhete").textContent = selectedTicket;
   document.getElementById("mNome").textContent = nome;
+  document.getElementById("modal").classList.remove("hidden");
 
-  modal.classList.remove("hidden");
   formArea.classList.add("hidden");
-
-  carregar();
+  carregarBilhetes();
 };
 
-// 🔹 FECHAR MODAL
-document.getElementById("fecharModal").onclick = () => {
-  modal.classList.add("hidden");
-};
+function fecharModal() {
+  document.getElementById("modal").classList.add("hidden");
+}
 
-carregar();
+const nomeInput = document.getElementById("nome");
+const telefoneInput = document.getElementById("telefone");
+const emailInput = document.getElementById("email");
+const nascimentoInput = document.getElementById("nascimento");
+const cidadeInput = document.getElementById("cidade");
+const paisInput = document.getElementById("pais");
+const comprovativoInput = document.getElementById("comprovativo");
+
+carregarBilhetes();
