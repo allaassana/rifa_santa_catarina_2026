@@ -1,52 +1,37 @@
-const grid = document.getElementById("grid");
-const detalhes = document.getElementById("detalhes");
-const vencedores = document.getElementById("vencedores");
-const TOTAL = 120;
+const tabela = document.getElementById("tabelaCompras");
 
-async function carregarAdmin() {
-  const { data = [] } = await db.from("compras").select("*");
-  grid.innerHTML = "";
+// ===============================
+// CARREGAR COMPRAS
+// ===============================
+async function carregarCompras() {
+  const { data, error } = await db
+    .from("compras")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  for (let i = 1; i <= TOTAL; i++) {
-    const div = document.createElement("div");
-    div.className = "ticket";
-    div.textContent = i;
-
-    const compra = data.find(c => c.bilhete === i);
-    if (compra) {
-      div.classList.add("sold");
-      div.onclick = () => mostrarDetalhes(compra);
-    }
-    grid.appendChild(div);
+  if (error) {
+    alert("Erro ao carregar admin");
+    console.error(error);
+    return;
   }
-}
 
-function mostrarDetalhes(c) {
-  detalhes.innerHTML = `
-    <p><b>Bilhete:</b> ${c.bilhete}</p>
-    <p><b>Nome:</b> ${c.nome}</p>
-    <p><b>Telefone:</b> ${c.telefone}</p>
-    <p><b>Email:</b> ${c.email}</p>
-    <a href="${c.comprovativo}" target="_blank">📎 Comprovativo</a>
-  `;
-}
+  tabela.innerHTML = "";
 
-document.getElementById("sortear").onclick = async () => {
-  const { data } = await db.from("compras").select("*");
-  const v = data[Math.floor(Math.random() * data.length)];
-  await db.from("vencedores").insert(v);
-  carregarVencedores();
-};
+  data.forEach(c => {
+    const tr = document.createElement("tr");
 
-async function carregarVencedores() {
-  const { data = [] } = await db.from("vencedores").select("*");
-  vencedores.innerHTML = "";
-  data.forEach(v => {
-    const li = document.createElement("li");
-    li.textContent = `Bilhete ${v.bilhete} — ${v.nome}`;
-    vencedores.appendChild(li);
+    tr.innerHTML = `
+      <td>${c.bilhete}</td>
+      <td>${c.nome}</td>
+      <td>${c.telefone}</td>
+      <td>${c.email}</td>
+      <td>${c.cidade || ""}</td>
+      <td>${c.pais || ""}</td>
+      <td>${c.status}</td>
+    `;
+
+    tabela.appendChild(tr);
   });
 }
 
-carregarAdmin();
-carregarVencedores();
+carregarCompras();
