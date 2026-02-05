@@ -1,30 +1,32 @@
-document.addEventListener("DOMContentLoaded", carregarCompras);
+const tbody = document.getElementById("comprasBody");
 
 async function carregarCompras() {
-  const tabela = document.getElementById("listaCompras");
-  if (!tabela) return;
-
   const { data, error } = await db
     .from("compras")
     .select("*")
-    .order("bilhete", { ascending: true });
+    .order("created_at", { ascending: false });
 
   if (error) {
-    alert("Erro ao carregar admin");
+    alert("Erro ao carregar compras");
     return;
   }
 
-  tabela.innerHTML = "";
+  tbody.innerHTML = "";
 
   data.forEach(c => {
     const tr = document.createElement("tr");
+
     tr.innerHTML = `
       <td>${c.bilhete}</td>
       <td>${c.nome}</td>
       <td>${c.telefone}</td>
       <td>${c.email}</td>
+      <td>${c.cidade || ""}</td>
       <td>${c.status}</td>
     `;
-    tabela.appendChild(tr);
+
+    tbody.appendChild(tr);
   });
 }
+
+carregarCompras();
