@@ -1,10 +1,16 @@
 const grid = document.getElementById("grid");
 const detalhes = document.getElementById("detalhes");
+const vencedoresList = document.getElementById("vencedores");
+const btnSortear = document.getElementById("sortear");
 
+/* -----------------------------
+   CARREGAR COMPRAS
+-------------------------------- */
 async function carregarCompras() {
   const { data, error } = await db
     .from("compras")
-    .select("*");
+    .select("*")
+    .order("bilhete");
 
   if (error) {
     console.error(error);
@@ -12,14 +18,15 @@ async function carregarCompras() {
   }
 
   const vendidos = data.map(c => c.bilhete);
-
   grid.innerHTML = "";
 
   for (let i = 1; i <= 120; i++) {
     const btn = document.createElement("div");
     btn.classList.add("ticket");
 
-    if (vendidos.includes(i)) {
+    const compra = data.find(c => c.bilhete === i);
+
+    if (compra) {
       btn.classList.add("sold");
     } else {
       btn.classList.add("available");
@@ -28,7 +35,6 @@ async function carregarCompras() {
     btn.textContent = i;
 
     btn.onclick = () => {
-      const compra = data.find(c => c.bilhete === i);
       if (!compra) {
         detalhes.innerHTML = "<p>Bilhete disponível</p>";
         return;
@@ -51,6 +57,62 @@ async function carregarCompras() {
 
     grid.appendChild(btn);
   }
+
+  carregarVencedores();
 }
 
+/* -----------------------------
+   SORTEAR VENCEDOR
+-------------------------------- */
+btnSortear.onclick = async () => {
+  const { data, error } = await db
+    .from("compras")
+    .select("*");
+
+  if (error || !data.length) {
+    alert("Nenhuma compra encontrada.");
+    return;
+  }
+
+  const vencedor = data[Math.floor(Math.random() * data.length)];
+
+  await db.from("vencedores").insert({
+    bilhete: vencedor.bilhete,
+    nome: vencedor.nome,
+    telefone: vencedor.telefone,
+    email: vencedor.email
+  });
+
+  alert(`🎉 Vencedor: ${vencedor.nome} (Bilhete ${vencedor.bilhete})`);
+  carregarVencedores();
+};
+
+/* -----------------------------
+   HISTÓRICO DE VENCEDORES
+-------------------------------- */
+async function carregarVencedores() {
+  const { data, error } = await db
+    .from("vencedores")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  vencedoresList.innerHTML = "";
+
+  data.forEach(v => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      🎉 <strong>${v.nome}</strong> —
+      Bilhete ${v.bilhete}
+      <small>(${new Date(v.created_at).toLocaleString()})</small>
+    `;
+    vencedoresList.appendChild(li);
+  });
+}
+
+/* INIT */
 carregarCompras();
