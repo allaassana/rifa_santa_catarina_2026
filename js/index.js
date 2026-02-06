@@ -26,9 +26,14 @@ async function carregarBilhetes() {
   for (let i = 1; i <= TOTAL_BILHETES; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
-    btn.className = vendidos.includes(i) ? "sold" : "available";
 
-    if (!vendidos.includes(i)) {
+    // 🔥 CLASSES IGUAIS AO ADMIN
+    btn.classList.add("ticket");
+
+    if (vendidos.includes(i)) {
+      btn.classList.add("sold");
+    } else {
+      btn.classList.add("available");
       btn.onclick = () => selecionarBilhete(i);
     }
 
@@ -36,7 +41,8 @@ async function carregarBilhetes() {
   }
 
   document.getElementById("soldCount").textContent = vendidos.length;
-  document.getElementById("availCount").textContent = TOTAL_BILHETES - vendidos.length;
+  document.getElementById("availCount").textContent =
+    TOTAL_BILHETES - vendidos.length;
 }
 
 /* -----------------------------
@@ -72,8 +78,7 @@ document.getElementById("confirmar").onclick = async () => {
     if (file) {
       const fileName = `${Date.now()}_${file.name}`;
 
-      const { error: uploadError } = await db
-        .storage
+      const { error: uploadError } = await db.storage
         .from("comprovativos")
         .upload(fileName, file);
 
@@ -83,8 +88,7 @@ document.getElementById("confirmar").onclick = async () => {
         return;
       }
 
-      const { data } = db
-        .storage
+      const { data } = db.storage
         .from("comprovativos")
         .getPublicUrl(fileName);
 
@@ -100,7 +104,7 @@ document.getElementById("confirmar").onclick = async () => {
       data_nascimento: nascimento || null,
       cidade,
       pais,
-      comprovativo_url,   // ✅ NOME CORRETO
+      comprovativo_url,
       status: "pendente"
     });
 
@@ -112,6 +116,7 @@ document.getElementById("confirmar").onclick = async () => {
 
     alert("Compra registada com sucesso!");
     formArea.classList.add("hidden");
+    bilheteSelecionado = null;
     carregarBilhetes();
 
   } catch (e) {
