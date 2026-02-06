@@ -1,100 +1,40 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f5f7fa;
-}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Painel Admin</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
 
-/* HEADER */
-.site-header {
-  background: #243b55;
-  color: white;
-  padding: 25px 10px;
-  text-align: center;
-}
+<header class="site-header">
+  <div class="header-content">
+    <img src="logo_diocese.png" class="logo" />
+    <h1>Painel Admin</h1>
+    <p>Rifa Santa Catarina 2025</p>
+  </div>
+</header>
 
-.site-header .logo {
-  height: 60px;
-  margin-bottom: 10px;
-}
+<main class="container">
+  <button id="exportCSV">⬇ Exportar CSV</button>
+  <button id="sortear">🎉 Sortear</button>
 
-.site-header h1 {
-  margin: 5px 0;
-  font-size: 28px;
-}
+  <div id="grid" class="grid"></div>
 
-.site-header p {
-  margin: 0;
-  font-size: 14px;
-}
+  <h3>Detalhes do Comprador</h3>
+  <div id="detalhes"></div>
 
-/* CONTAINER */
-.container {
-  max-width: 1100px;
-  margin: auto;
-  padding: 20px;
-}
+  <h3>🏆 Vencedores</h3>
+  <ul id="vencedores"></ul>
+</main>
 
-/* GRID */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-/* BILHETES */
-.available {
-  background: #9ccc65;
-  color: white;
-  border: none;
-  padding: 12px 0;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.available:hover {
-  background: #7cb342;
-}
-
-.sold {
-  background: #d6d6d6;
-  color: #555;
-  border: none;
-  padding: 12px 0;
-  border-radius: 6px;
-  cursor: not-allowed;
-}
-
-/* ADMIN */
-.ticket {
-  text-align: center;
-  font-weight: bold;
-}
-
-/* BOTÕES */
-button {
-  padding: 10px 14px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-#sortear {
-  background: #d4af37;
-  color: #000;
-}
-
-#exportCSV {
-  background: #243b55;
-  color: #fff;
-}
-
-/* DETALHES */
-#detalhes {
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  margin-top: 15px;
-}
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const db = supabase.createClient(
+    "https://ydyuxumwqnuhomahaxet.supabase.co",
+    "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
+  );
+</script>
+<script src="js/admin.js"></script>
+</body>
+</html>
