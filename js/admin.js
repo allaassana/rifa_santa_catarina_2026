@@ -1,40 +1,25 @@
 const grid = document.getElementById("grid");
 const detalhes = document.getElementById("detalhes");
 const vencedoresList = document.getElementById("vencedores");
-const btnSortear = document.getElementById("sortear");
+const sortearBtn = document.getElementById("sortear");
 
-/* -----------------------------
+/* -------------------------
    CARREGAR COMPRAS
--------------------------------- */
+-------------------------- */
 async function carregarCompras() {
-  const { data, error } = await db
-    .from("compras")
-    .select("*")
-    .order("bilhete");
-
-  if (error) {
-    console.error(error);
-    return;
-  }
+  const { data, error } = await db.from("compras").select("*");
+  if (error) return console.error(error);
 
   const vendidos = data.map(c => c.bilhete);
   grid.innerHTML = "";
 
   for (let i = 1; i <= 120; i++) {
     const btn = document.createElement("div");
-    btn.classList.add("ticket");
-
-    const compra = data.find(c => c.bilhete === i);
-
-    if (compra) {
-      btn.classList.add("sold");
-    } else {
-      btn.classList.add("available");
-    }
-
+    btn.className = vendidos.includes(i) ? "sold ticket" : "available ticket";
     btn.textContent = i;
 
     btn.onclick = () => {
+      const compra = data.find(c => c.bilhete === i);
       if (!compra) {
         detalhes.innerHTML = "<p>Bilhete disponível</p>";
         return;
@@ -57,62 +42,57 @@ async function carregarCompras() {
 
     grid.appendChild(btn);
   }
-
-  carregarVencedores();
 }
 
-/* -----------------------------
+/* -------------------------
    SORTEAR VENCEDOR
--------------------------------- */
-btnSortear.onclick = async () => {
-  const { data, error } = await db
-    .from("compras")
-    .select("*");
+-------------------------- */
+sortearBtn.onclick = async () => {
+  const { data: compras } = await db.from("compras").select("*");
+  const { data: vencedores } = await db.from("vencedores").select("bilhete");
 
-  if (error || !data.length) {
-    alert("Nenhuma compra encontrada.");
+  const jaSorteados = vencedores.map(v => v.bilhete);
+  const elegiveis = compras.filter(c => !jaSorteados.includes(c.bilhete));
+
+  if (elegiveis.length === 0) {
+    alert("Todos os bilhetes já foram sorteados!");
     return;
   }
 
-  const vencedor = data[Math.floor(Math.random() * data.length)];
+  const vencedor = elegiveis[Math.floor(Math.random() * elegiveis.length)];
 
   await db.from("vencedores").insert({
     bilhete: vencedor.bilhete,
     nome: vencedor.nome,
     telefone: vencedor.telefone,
-    email: vencedor.email
+    email: vencedor.email,
+    data_sorteio: new Date()
   });
 
-  alert(`🎉 Vencedor: ${vencedor.nome} (Bilhete ${vencedor.bilhete})`);
+  alert(`🎉 Vencedor sorteado!\nBilhete Nº ${vencedor.bilhete} - ${vencedor.nome}`);
   carregarVencedores();
 };
 
-/* -----------------------------
+/* -------------------------
    HISTÓRICO DE VENCEDORES
--------------------------------- */
+-------------------------- */
 async function carregarVencedores() {
   const { data, error } = await db
     .from("vencedores")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("data_sorteio", { ascending: false });
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+  if (error) return console.error(error);
 
   vencedoresList.innerHTML = "";
 
   data.forEach(v => {
     const li = document.createElement("li");
-    li.innerHTML = `
-      🎉 <strong>${v.nome}</strong> —
-      Bilhete ${v.bilhete}
-      <small>(${new Date(v.created_at).toLocaleString()})</small>
-    `;
+    li.textContent = `🎟 ${v.bilhete} — ${v.nome} (${new Date(v.data_sorteio).toLocaleString()})`;
     vencedoresList.appendChild(li);
   });
 }
 
 /* INIT */
 carregarCompras();
+carregarVencedores();
