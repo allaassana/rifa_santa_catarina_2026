@@ -1,52 +1,56 @@
 const grid = document.getElementById("grid");
 const detalhes = document.getElementById("detalhes");
-const vencedores = document.getElementById("vencedores");
-const TOTAL = 120;
 
-async function carregarAdmin() {
-  const { data = [] } = await db.from("compras").select("*");
+async function carregarCompras() {
+  const { data, error } = await db
+    .from("compras")
+    .select("*");
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const vendidos = data.map(c => c.bilhete);
+
   grid.innerHTML = "";
 
-  for (let i = 1; i <= TOTAL; i++) {
-    const div = document.createElement("div");
-    div.className = "ticket";
-    div.textContent = i;
+  for (let i = 1; i <= 120; i++) {
+    const btn = document.createElement("div");
+    btn.classList.add("ticket");
 
-    const compra = data.find(c => c.bilhete === i);
-    if (compra) {
-      div.classList.add("sold");
-      div.onclick = () => mostrarDetalhes(compra);
+    if (vendidos.includes(i)) {
+      btn.classList.add("sold");
+    } else {
+      btn.classList.add("available");
     }
-    grid.appendChild(div);
+
+    btn.textContent = i;
+
+    btn.onclick = () => {
+      const compra = data.find(c => c.bilhete === i);
+      if (!compra) {
+        detalhes.innerHTML = "<p>Bilhete disponível</p>";
+        return;
+      }
+
+      detalhes.innerHTML = `
+        <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
+        <p><strong>Nome:</strong> ${compra.nome}</p>
+        <p><strong>Telefone:</strong> ${compra.telefone}</p>
+        <p><strong>Email:</strong> ${compra.email}</p>
+        <p><strong>Cidade:</strong> ${compra.cidade}</p>
+        <p><strong>País:</strong> ${compra.pais}</p>
+        ${
+          compra.comprovativo_url
+            ? `<p><a href="${compra.comprovativo_url}" target="_blank">📎 Ver comprovativo</a></p>`
+            : ""
+        }
+      `;
+    };
+
+    grid.appendChild(btn);
   }
 }
 
-function mostrarDetalhes(c) {
-  detalhes.innerHTML = `
-    <p><b>Bilhete:</b> ${c.bilhete}</p>
-    <p><b>Nome:</b> ${c.nome}</p>
-    <p><b>Telefone:</b> ${c.telefone}</p>
-    <p><b>Email:</b> ${c.email}</p>
-    <a href="${c.comprovativo}" target="_blank">📎 Comprovativo</a>
-  `;
-}
-
-document.getElementById("sortear").onclick = async () => {
-  const { data } = await db.from("compras").select("*");
-  const v = data[Math.floor(Math.random() * data.length)];
-  await db.from("vencedores").insert(v);
-  carregarVencedores();
-};
-
-async function carregarVencedores() {
-  const { data = [] } = await db.from("vencedores").select("*");
-  vencedores.innerHTML = "";
-  data.forEach(v => {
-    const li = document.createElement("li");
-    li.textContent = `Bilhete ${v.bilhete} — ${v.nome}`;
-    vencedores.appendChild(li);
-  });
-}
-
-carregarAdmin();
-carregarVencedores();
+carregarCompras();
