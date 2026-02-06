@@ -1,10 +1,6 @@
 const TOTAL = 120;
-let bilheteSelecionado = null;
-
-// ELEMENTOS
 const grid = document.getElementById("ticketGrid");
-const formArea = document.getElementById("formArea");
-const ticketNumber = document.getElementById("ticketNumber");
+const form = document.getElementById("formArea");
 
 const nomeInput = document.getElementById("nome");
 const telefoneInput = document.getElementById("telefone");
@@ -17,28 +13,26 @@ const comprovativoInput = document.getElementById("comprovativo");
 const confirmarBtn = document.getElementById("confirmar");
 const cancelarBtn = document.getElementById("cancelar");
 
+let bilheteSelecionado = null;
 
-// ========================
-// CARREGAR BILHETES
-// ========================
+/* =======================
+   CARREGAR BILHETES
+======================= */
 async function carregarBilhetes() {
-  const { data, error } = await db
+  const { data } = await db
     .from("compras")
     .select("bilhete");
 
-  const vendidos = data ? data.map(d => d.bilhete) : [];
+  const vendidos = data.map(d => d.bilhete);
 
   grid.innerHTML = "";
 
   for (let i = 1; i <= TOTAL; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
-    btn.className = "ticket";
+    btn.className = vendidos.includes(i) ? "sold" : "free";
 
-    if (vendidos.includes(i)) {
-      btn.classList.add("sold");
-      btn.disabled = true;
-    } else {
+    if (!vendidos.includes(i)) {
       btn.onclick = () => selecionarBilhete(i);
     }
 
@@ -49,42 +43,44 @@ async function carregarBilhetes() {
   document.getElementById("availCount").textContent = TOTAL - vendidos.length;
 }
 
+carregarBilhetes();
 
-// ========================
-// SELECIONAR BILHETE
-// ========================
-function selecionarBilhete(num) {
-  bilheteSelecionado = num;
-  ticketNumber.textContent = num;
-  formArea.classList.remove("hidden");
+/* =======================
+   SELECIONAR
+======================= */
+function selecionarBilhete(n) {
+  bilheteSelecionado = n;
+  document.getElementById("ticketNumber").textContent = n;
+  form.classList.remove("hidden");
 }
 
+/* =======================
+   CANCELAR
+======================= */
+cancelarBtn.onclick = () => {
+  form.classList.add("hidden");
+  bilheteSelecionado = null;
+};
 
-// ========================
-// CONFIRMAR COMPRA
-// ========================
+/* =======================
+   CONFIRMAR COMPRA
+======================= */
 confirmarBtn.onclick = async () => {
-
-  if (!bilheteSelecionado) {
-    alert("Selecione um bilhete");
-    return;
-  }
+  if (!bilheteSelecionado) return;
 
   if (!nomeInput.value || !telefoneInput.value || !emailInput.value) {
-    alert("Preencha os campos obrigatórios");
+    alert("Preenche os campos obrigatórios");
     return;
   }
 
-  let comprovativoPath = null;
+  let comprovativoUrl = null;
 
-  // ========= UPLOAD =========
+  /* ===== UPLOAD ===== */
   if (comprovativoInput.files.length > 0) {
     const file = comprovativoInput.files[0];
-    const ext = file.name.split(".").pop();
-    const fileName = `bilhete_${bilheteSelecionado}_${Date.now()}.${ext}`;
+    const fileName = `${Date.now()}_${file.name}`;
 
-    const { error: uploadError } = await db
-      .storage
+    const { error: uploadError } = await db.storage
       .from("comprovativos")
       .upload(fileName, file);
 
@@ -93,23 +89,25 @@ confirmarBtn.onclick = async () => {
       return;
     }
 
-    comprovativoPath = fileName;
+    const { data } = db.storage
+      .from("comprovativos")
+      .getPublicUrl(fileName);
+
+    comprovativoUrl = data.publicUrl;
   }
 
-  // ========= GRAVAR COMPRA =========
-  const { error } = await db
-    .from("compras")
-    .insert([{
-      bilhete: bilheteSelecionado,
-      nome: nomeInput.value,
-      telefone: telefoneInput.value,
-      email: emailInput.value,
-      data_nascimento: nascimentoInput.value || null,
-      cidade: cidadeInput.value || null,
-      pais: paisInput.value || null,
-      comprovativo: comprovativoPath,
-      status: "pendente"
-    }]);
+  /* ===== GRAVAR COMPRA ===== */
+  const { error } = await db.from("compras").insert([{
+    bilhete: bilheteSelecionado,
+    nome: nomeInput.value,
+    telefone: telefoneInput.value,
+    email: emailInput.value,
+    data_nascimento: nascimentoInput.value || null,
+    cidade: cidadeInput.value || null,
+    pais: paisInput.value || null,
+    comprovativo_url: comprovativoUrl,
+    status: "pendente"
+  }]);
 
   if (error) {
     console.error(error);
@@ -118,18 +116,9 @@ confirmarBtn.onclick = async () => {
   }
 
   alert("Compra registada com sucesso!");
-  location.reload();
-};
 
-
-// ========================
-// CANCELAR
-// ========================
-cancelarBtn.onclick = () => {
-  formArea.classList.add("hidden");
+  form.classList.add("hidden");
   bilheteSelecionado = null;
+
+  carregarBilhetes();
 };
-
-
-// INIT
-carregarBilhetes();
