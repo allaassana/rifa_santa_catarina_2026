@@ -1,40 +1,157 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-  <meta charset="UTF-8" />
-  <title>Painel Admin</title>
-  <link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
+/* RESET */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-<header class="site-header">
-  <div class="header-content">
-    <img src="logo_diocese.png" class="logo" />
-    <h1>Painel Admin</h1>
-    <p>Rifa Santa Catarina 2025</p>
-  </div>
-</header>
+/* BODY */
+body {
+  background: #f4f6f8;
+  color: #222;
+}
 
-<main class="container">
-  <button id="exportCSV">⬇ Exportar CSV</button>
-  <button id="sortear">🎉 Sortear</button>
+/* HEADER (INDEX + ADMIN) */
+.site-header {
+  background: #243b55;
+  color: #fff;
+  text-align: center;
+  padding: 25px 15px;
+}
 
-  <div id="grid" class="grid"></div>
+.site-header img {
+  max-height: 70px;
+  margin-bottom: 10px;
+}
 
-  <h3>Detalhes do Comprador</h3>
-  <div id="detalhes"></div>
+.site-header h1 {
+  font-size: 32px;
+  margin-bottom: 5px;
+}
 
-  <h3>🏆 Vencedores</h3>
-  <ul id="vencedores"></ul>
-</main>
+.site-header p {
+  font-size: 15px;
+  opacity: 0.9;
+}
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const db = supabase.createClient(
-    "https://ydyuxumwqnuhomahaxet.supabase.co",
-    "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
-  );
-</script>
-<script src="js/admin.js"></script>
-</body>
-</html>
+/* CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: 25px auto;
+  padding: 15px;
+}
+
+/* INFO COUNTS */
+.info-count {
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: 8px;
+  margin-bottom: 25px;
+}
+
+/* TICKET BASE */
+.ticket {
+  border-radius: 6px;
+  padding: 10px 0;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s;
+}
+
+/* DISPONÍVEL */
+.ticket.available {
+  background: #9ccc65;
+  color: #fff;
+}
+
+.ticket.available:hover {
+  background: #7cb342;
+}
+
+/* VENDIDO */
+.ticket.sold {
+  background: #e0e0e0;
+  color: #555;
+  cursor: not-allowed;
+}
+
+/* ADMIN ACTION BUTTONS */
+button {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#exportCSV {
+  background: #2c3e50;
+  color: #fff;
+}
+
+#sortear {
+  background: #c9a23f;
+  color: #fff;
+  margin-left: 8px;
+}
+
+/* FORM */
+.form {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+}
+
+.form.hidden {
+  display: none;
+}
+
+.form input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.form button {
+  margin-top: 10px;
+}
+
+/* INFO BOX */
+.info {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+/* MODAL */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 320px;
+  text-align: center;
+}
