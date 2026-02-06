@@ -1,98 +1,65 @@
-const grid = document.getElementById("grid");
-const detalhes = document.getElementById("detalhes");
-const vencedoresList = document.getElementById("vencedores");
-const sortearBtn = document.getElementById("sortear");
+const TOTAL_BILHETES = 120;
+const grid = document.getElementById("ticketGrid");
+const formArea = document.getElementById("formArea");
+const ticketNumberSpan = document.getElementById("ticketNumber");
 
-/* -------------------------
-   CARREGAR COMPRAS
--------------------------- */
-async function carregarCompras() {
-  const { data, error } = await db.from("compras").select("*");
-  if (error) return console.error(error);
+let bilheteSelecionado = null;
 
-  const vendidos = data.map(c => c.bilhete);
+async function carregarBilhetes() {
+  const { data } = await db.from("compras").select("bilhete");
+  const vendidos = data.map(d => d.bilhete);
+
   grid.innerHTML = "";
 
-  for (let i = 1; i <= 120; i++) {
-    const btn = document.createElement("div");
-    btn.className = vendidos.includes(i) ? "sold ticket" : "available ticket";
+  for (let i = 1; i <= TOTAL_BILHETES; i++) {
+    const btn = document.createElement("button");
     btn.textContent = i;
+    btn.className = vendidos.includes(i) ? "sold" : "available";
 
-    btn.onclick = () => {
-      const compra = data.find(c => c.bilhete === i);
-      if (!compra) {
-        detalhes.innerHTML = "<p>Bilhete disponível</p>";
-        return;
-      }
-
-      detalhes.innerHTML = `
-        <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
-        <p><strong>Nome:</strong> ${compra.nome}</p>
-        <p><strong>Telefone:</strong> ${compra.telefone}</p>
-        <p><strong>Email:</strong> ${compra.email}</p>
-        <p><strong>Cidade:</strong> ${compra.cidade}</p>
-        <p><strong>País:</strong> ${compra.pais}</p>
-        ${
-          compra.comprovativo_url
-            ? `<p><a href="${compra.comprovativo_url}" target="_blank">📎 Ver comprovativo</a></p>`
-            : ""
-        }
-      `;
-    };
+    if (!vendidos.includes(i)) {
+      btn.onclick = () => {
+        bilheteSelecionado = i;
+        ticketNumberSpan.textContent = i;
+        formArea.classList.remove("hidden");
+      };
+    }
 
     grid.appendChild(btn);
   }
+
+  soldCount.textContent = vendidos.length;
+  availCount.textContent = TOTAL_BILHETES - vendidos.length;
 }
 
-/* -------------------------
-   SORTEAR VENCEDOR
--------------------------- */
-sortearBtn.onclick = async () => {
-  const { data: compras } = await db.from("compras").select("*");
-  const { data: vencedores } = await db.from("vencedores").select("bilhete");
+confirmar.onclick = async () => {
+  const file = comprovativo.files[0];
+  let comprovativo_url = null;
 
-  const jaSorteados = vencedores.map(v => v.bilhete);
-  const elegiveis = compras.filter(c => !jaSorteados.includes(c.bilhete));
-
-  if (elegiveis.length === 0) {
-    alert("Todos os bilhetes já foram sorteados!");
-    return;
+  if (file) {
+    const name = Date.now() + "_" + file.name;
+    await db.storage.from("comprovativos").upload(name, file);
+    comprovativo_url = db.storage.from("comprovativos").getPublicUrl(name).data.publicUrl;
   }
 
-  const vencedor = elegiveis[Math.floor(Math.random() * elegiveis.length)];
-
-  await db.from("vencedores").insert({
-    bilhete: vencedor.bilhete,
-    nome: vencedor.nome,
-    telefone: vencedor.telefone,
-    email: vencedor.email,
-    data_sorteio: new Date()
+  await db.from("compras").insert({
+    bilhete: bilheteSelecionado,
+    nome: nome.value,
+    telefone: telefone.value,
+    email: email.value,
+    data_nascimento: nascimento.value || null,
+    cidade: cidade.value,
+    pais: pais.value,
+    comprovativo_url,
+    status: "pendente"
   });
 
-  alert(`🎉 Vencedor sorteado!\nBilhete Nº ${vencedor.bilhete} - ${vencedor.nome}`);
-  carregarVencedores();
+  alert("Compra registada com sucesso!");
+  formArea.classList.add("hidden");
+  carregarBilhetes();
 };
 
-/* -------------------------
-   HISTÓRICO DE VENCEDORES
--------------------------- */
-async function carregarVencedores() {
-  const { data, error } = await db
-    .from("vencedores")
-    .select("*")
-    .order("data_sorteio", { ascending: false });
+cancelar.onclick = () => {
+  formArea.classList.add("hidden");
+};
 
-  if (error) return console.error(error);
-
-  vencedoresList.innerHTML = "";
-
-  data.forEach(v => {
-    const li = document.createElement("li");
-    li.textContent = `🎟 ${v.bilhete} — ${v.nome} (${new Date(v.data_sorteio).toLocaleString()})`;
-    vencedoresList.appendChild(li);
-  });
-}
-
-/* INIT */
-carregarCompras();
-carregarVencedores();
+carregarBilhetes();
