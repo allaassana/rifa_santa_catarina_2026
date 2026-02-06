@@ -1,57 +1,70 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Rifa Santa Catarina 2025</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
 <header class="site-header">
-  <div class="header-content">
-    <img src="logo_diocese.png" class="logo" />
-    <h1>Rifa Santa Catarina 2025</h1>
-    <p>Centro Pastoral Santa Ana & São Joaquim</p>
-  </div>
+  <img src="assets/logo_diocese.png" class="logo">
+  <h1>Rifa Santa Catarina 2025</h1>
+  <p>Centro Pastoral Santa Ana & São Joaquim</p>
 </header>
 
 <main class="container">
-  <p><strong>Vendidos:</strong> <span id="soldCount">0</span> |
-     <strong>Disponíveis:</strong> <span id="availCount">120</span></p>
+
+  <p>
+    <strong>Vendidos:</strong> <span id="soldCount">0</span> |
+    <strong>Disponíveis:</strong> <span id="availCount">120</span>
+  </p>
 
   <div id="ticketGrid" class="grid"></div>
 
-  <div id="formArea" class="hidden">
+  <section id="formArea" class="form hidden">
     <h3>Bilhete Nº <span id="ticketNumber"></span></h3>
 
-    <input id="nome" placeholder="Nome completo" />
-    <input id="telefone" placeholder="Telefone" />
-    <input id="email" placeholder="Email" />
-    <input id="nascimento" type="date" />
-    <input id="cidade" placeholder="Cidade" />
-    <input id="pais" placeholder="País" />
-    <input id="comprovativo" type="file" />
+    <input id="nome" placeholder="Nome *">
+    <input id="telefone" placeholder="Telefone *">
+    <input id="email" type="email" placeholder="Email *">
+    <input id="nascimento" type="date">
+    <input id="cidade" placeholder="Cidade">
+    <input id="pais" placeholder="País">
+    <input id="comprovativo" type="file" accept="image/*,application/pdf">
 
     <button id="confirmar">Confirmar Compra</button>
     <button id="cancelar">Cancelar</button>
-  </div>
+  </section>
 
-  <section class="box">
+  <section class="info">
     <h3>💳 Dados Bancários</h3>
     <p>BCA – IBAN: CV64 0003 0000 02544214 101 76</p>
     <p>CECV – IBAN: CV64 0002 0000 03844137 102 02</p>
-  </section>
 
-  <section class="box">
     <h3>📞 Contactos</h3>
     <p>Esmeraldo Borges – miraborges10@hotmail.com</p>
     <p>Ana Maria Carvalho – dinaleia@hotmail.com</p>
   </section>
+
 </main>
+
+<!-- MODAL -->
+<div id="modal" class="modal hidden">
+  <div class="modal-box">
+    <h3>✅ Compra Confirmada</h3>
+    <p>Bilhete: <span id="mBilhete"></span></p>
+    <p>Nome: <span id="mNome"></span></p>
+    <button id="baixarPDF">📄 Baixar Recibo (PDF)</button>
+    <button onclick="fecharModal()">Fechar</button>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const db = supabase.createClient(
+  window.db = supabase.createClient(
     "https://ydyuxumwqnuhomahaxet.supabase.co",
     "sb_publishable_mTc8Aoplv-HTj-23xoMZ_w_gzoQkN3u"
   );
