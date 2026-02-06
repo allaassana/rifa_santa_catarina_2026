@@ -1,7 +1,14 @@
-const TOTAL = 120;
+// ===== CONFIG =====
+const TOTAL_BILHETES = 120;
+
 const grid = document.getElementById("ticketGrid");
 const form = document.getElementById("formArea");
+const ticketNumberSpan = document.getElementById("ticketNumber");
 
+const soldCount = document.getElementById("soldCount");
+const availCount = document.getElementById("availCount");
+
+// Inputs
 const nomeInput = document.getElementById("nome");
 const telefoneInput = document.getElementById("telefone");
 const emailInput = document.getElementById("email");
@@ -15,67 +22,72 @@ const cancelarBtn = document.getElementById("cancelar");
 
 let bilheteSelecionado = null;
 
-/* =======================
-   CARREGAR BILHETES
-======================= */
-async function carregarBilhetes() {
-  const { data } = await db
-    .from("compras")
-    .select("bilhete");
-
-  const vendidos = data.map(d => d.bilhete);
-
+// ===== GRID =====
+function criarGrid(bilhetesVendidos) {
   grid.innerHTML = "";
 
-  for (let i = 1; i <= TOTAL; i++) {
+  for (let i = 1; i <= TOTAL_BILHETES; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
-    btn.className = vendidos.includes(i) ? "sold" : "free";
 
-    if (!vendidos.includes(i)) {
+    if (bilhetesVendidos.includes(i)) {
+      btn.classList.add("sold");
+      btn.disabled = true;
+    } else {
+      btn.classList.add("available");
       btn.onclick = () => selecionarBilhete(i);
     }
 
     grid.appendChild(btn);
   }
 
-  document.getElementById("soldCount").textContent = vendidos.length;
-  document.getElementById("availCount").textContent = TOTAL - vendidos.length;
+  soldCount.textContent = bilhetesVendidos.length;
+  availCount.textContent = TOTAL_BILHETES - bilhetesVendidos.length;
 }
 
-carregarBilhetes();
+// ===== LOAD BILHETES =====
+async function carregarBilhetes() {
+  const { data, error } = await db
+    .from("compras")
+    .select("bilhete");
 
-/* =======================
-   SELECIONAR
-======================= */
-function selecionarBilhete(n) {
-  bilheteSelecionado = n;
-  document.getElementById("ticketNumber").textContent = n;
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const vendidos = data.map(r => r.bilhete);
+  criarGrid(vendidos);
+}
+
+// ===== SELECIONAR =====
+function selecionarBilhete(numero) {
+  bilheteSelecionado = numero;
+  ticketNumberSpan.textContent = numero;
   form.classList.remove("hidden");
 }
 
-/* =======================
-   CANCELAR
-======================= */
+// ===== CANCELAR =====
 cancelarBtn.onclick = () => {
   form.classList.add("hidden");
   bilheteSelecionado = null;
 };
 
-/* =======================
-   CONFIRMAR COMPRA
-======================= */
+// ===== CONFIRMAR =====
 confirmarBtn.onclick = async () => {
-  if (!bilheteSelecionado) return;
+  if (!bilheteSelecionado) {
+    alert("Selecione um bilhete.");
+    return;
+  }
 
   if (!nomeInput.value || !telefoneInput.value || !emailInput.value) {
-    alert("Preenche os campos obrigatórios");
+    alert("Preencha os campos obrigatórios.");
     return;
   }
 
   let comprovativoUrl = null;
 
-  /* ===== UPLOAD ===== */
+  // ===== UPLOAD =====
   if (comprovativoInput.files.length > 0) {
     const file = comprovativoInput.files[0];
     const fileName = `${Date.now()}_${file.name}`;
@@ -85,19 +97,20 @@ confirmarBtn.onclick = async () => {
       .upload(fileName, file);
 
     if (uploadError) {
-      alert("Erro no upload do comprovativo");
+      console.error(uploadError);
+      alert("Erro no upload do comprovativo.");
       return;
     }
 
-    const { data } = db.storage
+    const { data: publicUrl } = db.storage
       .from("comprovativos")
       .getPublicUrl(fileName);
 
-    comprovativoUrl = data.publicUrl;
+    comprovativoUrl = publicUrl.publicUrl;
   }
 
-  /* ===== GRAVAR COMPRA ===== */
-  const { error } = await db.from("compras").insert([{
+  // ===== INSERT COMPRA =====
+  const { error } = await db.from("compras").insert({
     bilhete: bilheteSelecionado,
     nome: nomeInput.value,
     telefone: telefoneInput.value,
@@ -107,18 +120,32 @@ confirmarBtn.onclick = async () => {
     pais: paisInput.value || null,
     comprovativo_url: comprovativoUrl,
     status: "pendente"
-  }]);
+  });
 
   if (error) {
     console.error(error);
-    alert("Erro ao gravar compra");
+    alert("Erro ao gravar compra.");
     return;
   }
 
+  // ===== SUCESSO =====
   alert("Compra registada com sucesso!");
+
+  // ===== RESET UI (LAYOUT FIX) =====
+  nomeInput.value = "";
+  telefoneInput.value = "";
+  emailInput.value = "";
+  nascimentoInput.value = "";
+  cidadeInput.value = "";
+  paisInput.value = "";
+  comprovativoInput.value = "";
 
   form.classList.add("hidden");
   bilheteSelecionado = null;
 
+  // Recarregar grid (sincroniza com admin)
   carregarBilhetes();
 };
+
+// ===== INIT =====
+carregarBilhetes();
