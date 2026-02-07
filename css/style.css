@@ -1,100 +1,88 @@
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
-  background: #f5f7fa;
+  margin: 0;
+  background: #f4f6f8;
 }
 
-/* HEADER */
 .site-header {
   background: #243b55;
   color: white;
-  padding: 25px 10px;
+  padding: 25px;
   text-align: center;
 }
 
-.site-header .logo {
-  height: 60px;
-  margin-bottom: 10px;
-}
-
-.site-header h1 {
-  margin: 5px 0;
-  font-size: 28px;
-}
-
-.site-header p {
-  margin: 0;
-  font-size: 14px;
-}
-
-/* CONTAINER */
 .container {
-  max-width: 1100px;
-  margin: auto;
   padding: 20px;
 }
 
-/* GRID */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
   gap: 8px;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
-/* BILHETES */
+.grid button {
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
 .available {
-  background: #9ccc65;
-  color: white;
-  border: none;
-  padding: 12px 0;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.available:hover {
-  background: #7cb342;
-}
-
-.sold {
-  background: #d6d6d6;
-  color: #555;
-  border: none;
-  padding: 12px 0;
-  border-radius: 6px;
-  cursor: not-allowed;
-}
-
-/* ADMIN */
-.ticket {
-  text-align: center;
-  font-weight: bold;
-}
-
-/* BOTÕES */
-button {
-  padding: 10px 14px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-#sortear {
-  background: #d4af37;
-  color: #000;
-}
-
-#exportCSV {
-  background: #243b55;
+  background: #a8d37a;
   color: #fff;
 }
 
-/* DETALHES */
-#detalhes {
-  background: white;
-  padding: 15px;
+.sold {
+  background: #d3d3d3;
+  color: #555;
+  cursor: not-allowed;
+}
+
+.hidden {
+  display: none;
+}
+
+#formArea input {
+  display: block;
+  margin: 6px 0;
+  padding: 6px;
+  width: 100%;
+  max-width: 300px;
+}
+
+#formArea button {
+  margin-top: 8px;
+}
+
+.btn-regulamento {
+  display: inline-block;
+  margin-top: 20px;
+  background: #243b55;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+/* MODAL */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-box {
+  background: #fff;
+  padding: 20px;
   border-radius: 8px;
-  margin-top: 15px;
+  text-align: center;
 }
