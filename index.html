@@ -7,29 +7,90 @@
   <link rel="stylesheet" href="css/style.css" />
 
   <style>
-    body { background:#f6f7f9; font-family: Arial, sans-serif; }
-    header { background:#1f3a5f; color:#fff; padding:30px; text-align:center; }
-    .container { max-width:1200px; margin:20px auto; padding:20px; }
-    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(48px,1fr)); gap:6px; }
-    .available { background:#a8d27a; border:none; padding:10px; border-radius:6px; cursor:pointer; }
-    .sold { background:#ddd; border:none; padding:10px; border-radius:6px; cursor:not-allowed; }
-    .hidden { display:none; }
+    body {
+      background:#f6f7f9;
+      font-family: Arial, sans-serif;
+      margin:0;
+    }
 
+    header {
+      background:#1f3a5f;
+      color:#fff;
+      padding:30px;
+      text-align:center;
+    }
+
+    .container {
+      max-width:1200px;
+      margin:20px auto;
+      padding:20px;
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(48px,1fr));
+      gap:6px;
+    }
+
+    .available {
+      background:#a8d27a;
+      border:none;
+      padding:10px;
+      border-radius:6px;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    .sold {
+      background:#ddd;
+      border:none;
+      padding:10px;
+      border-radius:6px;
+      cursor:not-allowed;
+    }
+
+    .hidden {
+      display:none !important;
+    }
+
+    input {
+      padding:8px;
+      margin:5px 0;
+      width:100%;
+      max-width:300px;
+      display:block;
+    }
+
+    .btn {
+      padding:8px 14px;
+      border-radius:6px;
+      border:none;
+      cursor:pointer;
+      margin:5px;
+      font-weight:bold;
+    }
+
+    .btn.green { background:#4CAF50; color:#fff; }
+    .btn.blue  { background:#1f3a5f; color:#fff; }
+
+    /* MODAL */
     .modal {
-      position: fixed; inset:0; background:rgba(0,0,0,.6);
-      display:flex; align-items:center; justify-content:center;
+      position: fixed;
+      inset:0;
+      background:rgba(0,0,0,.6);
+      display:flex;
+      align-items:center;
+      justify-content:center;
       z-index:9999;
     }
+
     .modal-box {
-      background:#fff; padding:25px; border-radius:10px;
-      width:320px; text-align:center;
+      background:#fff;
+      padding:25px;
+      border-radius:10px;
+      width:320px;
+      text-align:center;
     }
-    .btn {
-      padding:8px 14px; border-radius:6px;
-      border:none; cursor:pointer; margin:5px;
-    }
-    .btn.green { background:#4CAF50; color:#fff; }
-    .btn.blue { background:#1f3a5f; color:#fff; }
   </style>
 </head>
 
@@ -62,7 +123,7 @@
     <input id="pais" placeholder="País">
     <input id="comprovativo" type="file">
 
-    <br><br>
+    <br>
     <button id="confirmar" class="btn green">Confirmar Compra</button>
     <button id="cancelar" class="btn">Cancelar</button>
   </div>
@@ -106,6 +167,27 @@
   );
 </script>
 
+<!-- MODAL CONTROL -->
+<script>
+  function mostrarModal(bilhete, nome, telefone) {
+    document.getElementById("modalBilhete").textContent = bilhete;
+    document.getElementById("modalNome").textContent = nome;
+
+    const msg = `Olá, aqui está o bilhete número ${bilhete}.\nCompra confirmada!`;
+
+    document.getElementById("whatsappBtn").href =
+      `https://wa.me/238${telefone}?text=${encodeURIComponent(msg)}`;
+
+    document.getElementById("modal").classList.remove("hidden");
+  }
+
+  document.getElementById("fecharModal").onclick = () => {
+    document.getElementById("modal").classList.add("hidden");
+  };
+</script>
+
+<!-- JS PRINCIPAL -->
 <script src="js/index.js"></script>
+
 </body>
 </html>
