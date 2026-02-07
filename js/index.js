@@ -6,21 +6,32 @@ const ticketNumberSpan = document.getElementById("ticketNumber");
 
 let bilheteSelecionado = null;
 
-/* CARREGAR BILHETES */
+/* =============================
+   CARREGAR BILHETES
+============================= */
 async function carregarBilhetes() {
-  const { data } = await db.from("compras").select("bilhete");
+  const { data, error } = await db
+    .from("compras")
+    .select("bilhete");
+
+  if (error || !data) {
+    console.error("Erro ao carregar bilhetes", error);
+    return;
+  }
+
   const vendidos = data.map(d => d.bilhete);
 
   grid.innerHTML = "";
 
   for (let i = 1; i <= TOTAL_BILHETES; i++) {
     const btn = document.createElement("button");
+    btn.className = vendidos.includes(i)
+      ? "ticket sold"
+      : "ticket available";
+
     btn.textContent = i;
 
-    if (vendidos.includes(i)) {
-      btn.className = "sold";
-    } else {
-      btn.className = "available";
+    if (!vendidos.includes(i)) {
       btn.onclick = () => selecionarBilhete(i);
     }
 
@@ -28,60 +39,95 @@ async function carregarBilhetes() {
   }
 
   document.getElementById("soldCount").textContent = vendidos.length;
-  document.getElementById("availCount").textContent = TOTAL_BILHETES - vendidos.length;
+  document.getElementById("availCount").textContent =
+    TOTAL_BILHETES - vendidos.length;
 }
 
+/* =============================
+   SELECIONAR BILHETE
+============================= */
 function selecionarBilhete(num) {
   bilheteSelecionado = num;
   ticketNumberSpan.textContent = num;
   formArea.classList.remove("hidden");
 }
 
-/* CONFIRMAR */
+/* =============================
+   CONFIRMAR COMPRA
+============================= */
 document.getElementById("confirmar").onclick = async () => {
-  const nome = nome.value.trim();
-  const telefone = telefone.value.trim();
-  const email = email.value.trim();
+  const nome = document.getElementById("nome").value.trim();
+  const telefone = document.getElementById("telefone").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const nascimento = document.getElementById("nascimento").value;
+  const cidade = document.getElementById("cidade").value.trim();
+  const pais = document.getElementById("pais").value.trim();
+  const file = document.getElementById("comprovativo").files[0];
 
-  if (!nome || !telefone || !email) return alert("Preencha os campos obrigatórios.");
+  if (!nome || !telefone || !email || !bilheteSelecionado) {
+    alert("Preencha os campos obrigatórios.");
+    return;
+  }
 
-  await db.from("compras").insert({
+  let comprovativo_url = null;
+
+  if (file) {
+    const fileName = `${Date.now()}_${file.name}`;
+    const { error: uploadError } = await db.storage
+      .from("comprovativos")
+      .upload(fileName, file);
+
+    if (uploadError) {
+      alert("Erro no upload do comprovativo");
+      return;
+    }
+
+    comprovativo_url = db.storage
+      .from("comprovativos")
+      .getPublicUrl(fileName).data.publicUrl;
+  }
+
+  const { error } = await db.from("compras").insert({
     bilhete: bilheteSelecionado,
     nome,
     telefone,
     email,
-    status: "pendente"
+    data_nascimento: nascimento || null,
+    cidade,
+    pais,
+    comprovativo_url,
+    status: "confirmado"
   });
 
-  document.getElementById("mBilhete").textContent = bilheteSelecionado;
-  document.getElementById("mNome").textContent = nome;
-  document.getElementById("modal").classList.remove("hidden");
+  if (error) {
+    alert("Erro ao gravar compra");
+    return;
+  }
 
-  const msg = encodeURIComponent(
-    `Olá, aqui está o bilhete número ${bilheteSelecionado}.\nCompra confirmada!`
-  );
-
-  window.open(`https://wa.me/${telefone}?text=${msg}`, "_blank");
-
-  formArea.classList.add("hidden");
+  mostrarModalConfirmacao(nome, bilheteSelecionado, telefone);
   carregarBilhetes();
 };
 
-document.getElementById("cancelar").onclick = () => {
-  formArea.classList.add("hidden");
-};
+/* =============================
+   MODAL + WHATSAPP
+============================= */
+function mostrarModalConfirmacao(nome, bilhete, telefone) {
+  document.getElementById("modalBilhete").textContent = bilhete;
+  document.getElementById("modalNome").textContent = nome;
 
-function fecharModal() {
-  document.getElementById("modal").classList.add("hidden");
+  document.getElementById("modal").classList.remove("hidden");
+
+  const msg = encodeURIComponent(
+    `Olá, aqui está o bilhete número ${bilhete}.\nCompra confirmada!`
+  );
+
+  document.getElementById("whatsappBtn").href =
+    `https://wa.me/${telefone}?text=${msg}`;
 }
 
-document.getElementById("baixarPDF").onclick = () => {
-  const texto = `RECIBO\nBilhete: ${bilheteSelecionado}`;
-  const blob = new Blob([texto], { type: "text/plain" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `recibo_bilhete_${bilheteSelecionado}.txt`;
-  a.click();
+document.getElementById("fecharModal").onclick = () => {
+  document.getElementById("modal").classList.add("hidden");
 };
 
+/* INIT */
 carregarBilhetes();
