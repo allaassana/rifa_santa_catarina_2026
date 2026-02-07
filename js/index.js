@@ -10,7 +10,9 @@ let bilheteSelecionado = null;
    CARREGAR BILHETES
 ================================ */
 async function carregarBilhetes() {
-  const { data, error } = await db.from("compras").select("bilhete");
+  const { data, error } = await db
+    .from("compras")
+    .select("bilhete");
 
   if (error) {
     console.error(error);
@@ -50,26 +52,6 @@ function selecionarBilhete(num) {
 }
 
 /* ===============================
-   MODAL
-================================ */
-function mostrarModal(bilhete, nome, telefone) {
-  document.getElementById("modalBilhete").textContent = bilhete;
-  document.getElementById("modalNome").textContent = nome;
-
-  const mensagem = `Olá, aqui está o bilhete número ${bilhete}.\nCompra confirmada!`;
-  const telLimpo = telefone.replace(/\D/g, "");
-
-  document.getElementById("whatsappBtn").href =
-    `https://wa.me/238${telLimpo}?text=${encodeURIComponent(mensagem)}`;
-
-  document.getElementById("modal").classList.remove("hidden");
-}
-
-document.getElementById("fecharModal").onclick = () => {
-  document.getElementById("modal").classList.add("hidden");
-};
-
-/* ===============================
    CONFIRMAR COMPRA
 ================================ */
 document.getElementById("confirmar").onclick = async () => {
@@ -91,18 +73,20 @@ document.getElementById("confirmar").onclick = async () => {
   if (file) {
     const fileName = `${Date.now()}_${file.name}`;
 
-    const { error } = await db.storage
+    const { error: uploadError } = await db.storage
       .from("comprovativos")
       .upload(fileName, file);
 
-    if (error) {
+    if (uploadError) {
       alert("Erro ao enviar comprovativo.");
       return;
     }
 
-    comprovativo_url = db.storage
+    const { data } = db.storage
       .from("comprovativos")
-      .getPublicUrl(fileName).data.publicUrl;
+      .getPublicUrl(fileName);
+
+    comprovativo_url = data.publicUrl;
   }
 
   const { error } = await db.from("compras").insert({
@@ -124,6 +108,7 @@ document.getElementById("confirmar").onclick = async () => {
 
   formArea.classList.add("hidden");
   carregarBilhetes();
+
   mostrarModal(bilheteSelecionado, nome, telefone);
 
   bilheteSelecionado = null;
@@ -139,3 +124,4 @@ document.getElementById("cancelar").onclick = () => {
 
 /* INIT */
 carregarBilhetes();
+document.getElementById("modal").classList.add("hidden");
