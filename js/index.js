@@ -10,9 +10,7 @@ let bilheteSelecionado = null;
    CARREGAR BILHETES
 ================================ */
 async function carregarBilhetes() {
-  const { data, error } = await db
-    .from("compras")
-    .select("bilhete");
+  const { data, error } = await db.from("compras").select("bilhete");
 
   if (error) {
     console.error(error);
@@ -52,6 +50,26 @@ function selecionarBilhete(num) {
 }
 
 /* ===============================
+   MODAL
+================================ */
+function mostrarModal(bilhete, nome, telefone) {
+  document.getElementById("modalBilhete").textContent = bilhete;
+  document.getElementById("modalNome").textContent = nome;
+
+  const mensagem = `Olá, aqui está o bilhete número ${bilhete}.\nCompra confirmada!`;
+  const telLimpo = telefone.replace(/\D/g, "");
+
+  document.getElementById("whatsappBtn").href =
+    `https://wa.me/238${telLimpo}?text=${encodeURIComponent(mensagem)}`;
+
+  document.getElementById("modal").classList.remove("hidden");
+}
+
+document.getElementById("fecharModal").onclick = () => {
+  document.getElementById("modal").classList.add("hidden");
+};
+
+/* ===============================
    CONFIRMAR COMPRA
 ================================ */
 document.getElementById("confirmar").onclick = async () => {
@@ -70,28 +88,23 @@ document.getElementById("confirmar").onclick = async () => {
 
   let comprovativo_url = null;
 
-  /* ===== UPLOAD COMPROVATIVO ===== */
   if (file) {
     const fileName = `${Date.now()}_${file.name}`;
 
-    const { error: uploadError } = await db.storage
+    const { error } = await db.storage
       .from("comprovativos")
       .upload(fileName, file);
 
-    if (uploadError) {
-      console.error(uploadError);
+    if (error) {
       alert("Erro ao enviar comprovativo.");
       return;
     }
 
-    const { data } = db.storage
+    comprovativo_url = db.storage
       .from("comprovativos")
-      .getPublicUrl(fileName);
-
-    comprovativo_url = data.publicUrl;
+      .getPublicUrl(fileName).data.publicUrl;
   }
 
-  /* ===== GRAVAR COMPRA ===== */
   const { error } = await db.from("compras").insert({
     bilhete: bilheteSelecionado,
     nome,
@@ -105,19 +118,14 @@ document.getElementById("confirmar").onclick = async () => {
   });
 
   if (error) {
-    console.error(error);
     alert("Erro ao gravar compra.");
     return;
   }
 
-  /* ===== SUCESSO ===== */
   formArea.classList.add("hidden");
   carregarBilhetes();
-
-  // 👉 MODAL + WHATSAPP
   mostrarModal(bilheteSelecionado, nome, telefone);
 
-  // reset
   bilheteSelecionado = null;
 };
 
