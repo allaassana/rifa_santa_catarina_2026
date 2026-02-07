@@ -3,16 +3,18 @@ const TOTAL_BILHETES = 120;
 const grid = document.getElementById("ticketGrid");
 const formArea = document.getElementById("formArea");
 const ticketNumberSpan = document.getElementById("ticketNumber");
+const modal = document.getElementById("modal");
 
 let bilheteSelecionado = null;
+
+/* GARANTIA: modal NUNCA aparece ao entrar */
+modal.classList.add("hidden");
 
 /* ===============================
    CARREGAR BILHETES
 ================================ */
 async function carregarBilhetes() {
-  const { data, error } = await db
-    .from("compras")
-    .select("bilhete");
+  const { data, error } = await db.from("compras").select("bilhete");
 
   if (error) {
     console.error(error);
@@ -43,7 +45,7 @@ async function carregarBilhetes() {
 }
 
 /* ===============================
-   SELECIONAR BILHETE
+   SELECIONAR
 ================================ */
 function selecionarBilhete(num) {
   bilheteSelecionado = num;
@@ -72,21 +74,17 @@ document.getElementById("confirmar").onclick = async () => {
 
   if (file) {
     const fileName = `${Date.now()}_${file.name}`;
-
-    const { error: uploadError } = await db.storage
+    const { error } = await db.storage
       .from("comprovativos")
       .upload(fileName, file);
 
-    if (uploadError) {
-      alert("Erro ao enviar comprovativo.");
+    if (error) {
+      alert("Erro no upload do comprovativo.");
       return;
     }
 
-    const { data } = db.storage
-      .from("comprovativos")
-      .getPublicUrl(fileName);
-
-    comprovativo_url = data.publicUrl;
+    comprovativo_url =
+      db.storage.from("comprovativos").getPublicUrl(fileName).data.publicUrl;
   }
 
   const { error } = await db.from("compras").insert({
@@ -106,12 +104,28 @@ document.getElementById("confirmar").onclick = async () => {
     return;
   }
 
+  /* ===== SUCESSO ===== */
   formArea.classList.add("hidden");
   carregarBilhetes();
 
-  mostrarModal(bilheteSelecionado, nome, telefone);
+  // MODAL (APENAS AQUI)
+  document.getElementById("modalBilhete").textContent = bilheteSelecionado;
+  document.getElementById("modalNome").textContent = nome;
+
+  const msg = `Olá, aqui está o bilhete número ${bilheteSelecionado}.\nCompra confirmada!`;
+  document.getElementById("whatsappBtn").href =
+    `https://wa.me/238${telefone}?text=${encodeURIComponent(msg)}`;
+
+  modal.classList.remove("hidden");
 
   bilheteSelecionado = null;
+};
+
+/* ===============================
+   FECHAR MODAL
+================================ */
+document.getElementById("fecharModal").onclick = () => {
+  modal.classList.add("hidden");
 };
 
 /* ===============================
@@ -124,4 +138,3 @@ document.getElementById("cancelar").onclick = () => {
 
 /* INIT */
 carregarBilhetes();
-document.getElementById("modal").classList.add("hidden");
