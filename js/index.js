@@ -7,7 +7,7 @@ const modal = document.getElementById("modal");
 
 let bilheteSelecionado = null;
 
-/* Garantia */
+/* GARANTIA: modal nunca aparece ao entrar */
 modal.classList.add("hidden");
 
 /* ===============================
@@ -17,7 +17,7 @@ async function carregarBilhetes() {
   const { data, error } = await db.from("compras").select("bilhete");
 
   if (error) {
-    console.error(error);
+    console.error("Erro ao carregar bilhetes:", error);
     return;
   }
 
@@ -45,7 +45,7 @@ async function carregarBilhetes() {
 }
 
 /* ===============================
-   SELECIONAR BILHETE
+   SELECIONAR
 ================================ */
 function selecionarBilhete(num) {
   bilheteSelecionado = num;
@@ -70,12 +70,17 @@ document.getElementById("confirmar").onclick = async () => {
     return;
   }
 
-  /* Verificação extra (concorrência) */
-  const { data: existente } = await db
+  /* VERIFICAÇÃO CORRIGIDA (sem erro 406) */
+  const { data: existente, error: checkError } = await db
     .from("compras")
     .select("bilhete")
     .eq("bilhete", bilheteSelecionado)
-    .single();
+    .maybeSingle();
+
+  if (checkError) {
+    console.error("Erro na verificação:", checkError);
+    return;
+  }
 
   if (existente) {
     alert("Este bilhete já foi vendido.");
@@ -93,6 +98,7 @@ document.getElementById("confirmar").onclick = async () => {
 
     if (error) {
       alert("Erro no upload do comprovativo.");
+      console.error(error);
       return;
     }
 
@@ -118,9 +124,9 @@ document.getElementById("confirmar").onclick = async () => {
     return;
   }
 
-  /* SUCESSO */
+  /* ===== SUCESSO ===== */
   formArea.classList.add("hidden");
-  carregarBilhetes();
+  await carregarBilhetes();
 
   document.getElementById("modalBilhete").textContent = bilheteSelecionado;
   document.getElementById("modalNome").textContent = nome;
@@ -135,12 +141,15 @@ document.getElementById("confirmar").onclick = async () => {
 };
 
 /* ===============================
-   FECHAR / CANCELAR
+   FECHAR MODAL
 ================================ */
 document.getElementById("fecharModal").onclick = () => {
   modal.classList.add("hidden");
 };
 
+/* ===============================
+   CANCELAR
+================================ */
 document.getElementById("cancelar").onclick = () => {
   formArea.classList.add("hidden");
   bilheteSelecionado = null;
