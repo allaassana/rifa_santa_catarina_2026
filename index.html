@@ -155,10 +155,11 @@
 
 </div>
 
-<!-- MODAL (COMEÇA SEMPRE ESCONDIDO) -->
+<!-- MODAL -->
 <div id="modal" class="modal hidden">
   <div class="modal-box">
     <h3>✅ Compra Confirmada</h3>
+
     <p><strong>Bilhete:</strong> <span id="modalBilhete"></span></p>
     <p><strong>Nome:</strong> <span id="modalNome"></span></p>
 
@@ -167,7 +168,16 @@
     </a>
 
     <br><br>
-    <button id="fecharModal" class="btn gray">Fechar</button>
+
+    <button id="reciboBtn" class="btn blue">
+      📄 Baixar Recibo
+    </button>
+
+    <br><br>
+
+    <button id="fecharModal" class="btn gray">
+      Fechar
+    </button>
   </div>
 </div>
 
@@ -179,6 +189,7 @@
   );
 </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="js/index.js"></script>
 
 </body>
