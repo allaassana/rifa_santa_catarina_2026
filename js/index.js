@@ -7,7 +7,7 @@ const modal = document.getElementById("modal");
 
 let bilheteSelecionado = null;
 
-/* GARANTIA: modal NUNCA aparece ao entrar */
+/* Garantia */
 modal.classList.add("hidden");
 
 /* ===============================
@@ -45,7 +45,7 @@ async function carregarBilhetes() {
 }
 
 /* ===============================
-   SELECIONAR
+   SELECIONAR BILHETE
 ================================ */
 function selecionarBilhete(num) {
   bilheteSelecionado = num;
@@ -67,6 +67,19 @@ document.getElementById("confirmar").onclick = async () => {
 
   if (!nome || !telefone || !email || !bilheteSelecionado) {
     alert("Preencha os campos obrigatórios.");
+    return;
+  }
+
+  /* Verificação extra (concorrência) */
+  const { data: existente } = await db
+    .from("compras")
+    .select("bilhete")
+    .eq("bilhete", bilheteSelecionado)
+    .single();
+
+  if (existente) {
+    alert("Este bilhete já foi vendido.");
+    carregarBilhetes();
     return;
   }
 
@@ -101,18 +114,18 @@ document.getElementById("confirmar").onclick = async () => {
 
   if (error) {
     alert("Erro ao gravar compra.");
+    console.error(error);
     return;
   }
 
-  /* ===== SUCESSO ===== */
+  /* SUCESSO */
   formArea.classList.add("hidden");
   carregarBilhetes();
 
-  // MODAL (APENAS AQUI)
   document.getElementById("modalBilhete").textContent = bilheteSelecionado;
   document.getElementById("modalNome").textContent = nome;
 
-  const msg = `Olá, aqui está o bilhete número ${bilheteSelecionado}.\nCompra confirmada!`;
+  const msg = `Olá! O seu bilhete nº ${bilheteSelecionado} foi registado com sucesso.`;
   document.getElementById("whatsappBtn").href =
     `https://wa.me/238${telefone}?text=${encodeURIComponent(msg)}`;
 
@@ -122,15 +135,12 @@ document.getElementById("confirmar").onclick = async () => {
 };
 
 /* ===============================
-   FECHAR MODAL
+   FECHAR / CANCELAR
 ================================ */
 document.getElementById("fecharModal").onclick = () => {
   modal.classList.add("hidden");
 };
 
-/* ===============================
-   CANCELAR
-================================ */
 document.getElementById("cancelar").onclick = () => {
   formArea.classList.add("hidden");
   bilheteSelecionado = null;
