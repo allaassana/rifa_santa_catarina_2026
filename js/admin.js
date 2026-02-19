@@ -3,14 +3,23 @@ const detalhes = document.getElementById("detalhes");
 const vencedoresList = document.getElementById("vencedores");
 const sortearBtn = document.getElementById("sortear");
 
-/* -------------------------
-   CARREGAR COMPRAS
--------------------------- */
+/* ===============================
+   CARREGAR COMPRAS + CONTADORES
+================================ */
 async function carregarCompras() {
   const { data, error } = await db.from("compras").select("*");
   if (error) return console.error(error);
 
   const vendidos = data.map(c => c.bilhete);
+
+  /* CONTADORES */
+  const soldEl = document.getElementById("soldCount");
+  const availEl = document.getElementById("availableCount");
+
+  if (soldEl) soldEl.textContent = vendidos.length;
+  if (availEl) availEl.textContent = 120 - vendidos.length;
+
+  /* GRID */
   grid.innerHTML = "";
 
   for (let i = 1; i <= 120; i++) {
@@ -20,6 +29,7 @@ async function carregarCompras() {
 
     btn.onclick = () => {
       const compra = data.find(c => c.bilhete === i);
+
       if (!compra) {
         detalhes.innerHTML = "<p>Bilhete disponível</p>";
         return;
@@ -44,9 +54,9 @@ async function carregarCompras() {
   }
 }
 
-/* -------------------------
+/* ===============================
    SORTEAR VENCEDOR
--------------------------- */
+================================ */
 sortearBtn.onclick = async () => {
   const { data: compras } = await db.from("compras").select("*");
   const { data: vencedores } = await db.from("vencedores").select("bilhete");
@@ -69,13 +79,13 @@ sortearBtn.onclick = async () => {
     data_sorteio: new Date()
   });
 
-  alert(`🎉 Vencedor sorteado!\nBilhete Nº ${vencedor.bilhete} - ${vencedor.nome}`);
+  alert(`🎉 Vencedor sorteado!\nBilhete Nº ${vencedor.bilhete} — ${vencedor.nome}`);
   carregarVencedores();
 };
 
-/* -------------------------
+/* ===============================
    HISTÓRICO DE VENCEDORES
--------------------------- */
+================================ */
 async function carregarVencedores() {
   const { data, error } = await db
     .from("vencedores")
