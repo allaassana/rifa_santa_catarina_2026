@@ -7,7 +7,6 @@ const modal = document.getElementById("modal");
 
 let bilheteSelecionado = null;
 
-/* GARANTIA: modal nunca aparece ao entrar */
 modal.classList.add("hidden");
 
 /* ===============================
@@ -15,14 +14,9 @@ modal.classList.add("hidden");
 ================================ */
 async function carregarBilhetes() {
   const { data, error } = await db.from("compras").select("bilhete");
-
-  if (error) {
-    console.error("Erro ao carregar bilhetes:", error);
-    return;
-  }
+  if (error) return console.error(error);
 
   const vendidos = data.map(d => d.bilhete);
-
   grid.innerHTML = "";
 
   for (let i = 1; i <= TOTAL_BILHETES; i++) {
@@ -54,6 +48,46 @@ function selecionarBilhete(num) {
 }
 
 /* ===============================
+   GERAR RECIBO
+================================ */
+function gerarRecibo(nome, bilhete) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const data = new Date().toLocaleDateString("pt-PT");
+  const hora = new Date().toLocaleTimeString("pt-PT");
+
+  doc.setFontSize(14);
+  doc.text("RECIBO DE CONTRIBUIÇÃO", 20, 20);
+
+  doc.setFontSize(11);
+  doc.text("Paróquia de Santa Catarina de Santiago", 20, 32);
+  doc.text("Rifa Solidária 2025", 20, 38);
+
+  doc.line(20, 42, 190, 42);
+
+  doc.text(`Nome: ${nome}`, 20, 54);
+  doc.text(`Bilhete Nº: ${bilhete}`, 20, 62);
+  doc.text(`Data: ${data}`, 20, 70);
+  doc.text(`Hora: ${hora}`, 20, 78);
+
+  doc.line(20, 86, 190, 86);
+
+  doc.setFontSize(10);
+  doc.text(
+    "Este recibo confirma a contribuição voluntária no âmbito da Rifa Solidária da Paróquia de Santa Catarina de Santiago.",
+    20,
+    96,
+    { maxWidth: 170 }
+  );
+
+  doc.text("Obrigado pelo seu apoio.", 20, 112);
+  doc.text("— Comissão Organizadora —", 20, 124);
+
+  doc.save(`recibo_bilhete_${bilhete}.pdf`);
+}
+
+/* ===============================
    CONFIRMAR COMPRA
 ================================ */
 document.getElementById("confirmar").onclick = async () => {
@@ -70,17 +104,11 @@ document.getElementById("confirmar").onclick = async () => {
     return;
   }
 
-  /* VERIFICAÇÃO CORRIGIDA (sem erro 406) */
-  const { data: existente, error: checkError } = await db
+  const { data: existente } = await db
     .from("compras")
     .select("bilhete")
     .eq("bilhete", bilheteSelecionado)
     .maybeSingle();
-
-  if (checkError) {
-    console.error("Erro na verificação:", checkError);
-    return;
-  }
 
   if (existente) {
     alert("Este bilhete já foi vendido.");
@@ -98,7 +126,6 @@ document.getElementById("confirmar").onclick = async () => {
 
     if (error) {
       alert("Erro no upload do comprovativo.");
-      console.error(error);
       return;
     }
 
@@ -120,11 +147,9 @@ document.getElementById("confirmar").onclick = async () => {
 
   if (error) {
     alert("Erro ao gravar compra.");
-    console.error(error);
     return;
   }
 
-  /* ===== SUCESSO ===== */
   formArea.classList.add("hidden");
   await carregarBilhetes();
 
@@ -135,21 +160,21 @@ document.getElementById("confirmar").onclick = async () => {
   document.getElementById("whatsappBtn").href =
     `https://wa.me/238${telefone}?text=${encodeURIComponent(msg)}`;
 
-  modal.classList.remove("hidden");
+  document.getElementById("reciboBtn").onclick = () => {
+    gerarRecibo(nome, bilheteSelecionado);
+  };
 
+  modal.classList.remove("hidden");
   bilheteSelecionado = null;
 };
 
 /* ===============================
-   FECHAR MODAL
+   FECHAR / CANCELAR
 ================================ */
 document.getElementById("fecharModal").onclick = () => {
   modal.classList.add("hidden");
 };
 
-/* ===============================
-   CANCELAR
-================================ */
 document.getElementById("cancelar").onclick = () => {
   formArea.classList.add("hidden");
   bilheteSelecionado = null;
