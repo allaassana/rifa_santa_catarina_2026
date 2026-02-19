@@ -1,88 +1,64 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f4f6f8;
+.header {
+  background:#1f3a5f;
+  color:#fff;
+  text-align:center;
+  padding:25px;
 }
 
-.site-header {
-  background: #243b55;
-  color: white;
-  padding: 25px;
-  text-align: center;
+.header img {
+  height:70px;
+  margin-bottom:10px;
 }
 
-.container {
-  padding: 20px;
+.main {
+  max-width:1200px;
+  margin:20px auto;
+  padding:20px;
 }
 
-.grid {
-  display: grid;
+.top-actions {
+  margin-bottom:10px;
+}
+
+.stats {
+  margin:10px 0 20px;
+  font-weight:bold;
+}
+
+.ticket-grid {
+  display:grid;
   grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
-  gap: 8px;
-  margin: 20px 0;
+  gap:8px;
+  margin-bottom:25px;
 }
 
-.grid button {
-  padding: 10px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
+.ticket {
+  padding:10px 0;
+  border-radius:6px;
+  text-align:center;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-.available {
-  background: #a8d37a;
-  color: #fff;
+.ticket.available {
+  background:#b6d88a;
 }
 
-.sold {
-  background: #d3d3d3;
-  color: #555;
-  cursor: not-allowed;
+.ticket.sold {
+  background:#e0e0e0;
+  cursor:not-allowed;
 }
 
-.hidden {
-  display: none;
+.details {
+  margin-top:20px;
 }
 
-#formArea input {
-  display: block;
-  margin: 6px 0;
-  padding: 6px;
-  width: 100%;
-  max-width: 300px;
-}
-
-#formArea button {
-  margin-top: 8px;
-}
-
-.btn-regulamento {
-  display: inline-block;
-  margin-top: 20px;
-  background: #243b55;
-  color: #fff;
-  padding: 10px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-}
-
-/* MODAL */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-box {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
+.details button {
+  margin-top:10px;
+  background:#c0392b;
+  color:#fff;
+  border:none;
+  padding:8px 12px;
+  border-radius:5px;
+  cursor:pointer;
 }
