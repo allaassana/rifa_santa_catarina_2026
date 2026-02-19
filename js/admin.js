@@ -3,55 +3,83 @@ const detalhes = document.getElementById("detalhes");
 const vencedoresList = document.getElementById("vencedores");
 const sortearBtn = document.getElementById("sortear");
 
+let comprasCache = [];
+
 /* ===============================
-   CARREGAR COMPRAS + CONTADORES
+   CARREGAR COMPRAS
 ================================ */
 async function carregarCompras() {
   const { data, error } = await db.from("compras").select("*");
   if (error) return console.error(error);
 
+  comprasCache = data;
   const vendidos = data.map(c => c.bilhete);
 
-  /* CONTADORES */
-  const soldEl = document.getElementById("soldCount");
-  const availEl = document.getElementById("availableCount");
+  document.getElementById("soldCount").textContent = vendidos.length;
+  document.getElementById("availableCount").textContent = 120 - vendidos.length;
 
-  if (soldEl) soldEl.textContent = vendidos.length;
-  if (availEl) availEl.textContent = 120 - vendidos.length;
-
-  /* GRID */
   grid.innerHTML = "";
 
   for (let i = 1; i <= 120; i++) {
     const btn = document.createElement("div");
-    btn.className = vendidos.includes(i) ? "sold ticket" : "available ticket";
     btn.textContent = i;
+    btn.className = vendidos.includes(i)
+      ? "ticket sold"
+      : "ticket available";
 
-    btn.onclick = () => {
-      const compra = data.find(c => c.bilhete === i);
-
-      if (!compra) {
-        detalhes.innerHTML = "<p>Bilhete disponível</p>";
-        return;
-      }
-
-      detalhes.innerHTML = `
-        <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
-        <p><strong>Nome:</strong> ${compra.nome}</p>
-        <p><strong>Telefone:</strong> ${compra.telefone}</p>
-        <p><strong>Email:</strong> ${compra.email}</p>
-        <p><strong>Cidade:</strong> ${compra.cidade}</p>
-        <p><strong>País:</strong> ${compra.pais}</p>
-        ${
-          compra.comprovativo_url
-            ? `<p><a href="${compra.comprovativo_url}" target="_blank">📎 Ver comprovativo</a></p>`
-            : ""
-        }
-      `;
-    };
-
+    btn.onclick = () => mostrarDetalhes(i);
     grid.appendChild(btn);
   }
+}
+
+/* ===============================
+   DETALHES + ELIMINAR
+================================ */
+function mostrarDetalhes(numero) {
+  const compra = comprasCache.find(c => c.bilhete === numero);
+
+  if (!compra) {
+    detalhes.innerHTML = "<p>Bilhete disponível</p>";
+    return;
+  }
+
+  detalhes.innerHTML = `
+    <p><strong>Bilhete:</strong> ${compra.bilhete}</p>
+    <p><strong>Nome:</strong> ${compra.nome}</p>
+    <p><strong>Telefone:</strong> ${compra.telefone}</p>
+    <p><strong>Email:</strong> ${compra.email}</p>
+    <p><strong>Cidade:</strong> ${compra.cidade}</p>
+    <p><strong>País:</strong> ${compra.pais}</p>
+    ${
+      compra.comprovativo_url
+        ? `<p><a href="${compra.comprovativo_url}" target="_blank">📎 Ver comprovativo</a></p>`
+        : ""
+    }
+    <button onclick="eliminarCompra(${compra.bilhete})">
+      🗑️ Eliminar comprador
+    </button>
+  `;
+}
+
+/* ===============================
+   ELIMINAR COMPRA
+================================ */
+async function eliminarCompra(bilhete) {
+  if (!confirm("Tens a certeza que queres eliminar este comprador?")) return;
+
+  const { error } = await db
+    .from("compras")
+    .delete()
+    .eq("bilhete", bilhete);
+
+  if (error) {
+    alert("Erro ao eliminar comprador.");
+    console.error(error);
+    return;
+  }
+
+  detalhes.innerHTML = "<p>Compra eliminada.</p>";
+  carregarCompras();
 }
 
 /* ===============================
@@ -79,26 +107,23 @@ sortearBtn.onclick = async () => {
     data_sorteio: new Date()
   });
 
-  alert(`🎉 Vencedor sorteado!\nBilhete Nº ${vencedor.bilhete} — ${vencedor.nome}`);
+  alert(`🎉 Vencedor: Bilhete ${vencedor.bilhete} — ${vencedor.nome}`);
   carregarVencedores();
 };
 
 /* ===============================
-   HISTÓRICO DE VENCEDORES
+   VENCEDORES
 ================================ */
 async function carregarVencedores() {
-  const { data, error } = await db
+  const { data } = await db
     .from("vencedores")
     .select("*")
     .order("data_sorteio", { ascending: false });
 
-  if (error) return console.error(error);
-
   vencedoresList.innerHTML = "";
-
   data.forEach(v => {
     const li = document.createElement("li");
-    li.textContent = `🎟 ${v.bilhete} — ${v.nome} (${new Date(v.data_sorteio).toLocaleString()})`;
+    li.textContent = `🎟 ${v.bilhete} — ${v.nome}`;
     vencedoresList.appendChild(li);
   });
 }
