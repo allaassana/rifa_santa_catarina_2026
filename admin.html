@@ -4,79 +4,46 @@
   <meta charset="UTF-8">
   <title>Painel Admin</title>
   <link rel="stylesheet" href="css/style.css">
-
-  <style>
-    body {
-      background:#f6f7f9;
-      font-family:Arial, sans-serif;
-      margin:0;
-    }
-
-    header {
-      background:#1f3a5f;
-      color:#fff;
-      text-align:center;
-      padding:25px;
-    }
-
-    header img {
-      height:70px;
-      margin-bottom:10px;
-    }
-
-    .container {
-      max-width:1200px;
-      margin:20px auto;
-      padding:20px;
-    }
-
-    .stats-box {
-      margin:15px 0;
-      padding:12px;
-      background:#ffffff;
-      border-radius:8px;
-      width:260px;
-      box-shadow:0 2px 6px rgba(0,0,0,0.08);
-    }
-
-    .stats-box p {
-      margin:6px 0;
-      font-size:15px;
-    }
-  </style>
 </head>
 
 <body>
 
-<header>
+<header class="header">
   <img src="assets/logo_diocese.png" alt="Logo Diocese">
   <h1>Painel Admin</h1>
   <p>Gestão da Rifa</p>
 </header>
 
-<div class="container">
+<main class="main">
 
-  <button id="exportCSV">⬇ Exportar CSV</button>
-  <button id="sortear">🎉 Sortear Vencedor</button>
-
-  <!-- CONTADORES -->
-  <div class="stats-box">
-    <p><strong>Vendidos:</strong> <span id="soldCount">0</span></p>
-    <p><strong>Disponíveis:</strong> <span id="availableCount">120</span></p>
+  <div class="top-actions">
+    <button id="exportCSV">⬇ Exportar CSV</button>
+    <button id="sortear">🎉 Sortear Vencedor</button>
   </div>
 
-  <!-- GRELHA DE BILHETES -->
-  <div id="grid" class="grid"></div>
+  <!-- CONTADORES -->
+  <div class="stats">
+    <strong>Vendidos:</strong> <span id="soldCount">0</span> |
+    <strong>Disponíveis:</strong> <span id="availableCount">120</span>
+  </div>
 
-  <h3>Detalhes do Comprador</h3>
-  <div id="detalhes"></div>
+  <!-- GRELHA (IGUAL AO INDEX) -->
+  <div id="grid" class="ticket-grid"></div>
 
-  <h3>🏆 Histórico de Vencedores</h3>
-  <ul id="vencedores"></ul>
+  <!-- DETALHES -->
+  <section class="details">
+    <h3>Detalhes do Comprador</h3>
+    <div id="detalhes"></div>
+  </section>
 
-</div>
+  <!-- VENCEDORES -->
+  <section class="details">
+    <h3>🏆 Histórico de Vencedores</h3>
+    <ul id="vencedores"></ul>
+  </section>
 
-<!-- SUPABASE (mantido como estava) -->
+</main>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   window.db = supabase.createClient(
@@ -85,8 +52,6 @@
   );
 </script>
 
-<!-- SCRIPT ADMIN -->
 <script src="js/admin.js"></script>
-
 </body>
 </html>
